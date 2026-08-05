@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "project": "fenjiu_nepal",
+  "generated_at": "2026-08-05T17:47:57+08:00",
+  "source_git": {
+    "repository_root": "/Volumes/WD_BLACK/汾酒尼泊尔",
+    "branch": "chore/project-collaboration-system",
+    "commit": "d918e27b9f3bacb1338c6de388f055c30e813407",
+    "short_commit": "d918e27",
+    "worktree_status": "clean",
+    "remote_origin": "https://github.com/fthytwerwt-sudo/fenjiu.git"
+  },
+  "sync_strategy": "strict_allowlist",
+  "max_file_bytes": 1048576,
+  "archive_path": "/Volumes/WD_BLACK/汾酒尼泊尔/dist/fenjiu_project_sync_pack_20260805_174757.zip",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 4898,
+      "sha256": "8ba6598b265eeb12cd050c368a259efb4e803e1f3742bf2143f081e873359b4b"
+    },
+    {
+      "path": "CURRENT_STATUS.md",
+      "bytes": 2785,
+      "sha256": "eb94e0c3a5ea8dc2fd1152cab06249343f39501c7b57783462a1508479e79507"
+    },
+    {
+      "path": "DECISIONS.md",
+      "bytes": 3087,
+      "sha256": "78668b99947a4ecef029fd2167978ea9960f3cd6cb2b0db324122f3466cb7f55"
+    },
+    {
+      "path": "FILE_INDEX.md",
+      "bytes": 3909,
+      "sha256": "014ec17dc0296c3c8481b58a481ba520bf1698270e2b8facc68da22c6ff6d0cd"
+    },
+    {
+      "path": "GIT_STATE.md",
+      "bytes": 376,
+      "sha256": "7d2e90cfd2fbc3de5a1c3bae1ff46c774ab59e6d95d4040f96de221c2883880a"
+    },
+    {
+      "path": "NEXT_ACTIONS.md",
+      "bytes": 1179,
+      "sha256": "9dccc3d2da3166458efab276bed9a88d6d000fe35e4cb3bb8d2e8ca9c6713c6d"
+    },
+    {
+      "path": "OPEN_QUESTIONS.md",
+      "bytes": 1589,
+      "sha256": "063b5b1a7c83c33aa525291ff8f4809c28dfa2f8573abe5c14a118fdeab984f1"
+    },
+    {
+      "path": "PROJECT_CONTEXT.md",
+      "bytes": 8389,
+      "sha256": "2eaad5a5eded8c0a2e463c491c1a3e2c9fb01a20362d96159b6b0fc42a1f3252"
+    },
+    {
+      "path": "PROJECT_ENTRY.md",
+      "bytes": 2497,
+      "sha256": "dc40a080cd13eace8714e46cd74022394c1acf7f8884191f6edb2434d5ae9444"
+    },
+    {
+      "path": "PROJECT_SYNC_README.md",
+      "bytes": 947,
+      "sha256": "7a40358f32fdd77973219d36b9485531392e9234648b0976e760c8e06b40cd1d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2370,
+      "sha256": "09be4128c2e82f8a45812839dbeb72cf7bb323857fbee21851ab3ee8cec21f06"
+    },
+    {
+      "path": "RISKS_AND_BLOCKERS.md",
+      "bytes": 1485,
+      "sha256": "a3b31a423851f4609d68dd8118a36cdfa1d779569406f19e521c39eab5090a47"
+    },
+    {
+      "path": "SOURCE_OF_TRUTH.md",
+      "bytes": 2235,
+      "sha256": "f5491f216dc84edf5cc83b0e546fe5c509a90b5d8c2fdf2c7ed746426fc815dd"
+    },
+    {
+      "path": "docs/collaboration/CHATGPT_CODEX_WORKFLOW.md",
+      "bytes": 1525,
+      "sha256": "21f637192f7c46198f92454428fe603342027e070f77c7a996bdc93e396b7c8a"
+    },
+    {
+      "path": "docs/collaboration/EXECUTION_HISTORY.md",
+      "bytes": 1891,
+      "sha256": "57913c1ab6425ffd0ece30a150bcf20f8ce424d6f2401bdfa5684cf9b28769a0"
+    },
+    {
+      "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
+      "bytes": 466,
+      "sha256": "4ce5c98ea696774f65924cea6a9e5981786a64a765b9d71eea27e653c4983268"
+    },
+    {
+      "path": "docs/collaboration/SESSION_HANDOFF_TEMPLATE.md",
+      "bytes": 841,
+      "sha256": "e493cb1e6487d96dd63fdc136bf63067d0d8fed81d486cb863c07fcd372b58bd"
+    },
+    {
+      "path": "docs/collaboration/TASK_HANDOFF_TEMPLATE.md",
+      "bytes": 908,
+      "sha256": "716bda88cdbb143b87b70acf6f56ea745af7fc4dfe6d294da78df3a5b4e56e4b"
+    },
+    {
+      "path": "docs/collaboration/collaboration_mechanism_adoption.md",
+      "bytes": 2791,
+      "sha256": "d36a266619aad9cbcc45534c89769f550780df5c0ebade6d4b14fbcbe500e30b"
+    },
+    {
+      "path": "docs/project/PROJECT_GOAL.md",
+      "bytes": 1183,
+      "sha256": "1c68a902758af535a84c9f81bf2088bd1b42b5010540160834764d3afd05deaa"
+    },
+    {
+      "path": "docs/project/SCOPE_AND_BOUNDARIES.md",
+      "bytes": 1703,
+      "sha256": "252e2547bdbc0a46a64264b38c2ca31c9bbc8aa6406df44ae327824c1624a396"
+    },
+    {
+      "path": "docs/sync/README.md",
+      "bytes": 2034,
+      "sha256": "29e41c46c22e497a0deedc2fec38d7c495d6fa54d91d81ed296a37481b0d85da"
+    },
+    {
+      "path": "project_sync/PROJECT_SYNC_README.md",
+      "bytes": 261,
+      "sha256": "4f4070a84f9a1f4235f05ee45269fa313e723d74851e501bf4c47dd4f3dbbe38"
+    },
+    {
+      "path": "scripts/build_project_sync_pack.py",
+      "bytes": 23534,
+      "sha256": "771728daf6406f176ca556683ca204985602283252dcf170c76ec47b6c39f90e"
+    }
+  ],
+  "excluded_summary": {
+    "QA、渲染或联系表派生产物": 1670,
+    "缓存、派生产物或本地运行目录": 1503,
+    "Git 内部目录": 417,
+    "媒体、二进制产物或压缩包": 91,
+    "系统元数据": 84,
+    "可能含凭据或恢复信息": 3,
+    "线索库含联系方式，仅限本地受控使用": 1,
+    "超过同步包单文件限制（1 MiB）": 1
+  },
+  "excluded_examples": [
+    {
+      "path": "._.omx",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._sources_tmp",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._output",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._qa",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._research_execution.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._research_root.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._outputs",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._node_modules",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_research_channels.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "research_channels.json",
+      "bytes": 1051556,
+      "reason": "线索库含联系方式，仅限本地受控使用"
+    },
+    {
+      "path": "._research_channels.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_docs.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".___pycache__",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._research_culture_compliance.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_workbooks.mjs",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "make_docx_contact_sheets.py",
+      "bytes": 1876,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "._make_docx_contact_sheets.py",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "._patch_xlsx_freeze.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._汾酒尼泊尔市场落地与渠道执行方案.docx",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".env",
+      "bytes": 287,
+      "reason": "可能含凭据或恢复信息"
+    },
+    {
+      "path": "._.env",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 108,
+      "reason": "可能含凭据或恢复信息"
+    },
+    {
+      "path": "._.env.example",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._.gitignore",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._check_env.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "如何填写阿里API_Key.txt",
+      "bytes": 542,
+      "reason": "可能含凭据或恢复信息"
+    },
+    {
+      "path": "._如何填写阿里API_Key.txt",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._prepare_video_assets.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._generate_happyhorse_shots.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._assemble_final_video.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_video_execution_report.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._generate_happyhorse_video_edit_once.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._交付物",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._seafood_project_data.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_seafood_docs.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._尼泊尔海鲜AI线上销售系统",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".__qa_seafood_assets",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".__qa_seafood_render",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_seafood_contact_sheets",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_font_test",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "_qa_font_variants.docx",
+      "bytes": 36903,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_font_variants.docx",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".__qa_font_variants_render",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_fontconfig",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".__qa_font_variants_render_fc",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "._supply_collab_data.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._build_supply_collab_docs.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._汾酒海鲜_尼泊尔线上销售_供应链协同与资料交付体系",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._qa_supply_collab_docs.py",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "_qa_supply_collab_structure.json",
+      "bytes": 4712,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_supply_collab_structure.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "render_supply_collab_docs.py",
+      "bytes": 2434,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "._render_supply_collab_docs.py",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_supply_collab_render",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "inspect_supply_collab_render.py",
+      "bytes": 4280,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": "._inspect_supply_collab_render.py",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_supply_collab_contact",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "_qa_supply_collab_visual.json",
+      "bytes": 58408,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_supply_collab_visual.json",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".__qa_supply_collab_render_final",
+      "bytes": 4096,
+      "reason": "QA、渲染或联系表派生产物"
+    },
+    {
+      "path": ".__qa_supply_collab_contact_final",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._.git",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._README.md",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._PROJECT_ENTRY.md",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._AGENTS.md",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._docs",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._project_sync",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._scripts",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": "._dist",
+      "bytes": 4096,
+      "reason": "系统元数据"
+    },
+    {
+      "path": ".omx/._logs",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/._state",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/metrics.json",
+      "bytes": 181,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/._metrics.json",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/._artifacts",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/turns-2026-07-13.jsonl",
+      "bytes": 10203,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/._turns-2026-07-13.jsonl",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/tmux-hook-2026-07-13.jsonl",
+      "bytes": 1372,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/._tmux-hook-2026-07-13.jsonl",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/turns-2026-07-14.jsonl",
+      "bytes": 2092,
+      "reason": "缓存、派生产物或本地运行目录"
+    },
+    {
+      "path": ".omx/logs/._turns-2026-07-14.jsonl",
+      "bytes": 4096,
+      "reason": "缓存、派生产物或本地运行目录"
+    }
+  ],
+  "notes": [
+    "同步包只包含协作上下文和文件地图，不复制业务原件。",
+    "发现疑似秘密时构建会失败，不会生成或更新同步包。",
+    "线索库、媒体、QA、渲染、缓存、环境文件和 ZIP 默认排除。"
+  ]
+}
