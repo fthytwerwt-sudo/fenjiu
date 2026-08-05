@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜GPT Project 机制包语义一致性与来源追溯修正
+
+- **目标**：消除 P0/P1/P2 两套定义，修正业务闸门误称为 P0 的表达，统一 blocked/Git 状态词，并让 `project_entry/AGENTS.md` 可由 Manifest 记录的 source commit 复现。
+- **实际读取**：根 `AGENTS.md`、`PROJECT_ENTRY.md`、GPT Project 机制包核心文件、Manifest、验证脚本、验证报告和 AGENTS 机制对照审计。
+- **第一阶段 source commit**：`28e6f92eb91548fc3f9ef3b79865cb4a591eb4d0`，用于生成 AGENTS 镜像。
+- **实际改动**：统一来源优先级定义；将商品、价格、库存、资质、账号、收款、履约和酒类合规前置统一称为 `business_gates（业务闸门）`；新增语义一致性审计；升级 Manifest、验证脚本和验证报告以验证 AGENTS provenance。
+- **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本条不表示用户已上传 GPT Project UI，也不表示供应链、平台、合规、上线、销售或履约成立。
+
 ## 2026-08-06｜GPT Project 配合机制同步包与 AGENTS 交叉审计
 
 - **目标**：补齐汾酒 GPT Project 手动上传用配合机制包，并按 P0 补充要求交叉审计 `AGENTS.md`、`PROJECT_ENTRY.md` 与参考仓库机制。

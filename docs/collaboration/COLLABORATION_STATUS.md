@@ -1,6 +1,6 @@
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-05
+- **最近更新**：2026-08-06
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -8,7 +8,7 @@
 | 项目 | 状态 | 说明 |
 |---|---|---|
 | AGENTS 规则 | **CONFIRMED** | 已要求先读业务状态，再读总览、事实源、范围和协作状态；禁止把机制完成写成业务完成 |
-| PROJECT_ENTRY | **CONFIRMED** | 已以 TikTok、供应链启动阶段、双方职责、P0 输入、历史研究降级和海鲜隔离作为首屏信息 |
+| PROJECT_ENTRY | **CONFIRMED** | 已以 TikTok、供应链启动阶段、双方职责、用户本轮输入来源优先级、历史研究降级和海鲜隔离作为首屏信息 |
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 
@@ -33,9 +33,9 @@
 ## GPT Project 配合机制包状态
 
 - **CONFIRMED**：`GPT项目资料同步包_gpt_project_mechanism_sync/` 已创建为 GPT Project 手动上传包；它与 `project_sync/latest/` 分工不同，不能互相替代。
-- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2、GitHub 事实读取、Codex 执行落库、供应链缺口、TikTok 主线、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
-- **CONFIRMED**：`project_entry/AGENTS.md` 是根目录 `AGENTS.md` 的生成时只读镜像；当前验证显示根 AGENTS 与镜像 SHA-256 一致。
-- **CONFIRMED**：`scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 已验证 23 个文件、系统提示词 3081 字符、Manifest 一致、敏感信息扫描通过、绝对路径扫描通过、参考项目污染扫描通过、媒体排除通过。
+- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2 来源优先级、GitHub 事实读取、Codex 执行落库、供应链业务闸门缺口、TikTok 主线、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
+- **CONFIRMED**：`project_entry/AGENTS.md` 必须由 Manifest 记录的 source commit 中 `AGENTS.md` 生成；验证脚本会回读历史 commit、比较 source SHA、mirror SHA 和镜像内容。
+- **CONFIRMED**：`scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 已升级为语义一致性、业务闸门术语、blocked/Git 状态词和 AGENTS provenance 验证；具体 SHA 和结果以验证报告为准。
 - **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本包生成、验证、commit 或 push 不代表用户已上传 GPT Project UI，也不代表供应链、平台、合规、上线、销售或履约成立。
 
 ## GitHub 收口状态
@@ -52,7 +52,7 @@
 
 ## 剩余机制收口
 
-1. **P0**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
+1. **高优先待办**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
 2. 将 GitHub 默认分支切换为 main，随后删除旧临时远端分支，并回读全部远端状态。
 3. 在包含本次状态回填的 main 上重新生成同步包，并完成解压、哈希和新会话接手验证。
 4. 用户按需将 `GPT项目资料同步包_gpt_project_mechanism_sync/` 上传到 ChatGPT GPT Project，并用上传后验证清单测试新聊天框。

@@ -66,6 +66,38 @@ AGENTS_REQUIRED_KEYWORDS = {
     "mechanism_missing_gate": ["blocked_gpt_project_mechanism_missing"],
     "sync_package_boundary": ["project_sync/latest", "GPT项目资料同步包_gpt_project_mechanism_sync"],
 }
+SOURCE_PRIORITY_DEFINITIONS = [
+    "P0 = 用户本轮明确输入",
+    "P1 = GitHub main 当前事实、当前书面证据和当前验证证据",
+    "P2 = 历史聊天、账号记忆、旧项目机制、外部资料和通用建议",
+]
+SOURCE_PRIORITY_FILES = {
+    "AGENTS.md": ROOT_AGENTS,
+    INSTRUCTIONS_FILE: PACKAGE / INSTRUCTIONS_FILE,
+    "04_P0-P1-P2锚点与抗漂移机制_anchor_priority_anti_drift.md": PACKAGE
+    / "04_P0-P1-P2锚点与抗漂移机制_anchor_priority_anti_drift.md",
+    "14_Codex长期执行单模板_codex_task_template.md": PACKAGE / "14_Codex长期执行单模板_codex_task_template.md",
+    "19_用户上传后验证清单_post_upload_validation_checklist.md": PACKAGE
+    / "19_用户上传后验证清单_post_upload_validation_checklist.md",
+}
+FORBIDDEN_BUSINESS_P0_TERMS = [
+    "P0 缺口",
+    "P0 证据",
+    "P0 阻断",
+    "P0 条件",
+    "P0 输入齐全",
+    "价格和库存是 P0",
+]
+FORBIDDEN_STATUS_TERMS = [
+    "blocked_need_requirement_design",
+    "partial_completed",
+]
+REQUIRED_STATUS_TERMS = [
+    "blocked_need_implementation_design_layer",
+    "blocked_push_failed",
+    "local_only_not_completed",
+    "no_file_change_completed_readonly",
+]
 SYSTEM_REQUIRED_KEYWORDS = [
     "汾酒",
     "尼泊尔",
@@ -130,6 +162,20 @@ def git_value(args: list[str], fallback: str = "unknown") -> str:
     return result.stdout.strip() or fallback
 
 
+def git_show_text(commit: str, file_path: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "show", f"{commit}:{file_path}"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout
+
+
 def rel(path: Path) -> str:
     return path.relative_to(PACKAGE).as_posix()
 
@@ -175,7 +221,10 @@ def collect_infos() -> list[FileInfo]:
 
 
 def render_manifest(infos: list[FileInfo]) -> str:
-    root_agents_sha = sha256_text(read_text(ROOT_AGENTS)) if ROOT_AGENTS.exists() else "missing"
+    source_commit = git_value(["rev-parse", "HEAD"])
+    source_agents_text = git_show_text(source_commit, "AGENTS.md")
+    source_agents_sha = sha256_text(source_agents_text) if source_agents_text is not None else "missing"
+    mirror_agents_sha = sha256_text(read_text(AGENTS_MIRROR)) if AGENTS_MIRROR.exists() else "missing"
     lines = [
         "# GPT Project 配合机制上传清单",
         "",
@@ -187,10 +236,11 @@ def render_manifest(infos: list[FileInfo]) -> str:
         "",
         f"- `source_repository`: `fthytwerwt-sudo/fenjiu`",
         f"- `source_branch`: `{git_value(['branch', '--show-current'])}`",
-        f"- `source_commit`: `{git_value(['rev-parse', 'HEAD'])}`",
+        f"- `source_commit`: `{source_commit}`",
         f"- `source_file`: `AGENTS.md`",
-        f"- `source_sha256`: `{root_agents_sha}`",
+        f"- `source_sha256`: `{source_agents_sha}`",
         f"- `mirror_file`: `project_entry/AGENTS.md`",
+        f"- `mirror_sha256`: `{mirror_agents_sha}`",
         f"- `mirror_generated_at_utc`: `{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}`",
         "",
         "本清单由验证脚本根据实际文件生成。字符数和 SHA-256 以当前目录内容为准。",
@@ -204,10 +254,10 @@ def render_manifest(infos: list[FileInfo]) -> str:
         INSTRUCTIONS_FILE: "复制到 Project Instructions 的汾酒专用系统提示词",
         "02_项目身份与长期业务边界_project_identity_stable_scope.md": "固定汾酒尼泊尔 TikTok 主线和业务边界",
         "03_三层架构与事实源边界_three_layer_source_boundary.md": "区分 GPT Project、GitHub、Codex 和账号记忆",
-        "04_P0-P1-P2锚点与抗漂移机制_anchor_priority_anti_drift.md": "规定优先级和抗漂移检查",
+        "04_P0-P1-P2锚点与抗漂移机制_anchor_priority_anti_drift.md": "规定来源优先级和抗漂移检查",
         "05_GitHub事实源读取机制_github_fact_source_protocol.md": "规定何时回读 GitHub 当前事实源",
         "06_Codex执行落库机制_codex_execution_to_repo_protocol.md": "规定 Codex 执行、验证、提交和推送",
-        "07_供应链启动与资料缺口判断机制_supplier_readiness_gap_protocol.md": "判断商品、价格、库存、资质和履约缺口",
+        "07_供应链启动与资料缺口判断机制_supplier_readiness_gap_protocol.md": "判断商品、价格、库存、资质和履约业务闸门缺口",
         "08_TikTok主线与渠道边界_tiktok_channel_scope_protocol.md": "限定 TikTok 主线和辅助渠道边界",
         "09_酒类合规与外部执行闸门_alcohol_compliance_execution_gate.md": "规定公开发布、投放、收款和履约的前置条件",
         "10_汾酒与海鲜业务线隔离机制_business_line_isolation.md": "防止海鲜资料污染汾酒主线",
@@ -281,6 +331,123 @@ def parse_manifest(text: str) -> dict[str, tuple[int, str]]:
     return result
 
 
+def parse_manifest_metadata(text: str) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    for line in text.splitlines():
+        match = re.match(r"- `([^`]+)`: `([^`]*)`", line)
+        if match:
+            metadata[match.group(1)] = match.group(2)
+    return metadata
+
+
+def validate_source_priority_semantics(errors: list[str], metrics: dict[str, object]) -> None:
+    missing_by_file: dict[str, list[str]] = {}
+    for label, path in SOURCE_PRIORITY_FILES.items():
+        if not path.exists():
+            missing_by_file[label] = ["file_missing"]
+            continue
+        text = read_text(path)
+        missing = [definition for definition in SOURCE_PRIORITY_DEFINITIONS if definition not in text]
+        if missing:
+            missing_by_file[label] = missing
+    metrics["source_priority_semantics"] = "passed" if not missing_by_file else "failed"
+    if missing_by_file:
+        errors.append(f"source priority semantic mismatch: {missing_by_file}")
+
+
+def validate_business_gate_semantics(
+    texts: dict[str, str],
+    errors: list[str],
+    metrics: dict[str, object],
+) -> None:
+    package_text = "\n".join(texts.values())
+    forbidden_hits = [term for term in FORBIDDEN_BUSINESS_P0_TERMS if term in package_text]
+    required_terms = ["business_gates", "业务闸门", "hard_constraints", "硬约束"]
+    missing_required = [term for term in required_terms if term not in package_text]
+    passed = not forbidden_hits and not missing_required
+    metrics["business_gate_semantics"] = "passed" if passed else "failed"
+    if forbidden_hits:
+        errors.append(f"business gates still named as P0: {forbidden_hits}")
+    if missing_required:
+        errors.append(f"business gate terminology missing: {missing_required}")
+
+
+def validate_status_terms(
+    texts: dict[str, str],
+    errors: list[str],
+    metrics: dict[str, object],
+) -> None:
+    active_texts = [
+        "\n".join(texts.values()),
+        read_text(ROOT_AGENTS) if ROOT_AGENTS.exists() else "",
+        read_text(ROOT / "PROJECT_ENTRY.md") if (ROOT / "PROJECT_ENTRY.md").exists() else "",
+        read_text(ROOT / "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md")
+        if (ROOT / "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md").exists()
+        else "",
+    ]
+    active_text = "\n".join(active_texts)
+    forbidden_hits = [term for term in FORBIDDEN_STATUS_TERMS if term in active_text]
+    missing_required = [term for term in REQUIRED_STATUS_TERMS if term not in active_text]
+    metrics["blocked_status_consistency"] = (
+        "passed" if "blocked_need_implementation_design_layer" in active_text and "blocked_need_requirement_design" not in active_text else "failed"
+    )
+    metrics["git_status_consistency"] = "passed" if not forbidden_hits and not missing_required else "failed"
+    if forbidden_hits:
+        errors.append(f"forbidden status terms found: {forbidden_hits}")
+    if missing_required:
+        errors.append(f"required status terms missing: {missing_required}")
+
+
+def validate_agents_provenance(
+    errors: list[str],
+    metrics: dict[str, object],
+) -> None:
+    if not MANIFEST.exists():
+        errors.append("blocked_manifest_mismatch: manifest file is missing")
+        metrics["agents_source_commit_verified"] = False
+        metrics["agents_provenance_verified"] = False
+        return
+
+    metadata = parse_manifest_metadata(read_text(MANIFEST))
+    source_commit = metadata.get("source_commit", "")
+    manifest_source_sha = metadata.get("source_sha256", "")
+    manifest_mirror_sha = metadata.get("mirror_sha256", "")
+    metrics["agents_source_commit"] = source_commit or "missing"
+    if not source_commit:
+        errors.append("blocked_manifest_mismatch: source_commit missing from manifest")
+        metrics["agents_source_commit_verified"] = False
+        metrics["agents_provenance_verified"] = False
+        return
+
+    source_agents_text = git_show_text(source_commit, "AGENTS.md")
+    if source_agents_text is None:
+        errors.append("blocked_agents_provenance_mismatch: source commit AGENTS.md is unreadable")
+        metrics["agents_source_commit_verified"] = False
+        metrics["agents_provenance_verified"] = False
+        return
+
+    source_sha = sha256_text(source_agents_text)
+    mirror_text = read_text(AGENTS_MIRROR) if AGENTS_MIRROR.exists() else ""
+    mirror_sha = sha256_text(mirror_text) if mirror_text else "missing"
+    metrics["agents_source_commit_verified"] = True
+    metrics["agents_source_commit_exists"] = True
+    metrics["source_commit_agents_sha256"] = source_sha
+    metrics["mirror_agents_sha256"] = mirror_sha
+
+    provenance_errors: list[str] = []
+    if source_sha != manifest_source_sha:
+        provenance_errors.append("source_sha256 does not match git show source commit")
+    if mirror_sha != manifest_mirror_sha:
+        provenance_errors.append("mirror_sha256 does not match mirror file")
+    if source_agents_text != mirror_text:
+        provenance_errors.append("source commit AGENTS.md content does not match mirror")
+    if provenance_errors:
+        errors.append(f"blocked_agents_provenance_mismatch: {provenance_errors}")
+        metrics["agents_provenance_verified"] = False
+    else:
+        metrics["agents_provenance_verified"] = True
+
+
 def validate(write_manifest: bool) -> tuple[list[str], dict[str, object]]:
     errors: list[str] = []
     metrics: dict[str, object] = {}
@@ -330,6 +497,10 @@ def validate(write_manifest: bool) -> tuple[list[str], dict[str, object]]:
     missing_package_keywords = [word for word in PACKAGE_REQUIRED_KEYWORDS if word not in package_text]
     if missing_package_keywords:
         errors.append(f"package missing Fenjiu keywords: {missing_package_keywords}")
+
+    validate_source_priority_semantics(errors, metrics)
+    validate_business_gate_semantics(texts, errors, metrics)
+    validate_status_terms(texts, errors, metrics)
 
     forbidden_hits = [term for term in FORBIDDEN_REFERENCE_TERMS if term in package_text]
     if forbidden_hits:
@@ -418,6 +589,8 @@ def validate(write_manifest: bool) -> tuple[list[str], dict[str, object]]:
     if "根目录当前 `AGENTS.md` 永远高于" not in conflict_texts["agents_boundary"]:
         errors.append("AGENTS boundary file does not state root AGENTS authority")
 
+    validate_agents_provenance(errors, metrics)
+
     metrics["file_count"] = len(existing)
     metrics["required_file_count"] = len(REQUIRED_FILES)
     metrics["non_empty_file_count"] = len([text for text in texts.values() if text.strip()])
@@ -450,8 +623,16 @@ def write_report(errors: list[str], metrics: dict[str, object]) -> None:
         f"- **媒体排除**：{metrics.get('media_scan', 'unknown')}",
         f"- **Manifest 文件实际 SHA-256**：`{metrics.get('manifest_actual_sha256', 'not_generated')}`",
         f"- **根 AGENTS SHA-256**：`{metrics.get('root_agents_sha256', 'not_checked')}`",
+        f"- **source commit AGENTS SHA-256**：`{metrics.get('source_commit_agents_sha256', 'not_checked')}`",
         f"- **GPT Project AGENTS 镜像 SHA-256**：`{metrics.get('mirror_agents_sha256', 'not_checked')}`",
         f"- **AGENTS 镜像一致性**：{metrics.get('agents_mirror_consistent', False)}",
+        f"- `source_priority_semantics = {metrics.get('source_priority_semantics', 'unknown')}`",
+        f"- `business_gate_semantics = {metrics.get('business_gate_semantics', 'unknown')}`",
+        f"- `blocked_status_consistency = {metrics.get('blocked_status_consistency', 'unknown')}`",
+        f"- `git_status_consistency = {metrics.get('git_status_consistency', 'unknown')}`",
+        f"- `agents_source_commit_verified = {str(metrics.get('agents_source_commit_verified', False)).lower()}`",
+        f"- `agents_source_commit = {metrics.get('agents_source_commit', 'unknown')}`",
+        f"- `agents_provenance_verified = {str(metrics.get('agents_provenance_verified', False)).lower()}`",
         "- **用户上传状态**：`user_uploaded_to_gpt_project_ui = false`",
         "",
         "## Findings",

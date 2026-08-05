@@ -3,7 +3,7 @@
 - **验证状态**：`passed`
 - **文件数量**：23
 - **非空文件数量**：23
-- **系统提示词字符数**：3081
+- **系统提示词字符数**：3613
 - **Manifest 一致性**：True
 - **SHA-256**：True
 - **汾酒项目专属性验证**：passed
@@ -11,10 +11,18 @@
 - **敏感信息扫描**：passed
 - **绝对路径扫描**：passed
 - **媒体排除**：passed
-- **Manifest 文件实际 SHA-256**：`0c7bd7db2f0d22948d56a1bbf3059a7bce433574e33182e9fe5747ffcb122c48`
-- **根 AGENTS SHA-256**：`658501d453e8e35ea269e536f53d88bae4e891bd8f239c3310ef0baa7b5183cf`
-- **GPT Project AGENTS 镜像 SHA-256**：`658501d453e8e35ea269e536f53d88bae4e891bd8f239c3310ef0baa7b5183cf`
+- **Manifest 文件实际 SHA-256**：`a7dff3477fac78f7553c0501b27c7baf6fa41777c629ec0295814d94debbe154`
+- **根 AGENTS SHA-256**：`99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893`
+- **source commit AGENTS SHA-256**：`99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893`
+- **GPT Project AGENTS 镜像 SHA-256**：`99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893`
 - **AGENTS 镜像一致性**：True
+- `source_priority_semantics = passed`
+- `business_gate_semantics = passed`
+- `blocked_status_consistency = passed`
+- `git_status_consistency = passed`
+- `agents_source_commit_verified = true`
+- `agents_source_commit = 28e6f92eb91548fc3f9ef3b79865cb4a591eb4d0`
+- `agents_provenance_verified = true`
 - **用户上传状态**：`user_uploaded_to_gpt_project_ui = false`
 
 ## Findings
