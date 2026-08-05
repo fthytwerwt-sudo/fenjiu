@@ -23,10 +23,10 @@
 ## 同步包状态
 
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
-- **同步包版本**：**待验证**；V2 修正后必须重新生成，不能将历史 bundle 误称为 V2 最终包。
-- **同步包脚本版本**：**待验证**；以最终安全 main 上的构建脚本 source_commit 为准，不在文档中预写最终 commit。
-- **最近本地 bundle 验证日期**：2026-08-05；该验证证明历史 bundle 可读，不替代 V2 重新生成、verify、解压和跨机器可用性检查。
-- **待验证**：V2 脱敏脚本修改完成后，须重新生成并验证同步包；该包必须包含 BUSINESS_STATUS 和本文。
+- **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
+- **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
+- **最近本地 bundle 验证日期**：2026-08-05；V2 build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过。
+- **CONFIRMED**：V2 脱敏脚本已完成重新生成与验证；最终包仍须在本文件本次回填提交后再次生成，确保新会话读到同一状态。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。
 
@@ -35,21 +35,19 @@
 | 字段 | 当前状态 |
 |---|---|
 | Repository | fthytwerwt-sudo/fenjiu |
-| Visibility | **待最终远端回读**；不得提前写为 Private |
-| Default branch | **待最终远端回读**；目标为干净 main |
-| 最近验证远端 branch | **待最终远端回读** |
-| 最近验证远端 commit | **待最终远端回读** |
-| Pull requests | **待最终远端回读** |
+| Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
+| Default branch | **CONFIRMED（远端读取）**：仍为旧临时分支；目标为干净 main |
+| 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
+| 最近验证远端 commit | **CONFIRMED（远端读取）**：010b24ab76cd7ee1425e2c2ee56e14caae6d06e9 |
+| Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
 ## 剩余机制收口
 
-1. 完成同步包脚本的绝对路径、排除清单和跨机器元数据修正。
-2. 在本地备份存在且当前安全内容经扫描后，建立干净 main。
-3. 将仓库 visibility 改为 Private；若权限不足，保留为 P0 阻断并记录用户最小操作。
-4. 推送 main、设置默认分支、删除旧临时远端分支，并回读全部远端状态。
-5. 在干净 main 上重新生成、verify、解压和模拟新会话接手同步包。
+1. **P0**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
+2. 将 GitHub 默认分支切换为 main，随后删除旧临时远端分支，并回读全部远端状态。
+3. 在包含本次状态回填的 main 上重新生成同步包，并完成解压、哈希和新会话接手验证。
 
 ## 更新规则
 
-只能以实际命令、GitHub/API 回读、脚本验证和可读取的产物更新本文。最终 main commit、远端 branch、visibility、默认分支和 PR 状态由最终收口执行者回填。
+只能以实际命令、GitHub/API 回读、脚本验证和可读取的产物更新本文。本文记录最近一次可写入的远端验证；包的 source_commit 表示生成基线，不尝试构造“文件同时记录自身提交”的不可能结构。每次新提交后，最终远端 HEAD 仍须由执行回报再次回读。
