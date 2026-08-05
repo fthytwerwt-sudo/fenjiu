@@ -1,0 +1,42 @@
+# 项目统一入口｜PROJECT_ENTRY
+
+本文件是新 ChatGPT、Codex、Work 或人工协作者的业务优先导航；它不替代原始资料，也不把模板当作合作方已确认。
+
+## 30 秒定位
+
+- **当前正式范围**：汾酒仅做尼泊尔 TikTok 线上销售准备。TikTok 是当前主销售与内容渠道。
+- **当前阶段**：供应链启动资料收集与首批 TikTok 商品上线准备，不是已经公开销售或履约。
+- **用户负责**：线上账号运营、TikTok 内容制作与发布、商品展示和上架、客户沟通、订单转化，以及销售数据和市场反馈。
+- **供应链负责**：当地合法销售与品牌/产品资质、SKU/规格/价格/库存、账号主体认证支持、当地收款、仓储配送、退换货、质量、售后和财务结算；这些均为确认的责任边界，不表示资料已交付。
+- **当前最重要任务**：取得商品单、真实价格与规则、库存/补货、账号和认证支持、资质授权、收款、配送售后及明确负责人；资料齐备后再决定首批可上架 SKU。
+- **不自动恢复的旧范围**：B2B 经销商开发、多平台独立运营、Facebook/Instagram 独立营销、YouTube/Viber、90 天试销、自动找客或自动外联。
+- **海鲜资料线**：独立业务线；可共享有限协作机制，不能直接用于汾酒事实或决策。
+
+## 必读顺序
+
+1. [AGENTS.md](AGENTS.md)
+2. 本文件
+3. [业务状态](docs/project/BUSINESS_STATUS.md)
+4. [总览状态](docs/project/CURRENT_STATUS.md)
+5. [事实源地图](docs/project/SOURCE_OF_TRUTH.md)
+6. [范围与边界](docs/project/SCOPE_AND_BOUNDARIES.md)
+7. [协作机制状态](docs/collaboration/COLLABORATION_STATUS.md)
+8. 与当前任务直接相关的原始资料；不要用派生产物替代原始资料。
+
+## 先分清可继续与不可进入的动作
+
+- **可继续准备**：内部资料整理、供应链启动表、商品字段/上架资料设计、事实核验、合规与平台问题清单、受控草稿。
+- **P0 阻断外部执行**：未取得当前书面证据前，不得公开发布、投放、收款、下单、承诺交期或开展真实履约。关键缺口包括 SKU、价格、库存、主体和资质、账号权限、收款、配送售后，以及 TikTok 酒类内容/广告边界。
+
+## 状态和交接
+
+- 业务事实以 [BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md) 为准。
+- 协作与仓库收口事实以 [COLLABORATION_STATUS.md](docs/collaboration/COLLABORATION_STATUS.md) 为准。
+- 当前摘要以 [CURRENT_STATUS.md](docs/project/CURRENT_STATUS.md) 为准；它只路由，不替代两份详细状态。
+- 重要任务完成后更新状态、决策、风险、下一步和 [执行历史](docs/collaboration/EXECUTION_HISTORY.md)。
+
+生成交接包：
+
+    python3 scripts/build_project_sync_pack.py
+
+把 project_sync/latest 或本地 ZIP 与 [同步包说明](docs/sync/README.md) 一并交给新会话。新会话必须先复述当前范围、阶段、职责、事实分级、阻断和完成标准，再执行。

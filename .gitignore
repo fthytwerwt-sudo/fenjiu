@@ -1,0 +1,23 @@
+# 正式协作仓库只跟踪协作机制、状态文件和同步包生成器。
+# 原始研究、供应链原件、媒体、渲染物、线索库及本机配置保留在本地受控目录，
+# 不因存在于此工作区而自动进入 Git。
+/*
+!/.gitignore
+!/AGENTS.md
+!/README.md
+!/PROJECT_ENTRY.md
+!/docs/
+!/docs/**
+!/scripts/
+!/scripts/build_project_sync_pack.py
+!/project_sync/
+!/project_sync/PROJECT_SYNC_README.md
+!/project_sync/PROJECT_SYNC_MANIFEST.json
+!/project_sync/latest/
+!/project_sync/latest/**
+
+# 无论目录规则如何，凭据与系统元数据始终不得提交。
+.env
+.env.*
+.DS_Store
+._*
