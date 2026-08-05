@@ -25,6 +25,14 @@
 - 混入 unrelated dirty files。
 - staged diff 发现 secret、本地路径或媒体。
 
+## 正式状态键
+
+- `blocked_push_failed`：push 失败或远端拒绝。
+- `local_only_not_completed`：本地文件或 commit 存在，但未完成 push 和远端回读。
+- `no_file_change_completed_readonly`：只读核验任务无文件变化，且已完成必要回读。
+
+不要使用模糊的部分完成或本地-only 类表述作为正式完成状态；如需自然语言解释，必须同时给出上述正式状态键。
+
 ## 回报字段
 
 ```text

@@ -30,4 +30,4 @@ Codex 说完成后，GPT Project 仍要复审。复审不是不信任，而是�
 
 ## 复审失败处理
 
-发现缺文件、空文件、manifest 不一致、系统提示词过长、参考项目污染、secret、本地路径、push 失败或远端不可读时，状态写 `partial_completed` 或 `BLOCKED`，并让 Codex 修复对应层级。
+发现缺文件、空文件、manifest 不一致、系统提示词过长、参考项目污染、secret、本地路径、push 失败或远端不可读时，按原因写 `blocked_push_failed`、`local_only_not_completed` 或 `BLOCKED`，并让 Codex 修复对应层级。只读任务无文件变化且已完成回读时，状态可写 `no_file_change_completed_readonly`。

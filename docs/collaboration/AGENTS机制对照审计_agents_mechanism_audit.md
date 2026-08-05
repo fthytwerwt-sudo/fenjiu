@@ -39,7 +39,7 @@
 | 17 | 当前工作目录硬约束 | 缺失 | `AGENTS.md` 7 节 | 正确 | `lanxinse--` AGENTS | 是 | 防止错工作区写入 | 不写入其他项目 |
 | 18 | 唯一远端仓库硬约束 | 缺失 | `AGENTS.md` 7 节 | 正确 | `lanxinse--` AGENTS | 是 | 明确只允许 `fthytwerwt-sudo/fenjiu` | 不 push 到参考仓库 |
 | 19 | 禁止 `git add .` | 存在 | `AGENTS.md` 7 节、包 17 号文件 | 正确 | 当前仓库规则 | 否 | 原文件已明确 | 不 stage 无关文件 |
-| 20 | commit、push、remote HEAD 验证 | 存在但可加强 | `AGENTS.md` 7 节、包 17 号文件 | 正确 | `7402250`、参考 AGENTS | 是 | 补完成状态条件 | 不把 local-only 写 completed |
+| 20 | commit、push、remote HEAD 验证 | 存在但可加强 | `AGENTS.md` 7 节、包 17 号文件 | 正确 | `7402250`、参考 AGENTS | 是 | 补完成状态条件 | 不把 `local_only_not_completed` 写 completed |
 | 21 | 受控状态词 | 存在 | `AGENTS.md` 4 节、包 16 号文件 | 正确 | 当前用户 overlay | 否 | 原文件已有事实分级 | 不用模糊完成词 |
 | 22 | GPT Project 包与 GitHub 事实包区别 | 缺失 | `AGENTS.md` 3C、`README.md`、包 00/18 号文件 | 正确 | `4b535ef`、`7402250` | 是 | 防止两个包混用 | 不把 UI 上传写成已完成 |
 | 23 | GPT Project 包缺失时阻断方式 | 缺失 | `AGENTS.md` 3C、验证脚本 | 正确 | 补充任务 P0 | 是 | 明确 `blocked_gpt_project_mechanism_missing` | 不凭聊天记忆补机制 |

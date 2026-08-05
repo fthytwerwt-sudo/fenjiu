@@ -1,7 +1,7 @@
 # 执行报告模板
 
     ## 结论
-    - 状态：completed / partial_completed / blocked
+    - 状态：completed / local_only_not_completed / blocked_push_failed / no_file_change_completed_readonly / BLOCKED
     - 本轮实现了什么：
 
     ## 业务与协作状态
