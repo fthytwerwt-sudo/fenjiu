@@ -9,6 +9,7 @@
 - **实际读取**：当前工作区结构、根目录研究 JSON、现有 `.gitignore` 与凭据入口、参考仓库的 Agent 入口、当前状态、执行日志、上传清单、协作路由与 Git 历史。
 - **实际改动**：本轮建立的协作文件和同步包脚本见提交 diff；未移动或删除任何现有业务资料。
 - **Git 基线**：已在独立分支 `chore/project-collaboration-system` 创建首个提交 `398226caf0fc9ca109e4868806805fb4fa04ebce`；远端推送仍待本轮收尾验证。
+- **同步包实测**：已从 clean 工作区生成 `project_sync/latest/` 和本地 ZIP `dist/fenjiu_project_sync_pack_20260805_174709.zip`；manifest 记录 24 个文件，全部 SHA-256 校验通过，ZIP 可解压且不含 `._*`/`.DS_Store` 系统元数据。生成器 allowlist 扫描通过，未把 `.env`、凭据提示文件或 `research_channels.json` 打包。
 - **安全结论**：`.env`、凭据提示文件、`research_channels.json`、媒体、QA、渲染和缓存不进入 Git/同步包。
 - **业务状态**：未新增任何当地许可、平台权限、SKU、库存、合作方确认、订单或销售结论。
 - **下一步**：完成首个提交并生成/验证同步包；随后由用户/合作方补齐 A 级阻断条件。
