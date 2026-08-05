@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -402,9 +403,41 @@ def copy_allowlist(source_files: list[Path], destination: Path) -> None:
 def remove_system_metadata(directory: Path) -> None:
     """清理 macOS/FAT 外置盘生成的元数据，确保不会进入包或 manifest。"""
 
-    for path in directory.rglob("*"):
-        if path.is_file() and (path.name.startswith("._") or path.name == ".DS_Store"):
-            path.unlink()
+    try:
+        paths = sorted(directory.rglob("*"), key=lambda item: len(item.parts), reverse=True)
+    except FileNotFoundError:
+        return
+    for path in paths:
+        if path.name.startswith("._") or path.name == ".DS_Store":
+            try:
+                if path.is_dir():
+                    shutil.rmtree(path, ignore_errors=True)
+                else:
+                    path.unlink()
+            except FileNotFoundError:
+                # 外置盘的 AppleDouble 文件可在目录枚举期间被系统回收。
+                continue
+
+
+def replace_latest(package_dir: Path, timestamp_for_name: str) -> None:
+    """以目录级替换更新 latest，避免外置盘元数据与 rmtree 并发冲突。"""
+
+    backup = SYNC_ROOT / f".latest-stale-{timestamp_for_name}"
+    if LATEST_DIR.exists():
+        if backup.exists():
+            shutil.rmtree(backup, ignore_errors=True)
+        os.replace(LATEST_DIR, backup)
+    try:
+        shutil.copytree(package_dir, LATEST_DIR, copy_function=shutil.copyfile)
+        remove_system_metadata(LATEST_DIR)
+    except Exception:
+        if LATEST_DIR.exists():
+            shutil.rmtree(LATEST_DIR, ignore_errors=True)
+        if backup.exists() and not LATEST_DIR.exists():
+            os.replace(backup, LATEST_DIR)
+        raise
+    if backup.exists():
+        shutil.rmtree(backup, ignore_errors=True)
 
 
 def package_file_records(package_dir: Path) -> list[dict[str, object]]:
@@ -524,13 +557,11 @@ def build() -> tuple[Path, Path, dict[str, object]]:
         make_archive(package_dir, archive_path)
         verify_package(package_dir, archive_path)
 
-        if LATEST_DIR.exists():
-            shutil.rmtree(LATEST_DIR)
-        shutil.copytree(package_dir, LATEST_DIR, copy_function=shutil.copyfile)
-        remove_system_metadata(LATEST_DIR)
+        replace_latest(package_dir, timestamp_for_name)
         (SYNC_ROOT / "PROJECT_SYNC_MANIFEST.json").write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+        remove_system_metadata(SYNC_ROOT)
     return LATEST_DIR, archive_path, manifest
 
 
