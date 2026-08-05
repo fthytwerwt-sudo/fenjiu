@@ -1,0 +1,227 @@
+{
+  "schema_version": 2,
+  "project": "fenjiu_nepal",
+  "generated_at": "2026-08-05T18:30:21+08:00",
+  "source_git": {
+    "branch": "main",
+    "source_commit": "642d6380b0c15612882a397c36b3675b84d3d3f3",
+    "short_source_commit": "642d638",
+    "worktree_status": "clean",
+    "remote_origin": "unavailable"
+  },
+  "sync_strategy": "strict_allowlist",
+  "max_file_bytes": 1048576,
+  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260805_183021.zip",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 4709,
+      "sha256": "bb1ff8d631cf8d9ad1216469132f366dd6954800bce5c6a47c54f0218e6d9c62"
+    },
+    {
+      "path": "BUSINESS_STATUS.md",
+      "bytes": 3939,
+      "sha256": "d12a36132b82cdd9840583cb2ed0e22efcae41c4a4b566f15ecf79a1091e8a62"
+    },
+    {
+      "path": "COLLABORATION_STATUS.md",
+      "bytes": 4070,
+      "sha256": "4dfd9e23761b2e7e4fbaa28dbda5720993c129f7f88ce66e30db93cba521eb47"
+    },
+    {
+      "path": "CURRENT_STATUS.md",
+      "bytes": 1783,
+      "sha256": "4926bf6c8043911efa05f46a32df56dd8fa002f44ac002b78453f16255f068d0"
+    },
+    {
+      "path": "DECISIONS.md",
+      "bytes": 5129,
+      "sha256": "5fdc05473c7fd9dbb65fb423584a3e3ebe1a87a2ac2a4351421225d6bc0f7b44"
+    },
+    {
+      "path": "FILE_INDEX.md",
+      "bytes": 1078,
+      "sha256": "2df8d5adbbc29529736f0da1b1f253e8a4fb33765df8660458eff00cccc5c4d6"
+    },
+    {
+      "path": "GIT_STATE.md",
+      "bytes": 425,
+      "sha256": "38a9c78712b30964ffc698397d92018fde27e3a3dc815e86ca1cfb9a8cd16e14"
+    },
+    {
+      "path": "NEXT_ACTIONS.md",
+      "bytes": 1535,
+      "sha256": "0f7925ca6439c4c6f9216403821d14c4027885f91ee186994ea00100d2c66ee9"
+    },
+    {
+      "path": "OPEN_QUESTIONS.md",
+      "bytes": 1769,
+      "sha256": "369d791e0f34c84db6cea5edcec13c6cb764f389f29ee82fde7f029f803f27e4"
+    },
+    {
+      "path": "PROJECT_CONTEXT.md",
+      "bytes": 17826,
+      "sha256": "c48c44c41ab7f30eaf2de7dc3cbf60894a3d20f0103a1195d8e689819454d714"
+    },
+    {
+      "path": "PROJECT_ENTRY.md",
+      "bytes": 3065,
+      "sha256": "f2ef17f31356165cc3bde41c7ebd3ae6178e28d9b3b54033dc953b645912a7d7"
+    },
+    {
+      "path": "PROJECT_SYNC_README.md",
+      "bytes": 1282,
+      "sha256": "90525b12dcb134350a7913b277153614288dc36f6caaa93d491265addd5c5f63"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1850,
+      "sha256": "eafba23e94e124dff6bf41a6e693558b9e2afed6f789d5c00ee5d1866a729f1c"
+    },
+    {
+      "path": "RISKS_AND_BLOCKERS.md",
+      "bytes": 1911,
+      "sha256": "58c3847e1c297c23ad2c0a96c40477be8dde8617c6867f4e14b710028e3c1826"
+    },
+    {
+      "path": "SOURCE_OF_TRUTH.md",
+      "bytes": 2694,
+      "sha256": "82da26a603fd3cdd87736175242adaa9610eaf66ab5a41e6bc35f5b552daed08"
+    },
+    {
+      "path": "docs/collaboration/CHATGPT_CODEX_WORKFLOW.md",
+      "bytes": 1954,
+      "sha256": "3050cc0f14cd38f23e0d1c6bdd5423d524c411701ce53bc3c243a533f5abe963"
+    },
+    {
+      "path": "docs/collaboration/EXECUTION_HISTORY.md",
+      "bytes": 2139,
+      "sha256": "56e359e589ea3938006256cc24ebd55042758a3bc03fe65358fdbc4c7407c212"
+    },
+    {
+      "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
+      "bytes": 737,
+      "sha256": "46267d1cdf18f8e47b9058dae90f0b1ed019bb4d868e35b69f37ef3e34df5f20"
+    },
+    {
+      "path": "docs/collaboration/SESSION_HANDOFF_TEMPLATE.md",
+      "bytes": 1060,
+      "sha256": "ae0c6e1862b6a26b9403153f2bd2dbc1c849dcd7353692ae958d3a672bc446fb"
+    },
+    {
+      "path": "docs/collaboration/TASK_HANDOFF_TEMPLATE.md",
+      "bytes": 908,
+      "sha256": "716bda88cdbb143b87b70acf6f56ea745af7fc4dfe6d294da78df3a5b4e56e4b"
+    },
+    {
+      "path": "docs/collaboration/collaboration_mechanism_adoption.md",
+      "bytes": 2322,
+      "sha256": "7ad56916c486f005a5585c0c8258dcdde42aefd0b7e8fb7cbd68b3807fc3d8d0"
+    },
+    {
+      "path": "docs/project/PROJECT_GOAL.md",
+      "bytes": 1325,
+      "sha256": "2a6582c459dc0693dcce3137603a7d4905c0a0e876b6e7908c0f03786b943480"
+    },
+    {
+      "path": "docs/project/SCOPE_AND_BOUNDARIES.md",
+      "bytes": 2009,
+      "sha256": "54ba8a1cc93dc24f912eb19737df1565fa546563c14f9479ae66fb161c49b9bd"
+    },
+    {
+      "path": "docs/sync/README.md",
+      "bytes": 2785,
+      "sha256": "3845996664ddc2b6a90d00902fedd5e3454c401c3dcb2372e601bfb7418e7b98"
+    },
+    {
+      "path": "project_sync/PROJECT_SYNC_README.md",
+      "bytes": 668,
+      "sha256": "e61d3e7732a41c8ea6bc523b96883f168c1553426ff1d52b7f8cd3af8eb81c11"
+    },
+    {
+      "path": "scripts/build_project_sync_pack.py",
+      "bytes": 30665,
+      "sha256": "3db48ced864b80949b67bc6b5b940795269f80461ba2688d5b9d5aac8c2ae605"
+    }
+  ],
+  "excluded_summary": [
+    {
+      "category": "credentials_or_recovery",
+      "reason": "可能含凭据或账号恢复信息的文件不进入同步包",
+      "count": 3,
+      "file_size_range_bytes": {
+        "min": 108,
+        "max": 542
+      }
+    },
+    {
+      "category": "git_internal",
+      "reason": "Git 内部数据不属于可交接项目上下文",
+      "count": 325,
+      "file_size_range_bytes": {
+        "min": 21,
+        "max": 282455
+      }
+    },
+    {
+      "category": "local_runtime_or_cache",
+      "reason": "本地运行、缓存或派生产物不进入同步包",
+      "count": 906,
+      "file_size_range_bytes": {
+        "min": 82,
+        "max": 25982812
+      }
+    },
+    {
+      "category": "media_binary_or_archive",
+      "reason": "媒体、二进制或压缩产物不进入同步包",
+      "count": 94,
+      "file_size_range_bytes": {
+        "min": 45825,
+        "max": 6532770
+      }
+    },
+    {
+      "category": "oversized_file",
+      "reason": "超过同步包单文件大小限制",
+      "count": 1,
+      "file_size_range_bytes": {
+        "min": 20359726,
+        "max": 20359726
+      }
+    },
+    {
+      "category": "private_contacts",
+      "reason": "可能含私人联系方式的本地资料不进入同步包",
+      "count": 1,
+      "file_size_range_bytes": {
+        "min": 1051556,
+        "max": 1051556
+      }
+    },
+    {
+      "category": "qa_or_rendered_output",
+      "reason": "QA、渲染或联系表派生产物不进入同步包",
+      "count": 874,
+      "file_size_range_bytes": {
+        "min": 324,
+        "max": 6540521
+      }
+    },
+    {
+      "category": "system_metadata",
+      "reason": "系统元数据会破坏跨机器可移植性",
+      "count": 105,
+      "file_size_range_bytes": {
+        "min": 4096,
+        "max": 4096
+      }
+    }
+  ],
+  "notes": [
+    "同步包只包含协作上下文和文件地图，不复制业务原件。",
+    "发现疑似秘密时构建会失败，不会生成或更新同步包。",
+    "排除统计只保留类别、原因、数量和文件大小范围，不记录任何被排除文件路径。",
+    "source_git.source_commit 是生成时工作区所基于的 commit，不等于之后提交同步包目录的 commit。"
+  ]
+}
