@@ -34,4 +34,4 @@ Codex 完成前必须按任务运行相关验证。机制包类任务至少检�
 
 ## Git 规则
 
-只 stage 本轮相关路径，禁止 `git add .`。提交后必须 push 到目标分支，并用远端回读证明核心文件存在。push 失败或 remote HEAD 无法验证时，状态只能是 `partial_completed` 或 `blocked`，不能写完成。
+只 stage 本轮相关路径，禁止 `git add .`。提交后必须 push 到目标分支，并用远端回读证明核心文件存在。push 失败时状态只能是 `blocked_push_failed`；本地有文件但尚未 push/远端回读时状态只能是 `local_only_not_completed`；只读任务无文件变化且已完成回读时使用 `no_file_change_completed_readonly`。不能写完成。

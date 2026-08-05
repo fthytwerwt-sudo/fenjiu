@@ -52,4 +52,4 @@ GPT 判断什么，Codex 执行什么，用户确认什么；哪些步骤依赖�
 
 ## 停止线
 
-缺实现设计层、缺事实源、缺验证命令、缺阻断条件、需要外部执行但缺授权时，输出 `blocked_need_requirement_design`，不要让 Codex 猜。
+缺实现设计层、缺事实源、缺验证命令、缺阻断条件、需要外部执行但缺授权时，输出 `blocked_need_implementation_design_layer`，不要让 Codex 猜。

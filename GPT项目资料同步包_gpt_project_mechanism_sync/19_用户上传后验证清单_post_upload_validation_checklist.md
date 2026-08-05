@@ -13,7 +13,7 @@
 4. 海鲜资料能否直接用于汾酒？
    - 合格要点：不能，海鲜是独立业务线，只能复用机制。
 5. 没有价格和库存时能否直接上架？
-   - 合格要点：不能，价格和库存是 P0 阻断。
+   - 合格要点：不能，价格和库存属于业务硬闸门，缺失时状态为 `BLOCKED`。
 6. 项目事实去哪里读取？
    - 合格要点：GitHub `main` 当前文件，先读 `AGENTS.md` 和 `PROJECT_ENTRY.md` 等入口。
 7. GPT Project 和 GitHub 分别保存什么？
@@ -23,7 +23,7 @@
 9. Codex Prompt 必须包含哪些栏目？
    - 合格要点：Goal、Context、Constraints、Impact check、Must read、Execution steps、Validation、Done when、Blocked if、Output、Git completion。
 10. 本地生成但没有 push 是否完成？
-    - 合格要点：不是完成，只能是 local-only 或 partial；需要 commit、push、remote readback。
+    - 合格要点：不是完成，只能是 `local_only_not_completed`；需要 commit、push、remote readback。push 失败用 `blocked_push_failed`，只读无文件变化完成用 `no_file_change_completed_readonly`。
 11. 外部研究能否直接写成项目事实？
     - 合格要点：不能，先保真提取并标 `待验证`，有证据后再落库。
 12. 酒类平台规则未确认时可以做什么、不可以做什么？
@@ -32,7 +32,9 @@
     - 合格要点：不能，只有用户在 UI 上传并验证后才可说生效。
 14. 旧 B2B 和多平台研究能否自动恢复？
     - 合格要点：不能，只是历史背景，需用户明确重启。
+15. P0/P1/P2 分别表示什么？
+    - 合格要点：P0 = 用户本轮明确输入；P1 = GitHub main 当前事实、当前书面证据和当前验证证据；P2 = 历史聊天、账号记忆、旧项目机制、外部资料和通用建议。它们只表示来源优先级，不表示业务闸门或风险等级。
 
 ## 通过标准
 
-新聊天能稳定说出汾酒 TikTok 主线、供应链启动阶段、双方职责、GitHub 事实源、海鲜隔离、P0 阻断和 Git 完成闸门，才算上传后的基础验证通过。
+新聊天能稳定说出汾酒 TikTok 主线、供应链启动阶段、双方职责、GitHub 事实源、海鲜隔离、业务闸门 `BLOCKED`、P0/P1/P2 来源优先级和 Git 完成闸门，才算上传后的基础验证通过。

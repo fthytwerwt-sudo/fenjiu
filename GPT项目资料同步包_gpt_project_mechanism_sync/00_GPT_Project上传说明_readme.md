@@ -43,6 +43,16 @@ gpt_project_ui_effective_status = not_claimed
 6. `06_Codex执行落库机制_codex_execution_to_repo_protocol.md`
 7. 遇到具体任务时，再按 manifest 的读取顺序补读对应机制文件。
 
+## 术语边界
+
+- `P0 = 用户本轮明确输入`
+- `P1 = GitHub main 当前事实、当前书面证据和当前验证证据`
+- `P2 = 历史聊天、账号记忆、旧项目机制、外部资料和通用建议`
+- `business_gates（业务闸门）`：商品、价格、库存、资质、账号、收款、履约和酒类合规前置。
+- `hard_constraints（硬约束）`：不得违反的安全、事实源、业务线、合规和 Git 远端边界。
+
+P0/P1/P2 只表示来源优先级，不表示业务重要程度、风险级别或供应链缺口等级。业务闸门缺少当前书面证据时，状态统一为 `BLOCKED`。
+
 ## 禁止上传内容
 
 不得把以下内容加入 GPT Project Knowledge：
