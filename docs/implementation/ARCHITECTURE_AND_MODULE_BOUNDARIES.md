@@ -1,6 +1,6 @@
 # 架构与模块边界
 
-> **状态：RECOMMENDED，未实施。** 本文是 [总计划](AI_NATIVE_SALES_OS_MASTER_PLAN.md) 的工程蓝图；不改变当前汾酒业务范围或外部执行禁令。
+> **状态：RECOMMENDED，未实施。** 本文是 [Phase 0–8 总蓝图](AI_NATIVE_SALES_OS_MASTER_PLAN.md) 的工程蓝图；不改变当前汾酒业务范围或外部执行禁令。
 
 ## 1. 建议的第一版形态
 
@@ -37,6 +37,7 @@ tests/                 # unit / contract / integration / e2e / regression
 observability/         # logging、metrics、tracing、dashboard 定义
 docs/implementation/   # 本计划、ADR、runbook、任务包
 docker-compose.yml     # local-only dependencies，禁止承载生产密钥
+Makefile               # 唯一、易理解的本地操作入口
 ```
 
 ## 3. 依赖方向与禁止项
@@ -100,6 +101,38 @@ flowchart LR
 - **审计：** 数据变更和批准是 append-only audit event；常规管理员不能删除。更正采用 superseding version，不覆盖历史。
 - **本地外置盘：** 开发 compose 的 volume 需相对路径；AppleDouble `._*`、`.DS_Store`、`outputs/`、媒体和临时 PDF/DOCX 继续被 Git 排除。同步包 allowlist 只有在规划完成并通过敏感扫描后才可单独扩展。
 
-## 8. 实施前的架构验收
+## 8. 统一开发入口与环境合同
+
+实施 Phase 1 时创建 `.env.example`，它只能包含键名、类型/用途和明显占位符，不能复制本机 `.env`。建议入口固定为：
+
+```text
+make bootstrap                    # 建虚拟环境/锁定依赖；不下载业务资料
+make dev-up                       # 启动 local PostgreSQL、broker、API、worker/admin
+make dev-down                     # 正常停止本地依赖
+make migrate                      # 只针对当前 local database 执行 migration
+make load-fixtures                # 只加载 is_synthetic=true 的资料
+make ingest FILE=<private-path> BUSINESS_LINE=<slug>
+make inspect-ingestion JOB_ID=<id>
+make approve-ingestion JOB_ID=<id>
+make regression
+make demo-run BUSINESS_LINE=<slug>
+make run-ready-report BUSINESS_LINE=<slug>
+```
+
+`bootstrap`、`dev-up`、`migrate` 不能隐式执行 `ingest`、外部 adapter、模型调用或网络采集；`ingest` 只允许私有受控文件路径，调用前检查业务线、文件哈希、MIME/大小、data classification 和 feature flag。任何真实配置应以 secret manager reference 或环境变量在运行时注入。
+
+## 9. Legacy 兼容与迁移策略
+
+| 资产 | Phase 0 基线 | 未来位置 | 本轮和实施阶段禁止事项 |
+|---|---|---|---|
+| `generate_happyhorse_shots.py`、`generate_happyhorse_video_edit_once.py` | 记录 CLI usage、代码 hash、最小 manifest validator 行为 | `adapters/video/happyhorse_legacy_port` 通过受控 subprocess 包装 | 本轮不改；后续不复制 API 逻辑、不读取/记录密钥、不调用真实模型作测试。 |
+| `prepare_video_assets.py`、`assemble_final_video.py`、`build_video_execution_report.py` | 记录输入/输出契约和 dry-safe 命令 | `content_video` 后处理 port | 不迁移历史输出、不覆盖原文件、不将输出当 approved 商品事实。 |
+| `build_research_channels.py` 与 `research_channels.json` | 只读审计字段和来源结构 | synthetic public-source fixture / CSV fallback 参考 | JSON 与联系人不进 runtime/CRM，除非未来逐条来源审查与人工导入。 |
+| DOCX/XLSX 与供应链生成脚本 | 记录可读/可生成的 fixture 文档结构 | ingestion parser fixture 和 regression source | 原始 DOCX/XLSX/PDF 不被移动、改名、写回或打包。 |
+| `seafood_project_data.py`、海鲜 FAQ/CRM 文档 | 仅研究/字段候选 | 独立 `seafood` fixture 合同输入 | 不把商品、价格、客户、合规或业务结论带入 `fenjiu`。 |
+
+实施任务如需把旧工具放入 `legacy_tools/`，必须先在独立任务中证明原路径兼容、调用方引用已迁移且 hash/CLI 回归通过；本规划不授权移动。同步包默认仍不打包整个 `docs/implementation/` 或任何 task card，因为它的严格 allowlist 面向最小项目事实交接。若未来需要纳入，只增加入口型、无敏感、低体积的索引文件，并单独运行同步包验证。
+
+## 10. 实施前的架构验收
 
 进入 Phase 1 前，必须证明：目录 skeleton 能在空数据库启动；modules 依赖图无反向 adapter；任一 fixture 不能以 production mode 运行；两个业务线不能跨读；worker 重试是幂等的；审计事件不能因为错误分支缺失。具体测试见 [测试与回滚策略](TEST_AND_ROLLBACK_STRATEGY.md)。

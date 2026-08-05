@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜AI Native Sales OS Phase 0–8 工程实施蓝图落库
+
+- **目标**：把已有 GPT Project / GitHub / Codex 治理机制与运行时工程规划分层，形成从工程基线到真实供应链资料导入、fixture 替换、全链回归和受控运行的可下发路径；本轮不开发业务代码。
+- **实际读取**：项目入口、业务/协作状态、事实源、范围、决策、风险、下一步、GPT Project 机制包/Manifest、未合并早期实施规划、HappyHorse/DashScope/FFmpeg 和研究/文档工具脚本，以及当前官方开源组件资料。
+- **实际改动**：重组 `docs/implementation/` 为 Phase 0–8 总蓝图、分阶段执行图、数据/导入/工作流/CRM/客服/视频/真实资料 runbook、测试回滚矩阵、run-ready 模板、机器可读依赖图和 27 张独立 Codex 任务卡；旧粗粒度规划入口标为 SUPERSEDED，避免混用编号。
+- **验证边界**：文档非空、任务卡字段、链接/路径、敏感/本地路径、业务线污染和 Git diff 检查须以本轮最终命令结果为准；Git commit/push/remote readback 在执行报告中单独回报。
+- **状态边界**：规划落库只表示工程实施设计完成；不表示运行时系统、供应链资料、平台合规、账号权限、外部发布、报价、收款、订单、履约或销售已完成。
+
 ## 2026-08-06｜GPT Project 机制包语义一致性与来源追溯修正
 
 - **目标**：消除 P0/P1/P2 两套定义，修正业务闸门误称为 P0 的表达，统一 blocked/Git 状态词，并让 `project_entry/AGENTS.md` 可由 Manifest 记录的 source commit 复现。

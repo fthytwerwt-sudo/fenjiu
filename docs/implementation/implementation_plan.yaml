@@ -1,0 +1,86 @@
+plan:
+  id: fenjiu-ai-native-sales-os-phase-0-8
+  status: planned
+  business_line_default: fenjiu_nepal
+  external_execution_default: false
+  source_of_truth: docs/project/BUSINESS_STATUS.md
+  command_contract:
+    - make bootstrap
+    - make dev-up
+    - make dev-down
+    - make migrate
+    - make load-fixtures
+    - make ingest FILE=<private-path> BUSINESS_LINE=<slug>
+    - make inspect-ingestion JOB_ID=<id>
+    - make approve-ingestion JOB_ID=<id>
+    - make regression
+    - make demo-run BUSINESS_LINE=<slug>
+    - make run-ready-report BUSINESS_LINE=<slug>
+phases:
+  - id: phase_00
+    name: engineering_fact_audit_and_baseline
+    tasks: [P00-01, P00-02, P00-03]
+  - id: phase_01
+    name: modular_monolith_foundation
+    depends_on: [phase_00]
+    tasks: [P01-01, P01-02, P01-03]
+  - id: phase_02
+    name: core_contracts_truth_and_isolation
+    depends_on: [phase_01]
+    tasks: [P02-01, P02-02, P02-03]
+  - id: phase_03
+    name: ingestion_mapping_approval
+    depends_on: [phase_02]
+    tasks: [P03-01, P03-02, P03-03]
+  - id: phase_04
+    name: workflow_approval_audit
+    depends_on: [phase_03]
+    tasks: [P04-01, P04-02, P04-03]
+  - id: phase_05
+    name: leads_crm_draft_only
+    depends_on: [phase_04]
+    tasks: [P05-01, P05-02, P05-03]
+  - id: phase_06
+    name: customer_service_handoff
+    depends_on: [phase_04]
+    tasks: [P06-01, P06-02, P06-03]
+  - id: phase_07
+    name: content_video_serviceization
+    depends_on: [phase_04]
+    tasks: [P07-01, P07-02, P07-03]
+  - id: phase_08
+    name: real_supplier_data_onboarding_and_run_ready
+    depends_on: [phase_03, phase_04, phase_05, phase_06, phase_07]
+    blocked_if: [real_supplier_data_missing, unresolved_critical_conflicts]
+    tasks: [P08-01, P08-02, P08-03]
+tasks:
+  P00-01: {phase: phase_00, depends_on: [], risk: low}
+  P00-02: {phase: phase_00, depends_on: [P00-01], can_run_in_parallel_with: [P00-03], risk: low}
+  P00-03: {phase: phase_00, depends_on: [P00-01], can_run_in_parallel_with: [P00-02], risk: medium}
+  P01-01: {phase: phase_01, depends_on: [P00-02, P00-03], risk: medium}
+  P01-02: {phase: phase_01, depends_on: [P01-01], risk: medium}
+  P01-03: {phase: phase_01, depends_on: [P01-02], risk: medium}
+  P02-01: {phase: phase_02, depends_on: [P01-03], risk: high}
+  P02-02: {phase: phase_02, depends_on: [P02-01], risk: high}
+  P02-03: {phase: phase_02, depends_on: [P02-02], risk: high}
+  P03-01: {phase: phase_03, depends_on: [P02-03], risk: high}
+  P03-02: {phase: phase_03, depends_on: [P03-01], risk: high}
+  P03-03: {phase: phase_03, depends_on: [P03-02], risk: high}
+  P04-01: {phase: phase_04, depends_on: [P03-03], risk: high}
+  P04-02: {phase: phase_04, depends_on: [P04-01], risk: high}
+  P04-03: {phase: phase_04, depends_on: [P04-02], risk: high}
+  P05-01: {phase: phase_05, depends_on: [P04-03], can_run_in_parallel_with: [P06-01, P07-01], risk: medium}
+  P05-02: {phase: phase_05, depends_on: [P05-01], can_run_in_parallel_with: [P06-02, P07-02], risk: medium}
+  P05-03: {phase: phase_05, depends_on: [P05-02], can_run_in_parallel_with: [P06-03, P07-03], risk: high}
+  P06-01: {phase: phase_06, depends_on: [P04-03], can_run_in_parallel_with: [P05-01, P07-01], risk: high}
+  P06-02: {phase: phase_06, depends_on: [P06-01], can_run_in_parallel_with: [P05-02, P07-02], risk: high}
+  P06-03: {phase: phase_06, depends_on: [P06-02], can_run_in_parallel_with: [P05-03, P07-03], risk: high}
+  P07-01: {phase: phase_07, depends_on: [P04-03], can_run_in_parallel_with: [P05-01, P06-01], risk: medium}
+  P07-02: {phase: phase_07, depends_on: [P07-01], can_run_in_parallel_with: [P05-02, P06-02], risk: high}
+  P07-03: {phase: phase_07, depends_on: [P07-02], can_run_in_parallel_with: [P05-03, P06-03], risk: high}
+  P08-01: {phase: phase_08, depends_on: [P03-03, P04-03, P05-03, P06-03, P07-03], risk: high}
+  P08-02: {phase: phase_08, depends_on: [P08-01], risk: high}
+  P08-03: {phase: phase_08, depends_on: [P08-02], risk: high}
+phase_09:
+  status: blocked_planning_only
+  prerequisites: [local_entity_and_licences, brand_authorisation, tiktok_alcohol_boundary, account_rights, fulfilment_and_refund, payment_and_order, user_authorisation]

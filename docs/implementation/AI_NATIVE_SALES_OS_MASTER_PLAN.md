@@ -1,100 +1,127 @@
-# AI 原生销售操作系统｜纵向落地总计划
+# AI Native Sales OS｜Phase 0–8 工程实施总蓝图
 
 > **文档状态：PLANNED / RECOMMENDED（2026-08-06）**
-> 本文完成的是可执行工程规划，不代表系统已开发、组件已接入、任何账号已连接，或汾酒/海鲜已获公开销售与履约资格。
+> **本轮完成度：工程实施蓝图、任务依赖图和 Codex 执行卡已规划；系统代码、数据库、账号、真实资料和外部动作均未实施。**
+> 业务状态仍以 [`../project/BUSINESS_STATUS.md`](../project/BUSINESS_STATUS.md) 为准：汾酒处于尼泊尔 TikTok 线上销售准备和供应链资料收集阶段，商品、价格、库存、资质、账号、收款、履约与酒类平台边界仍是 `UNKNOWN` 或 `BLOCKED`。
 
-## 1. 一句话结论
+## 1. 这次规划纠正的层级
 
-推荐以 **模块化单体 + PostgreSQL 真值中心 + adapter-first + fixture-first + human-in-the-loop** 建设共同技术底座；先跑通内部模拟闭环，再按业务线隔离地接入真实资料和受控渠道，绝不把第三方 SaaS、模型或采集器当成业务真值。
+仓库已存在 GPT Project / GitHub / Codex 的治理与交接机制；它们是本系统的**控制平面**，而不是运行时销售系统。本蓝图在不推翻该机制的前提下，定义业务运行层如何从空白工程底座走到“真实供应链资料可受控接入、批准真值可被内部模块读取、全链技术回归通过”的状态。
 
-## 2. 本计划解决与不解决什么
+本计划的最终技术目标不是“自动公开销售”，而是让未来资料到达后的主路径固定为：
 
-### 本计划解决
-
-- 把“供应链真值、资料导入、线索、CRM、客服、内容/视频”横向能力拆为可顺序验收的纵向闭环。
-- 让未来真实 Excel、DOCX、PDF、图片、文件夹或接口资料进入系统时，主要发生字段映射、适配器补充、fixture 替换和全链路回归，而不是推倒重写。
-- 为后续 Codex 工作保留小任务、清晰文件范围、审计证据、人工闸门和可逆回退。
-
-### 本计划明确不做
-
-- 本轮不写业务代码、数据库 migration、生产集成、真实网页采集或账号连接。
-- 不外发、不群发、不发布、不投放、不自动报价、不退款、不下单、不收款。
-- 不将研究数据、候选商品、历史公开名单、模拟价格或供应链模板升级为真实业务事实。
-
-## 3. 当前事实基线与影响面
-
-| 项目 | 审计结论 | 规划影响 |
-|---|---|---|
-| 仓库与远端 | 本地工作树在 `docs/ai-native-sales-os-plan`，基线为 `main` 的 `c1a3bab`；远端 HEAD/默认分支仍指向 `chore/project-collaboration-system` 的 `952889d`，不是本地当前分支 | 本计划只在独立文档分支写入；任何实施阶段先重新核验 default branch、visibility 与 remote HEAD |
-| 当前业务状态 | 汾酒仍是 `research_and_partner_readiness` 等价的供应链准备状态；SKU、价格、库存、主体、授权、账号、收款、履约均未获当前书面确认 | fixture 可用于内部测试；外部动作、真实报价、订单、支付与发布继续 BLOCKED |
-| 视频 | HappyHorse/DashScope 任务提交、轮询/断点续跑、下载、质量重试和 FFmpeg/字幕合成已有脚本 | 只封装为 video adapter/job，不重写生成链；先保留现有文件和验收语义 |
-| 找客 | `build_research_channels.py` 将人工转录的公开目录名单生成 JSON；不是持续采集服务 | 新 leads 模块从 source snapshot、采集策略、去重和审计做起；旧 JSON 只能作为隔离 fixture/研究输入 |
-| 客服 | 海鲜资料中有 FAQ、人工接管与禁止承诺设计，但没有消息入口、会话存储、知识查询或审批运行链 | 把规则移入可版本化 policy 与 approved facts；不把 Word/Python 常量直接当线上知识库 |
-| 仓库安全 | `.gitignore` allowlist 仅跟踪机制与文档；`.env`、媒体、输出、原始研究/资料默认不进 Git；外置盘存在 `._*` AppleDouble 元数据 | 新实现目录必须先更新忽略规则和同步包 allowlist；真实文件使用受控对象存储/本地私有目录，不进入仓库 |
-
-证据入口：[`AGENTS.md`](../../AGENTS.md)、[`PROJECT_ENTRY.md`](../../PROJECT_ENTRY.md)、[`BUSINESS_STATUS.md`](../project/BUSINESS_STATUS.md)、[`COLLABORATION_STATUS.md`](../collaboration/COLLABORATION_STATUS.md)、[`build_research_channels.py`](../../build_research_channels.py)、[`generate_happyhorse_shots.py`](../../generate_happyhorse_shots.py)、[`assemble_final_video.py`](../../assemble_final_video.py)。
-
-## 4. 导航：八份实施材料
-
-| 需要回答的问题 | 对应文档 |
-|---|---|
-| 系统为何这样切、什么可复用、什么不能进运行时 | [架构与模块边界](ARCHITECTURE_AND_MODULE_BOUNDARIES.md) |
-| 哪些开源组件可用、为什么可替换 | [开源组件选型矩阵](OPEN_SOURCE_SELECTION_MATRIX.md) |
-| 数据如何隔离、哪些字段可由 AI 修改 | [核心数据合同](CORE_DATA_CONTRACTS.md) |
-| 五条业务链如何运行和失败回退 | [纵向工作流](VERTICAL_WORKFLOWS.md) |
-| 各 Phase 的目标、验收、停止与回退 | [分阶段路线与验收](PHASED_ROADMAP_AND_ACCEPTANCE.md) |
-| 可直接复制下发的 Codex 任务卡 | [Codex 执行包](CODEX_EXECUTION_PACK.md) |
-| 测试、质量闸门、替换与回滚 | [测试与回滚策略](TEST_AND_ROLLBACK_STRATEGY.md) |
-| 这条架构建议的 ADR | [ADR-AINOS-0001](adr/ADR-AINOS-0001-modular-monolith-adapter-first.md) |
-
-## 5. 总体依赖图
-
-```mermaid
-flowchart TD
-  P0["Phase 0: 工程底座"] --> P1["Phase 1: 真值中心、导入、审批与审计"]
-  P1 --> P2["Phase 2: 公开线索、CRM、外联草稿"]
-  P1 --> P3["Phase 3: 客服 AI 与人工接管"]
-  P1 --> P4["Phase 4: 现有视频链服务化"]
-  P2 --> P5["Phase 5: 真实资料替换 fixture 与回归"]
-  P3 --> P5
-  P4 --> P5
-  P5 --> P6["Phase 6: 生产渠道/支付/库存/订单"]
-  P6 -. "当前缺合规、授权、真实资料" .-> B["BLOCKED"]
+```text
+受控接收 → 原始归档 → AI 提取/清洗 → 映射建议 → 缺失与冲突检查
+→ 人工批准 → approved 真值 → fixture 退役（保留测试）→ 模块刷新
+→ 全链回归 → 受控内部演示 → run-ready 报告
 ```
 
-`P2`、`P3`、`P4` 在 `P1` 完成后可并行，但每条只能访问本业务线已批准的真值版本。`P6` 不是“等时间到了就开始”，而是每一项受控集成分别通过书面证据、合规、权限、人工验收和回滚演练后才可解除 BLOCKED。
+任何外部发布、投放、报价、收款、下单、退款或履约仍只能由 Phase 9 的独立证据和用户授权解锁。
 
-## 6. 设计原则与不可越界规则
+## 2. 已确认基线与本轮不做事项
 
-1. **真值唯一，输入可多样。** 供应链原始文件、模型输出和第三方系统都不是事实；只有带来源、版本、状态与批准记录的 `approved_fact` 可被客服、内容或对外草稿读取。
-2. **业务线共享代码，不共享业务事实。** 每个业务记录强制带 `tenant_id`、`project_id`、`business_line_id`；禁止跨线查询和默认兜底。
-3. **AI 提议，人负责不可逆动作。** AI 可提取、归类、去重、评分、起草；价格、库存、合规、外发、发布、退款、合同和订单必须走 policy 与人工批准。
-4. **先小闭环，后宽集成。** 每 Phase 的退出条件是可运行且可复盘的最小闭环，不是某个模块“页面做完”。
-5. **adapter 只承载外部变化。** 数据库核心领域不依赖 LangGraph、Crawl4AI、Twenty、Chatwoot、模型 SDK 或视频 API；更换外部组件只改 adapter 和契约测试。
-6. **fixture 可运行但不可伪装。** 所有 fixture 必须显式 `data_state=fixture`、`is_synthetic=true`、`non_production=true`，且运行时拒绝其进入生产/外发动作。
+| 项目 | 当前结论 | 本计划处理方式 |
+|---|---|---|
+| 治理机制 | `CONFIRMED`：项目入口、事实分级、P0/P1/P2、Git 闭环和 GPT Project 机制包已存在 | 承接；运行时系统不得改写业务事实或绕过机制。 |
+| 工程资产 | `CONFIRMED`：HappyHorse / DashScope、FFmpeg、DOCX/XLSX、公开研究生成脚本存在 | 仅包装、回归和适配；本轮不移动、不重写。 |
+| 运行时工程 | `CONFIRMED`：尚未发现 `apps/`、`core/`、`modules/`、数据库 migration 或可运行服务 | Phase 1 起由后续 Codex 逐任务建设。 |
+| 真实供应链资料 | `UNKNOWN / BLOCKED`：无可批准 SKU、价格、库存、资质、账号、收款或履约事实 | 只使用显式 synthetic fixture；Phase 8 才定义真实资料入场。 |
+| 业务线 | `CONFIRMED`：汾酒与海鲜可共享代码/合同，不可共享真值、客户或业务结论 | 每个实体强制 `tenant_id/project_id/business_line_id` scope。 |
+| 旧 B2B / 多平台 / 自动外联 | 当前汾酒范围外 | 仅作为共享平台的 disabled / draft-only 能力，永不默认发送。 |
 
-## 7. 当前代码成熟度矩阵
+本轮没有创建业务代码、数据库、Docker 服务、账号连接、网络采集、模型调用或供应链数据副本。`.env`、`research_channels.json`、原始资料、媒体、`outputs/`、AppleDouble `._*` 均继续不进入 Git。
 
-| 能力 | 成熟度 | 当前可复用部分 | 缺口与实施位置 |
+## 3. 冻结的路线与 ADR
+
+**RECOMMENDED：** `Python + FastAPI + PostgreSQL + 可替换队列 + 极简 approval UI` 的模块化单体；`adapter-first`、`fixture-first but production-separated`、`human-in-the-loop`、`audit-by-default`。
+
+详细决定见 [ADR-AINOS-0001](adr/ADR-AINOS-0001-modular-monolith-adapter-first.md)。只有 `approved` 且未过期、无冲突、带来源/版本/人工审批的真值能被客服、内容、CRM 和视频模块读取。AI 可以提取、清洗、归类、去重、评分和起草；它不能把候选事实升级为正式价格、库存、资质、外发或订单。
+
+## 4. Phase 0–9 总图
+
+| Phase | 目的 | 严格前置 | 可并行关系 | 完成边界 |
+|---|---|---|---|---|
+| 0 | 工程事实审计与实施基线 | 当前仓库事实 | 无 | 冻结可复用资产、禁区、ADR 与第一批入口。 |
+| 1 | 模块化单体工程底座 | 0 | 无 | 空环境可启动、配置/日志/测试/feature flag/健康检查可用。 |
+| 2 | 核心数据合同、真值中心与隔离 | 1 | 无 | 数据合同、scope、版本、状态与审计护栏可测试。 |
+| 3 | 导入、清洗、映射、审批与版本链 | 2 | 与 Phase 4 的低耦合文档/contract 准备可并行；实现上先 2 | synthetic 资料能幂等进入候选、审批和 approved 真值。 |
+| 4 | 工作流、人工闸门、权限、审计与可观察性 | 2；审批对象实现依赖 3 | 5/6/7 只能在 4 的 policy/approval contract 冻结后并行 | 自动动作被统一 policy、审批、重试、审计和 feature flag 控制。 |
+| 5 | 公开资料、线索、CRM 与外联草稿 | 2、4 | 可与 6、7 并行 | 仅公开候选与草稿；真实采集/发送仍关闭。 |
+| 6 | 客服 AI、会话状态与人工接管 | 2、4 | 可与 5、7 并行 | 只读 approved 真值、draft-only、强制高风险转人工。 |
+| 7 | 内容和视频生产链服务化 | 2、4；legacy 回归基线来自 0 | 可与 5、6 并行 | 复用 legacy 视频脚本，所有成片先内部审批。 |
+| 8 | 真实资料入场、fixture 替换、全链回归与受控运行 | 3、4、5、6、7；真实资料到达 | 不可与尚未验收的上游并行 | 技术 `run-ready`，不代表外部业务已获准。 |
+| 9 | 正式外部上线闸门 | 8 + 外部书面证据 | 不属于本轮实施目标 | 只定义阻断；不写成当前可执行。 |
+
+```mermaid
+flowchart LR
+  P0["0 基线"] --> P1["1 工程底座"] --> P2["2 数据合同与真值"] --> P3["3 导入和审批"] --> P4["4 工作流和控制"]
+  P4 --> P5["5 Leads / CRM"]
+  P4 --> P6["6 客服 AI"]
+  P4 --> P7["7 内容 / 视频"]
+  P3 --> P8["8 真实资料入场"]
+  P5 --> P8
+  P6 --> P8
+  P7 --> P8
+  P8 -. "资料、合规、账号、履约、用户授权" .-> P9["9 外部上线闸门"]
+```
+
+## 5. 文档导航：单一职责，不重复堆叠
+
+| 需要回答的问题 | 规范文件 |
+|---|---|
+| 阶段依赖、第一批顺序、并行边界 | [PHASE_0_TO_8_EXECUTION_MAP.md](PHASE_0_TO_8_EXECUTION_MAP.md) |
+| 目录、依赖、运行命令、legacy 兼容 | [ARCHITECTURE_AND_MODULE_BOUNDARIES.md](ARCHITECTURE_AND_MODULE_BOUNDARIES.md) |
+| 当前官方开源核验、适配与退出 | [OPEN_SOURCE_SELECTION_AND_EXIT_STRATEGY.md](OPEN_SOURCE_SELECTION_AND_EXIT_STRATEGY.md) |
+| 字段、约束、状态、权限与保留 | [CORE_DATA_CONTRACTS.md](CORE_DATA_CONTRACTS.md) |
+| 导入/清洗/映射/人工批准链 | [INGESTION_MAPPING_APPROVAL_PIPELINE.md](INGESTION_MAPPING_APPROVAL_PIPELINE.md) |
+| workflow、审批、RBAC、审计、可观测性 | [WORKFLOW_APPROVAL_AUDIT_DESIGN.md](WORKFLOW_APPROVAL_AUDIT_DESIGN.md) |
+| Leads、CRM、草稿外联 | [LEADS_CRM_IMPLEMENTATION_PLAN.md](LEADS_CRM_IMPLEMENTATION_PLAN.md) |
+| 客服问答与人工接管 | [CUSTOMER_SERVICE_AI_IMPLEMENTATION_PLAN.md](CUSTOMER_SERVICE_AI_IMPLEMENTATION_PLAN.md) |
+| 内容与 HappyHorse / FFmpeg 服务化 | [CONTENT_VIDEO_SERVICEIZATION_PLAN.md](CONTENT_VIDEO_SERVICEIZATION_PLAN.md) |
+| 真实供应链资料的标准入场动作 | [REAL_SUPPLIER_DATA_ONBOARDING_RUNBOOK.md](REAL_SUPPLIER_DATA_ONBOARDING_RUNBOOK.md) |
+| 验收、回归、降级与 rollback | [TEST_ACCEPTANCE_ROLLBACK_MATRIX.md](TEST_ACCEPTANCE_ROLLBACK_MATRIX.md) |
+| `run-ready` 的固定报告格式 | [RUN_READY_REPORT_TEMPLATE.md](RUN_READY_REPORT_TEMPLATE.md) |
+| 可直接下发的任务卡索引 | [CODEX_EXECUTION_INDEX.md](CODEX_EXECUTION_INDEX.md) |
+| CI/工具可读取的任务依赖图 | [implementation_plan.yaml](implementation_plan.yaml) |
+
+旧的 `CODEX_EXECUTION_PACK.md`、`PHASED_ROADMAP_AND_ACCEPTANCE.md`、`VERTICAL_WORKFLOWS.md`、`OPEN_SOURCE_SELECTION_MATRIX.md` 与 `TEST_AND_ROLLBACK_STRATEGY.md` 保留为早期候选材料；本蓝图中的上述文件是 Phase 0–8 的权威执行入口，旧材料不得与新编号混用。
+
+## 6. 统一执行入口（未来实现，不代表命令当前存在）
+
+```text
+make bootstrap
+make dev-up
+make dev-down
+make migrate
+make load-fixtures
+make ingest FILE=<private-path> BUSINESS_LINE=fenjiu
+make inspect-ingestion JOB_ID=<id>
+make approve-ingestion JOB_ID=<id>
+make regression
+make demo-run BUSINESS_LINE=fenjiu
+make run-ready-report BUSINESS_LINE=fenjiu
+```
+
+`FILE` 必须指向私有受控目录，不会被复制进 Git；`BUSINESS_LINE=fenjiu` 只是运行范围，不说明该业务线已可外部销售。Phase 1 的任务会评估 Makefile 与 `uv run` / `docker compose` 是否能保持等价入口；若替代，必须保留以上易理解命令语义。
+
+## 7. Phase 8 的三层状态，绝不合并表述
+
+| 状态 | 定义 | 可做什么 | 不能据此推断 |
 |---|---|---|---|
-| 项目协作/事实边界 | **可复用（高）** | AGENTS、状态、风险、同步包、任务模板 | 将实施工程 handoff 与现有项目事实入口关联，但不要把业务状态改写为系统上线 |
-| 文档/XLSX/DOCX 输出 | **工具级（中）** | `build_*_docs.py`、供应链清单生成与 QA | 作为资料导入 fixture 与文档解析的参考；不是 runtime service |
-| 视频生成与合成 | **原型工具链（中高）** | HappyHorse、状态文件、重试、下载、FFmpeg、字幕、QC | 增加 manifest contract、job adapter、队列与人工审批，不改原脚本语义 |
-| 公开名单 | **研究/生成工具（低）** | 来源分级、人工转录、JSON/XLSX 生成、公开来源约束 | 增加受控采集、快照、robots/条款策略、去重、审核、拒绝联系与 CRM 写入 |
-| CRM | **规则设计（低）** | 海鲜资料中的阶段、字段、人工边界 | 领域模型、数据库、互动时间线、任务、审计、导出/迁移 |
-| 客服 AI | **策略设计（低）** | FAQ、人审、禁止承诺清单 | 消息 adapter、会话、检索、policy、草稿、handoff、审批后台 |
-| 数据/任务平台 | **缺失** | 无 | PostgreSQL、后台 worker、队列、migration、observability、secrets 配置 |
+| `system_technical_ready` | 系统在受控环境可启动、回归和 rollback | 内部 demo、报告、审计 | 数据已正确或可销售。 |
+| `data_usable` | 指定业务线资料已来源化、映射、通过质量检查并 `approved` | 客服/内容/CRM/视频读取 approved 真值做内部草稿 | 平台、合规、账号、收款和履约已允许。 |
+| `external_execution_allowed` | 所有 Phase 9 书面证据、feature flag 和用户授权共同满足 | 仅在明确白名单范围执行外部动作 | 已产生订单、销售成功或履约完成。 |
 
-## 8. 进入实施前的固定核验
+默认：前两个状态都为 `false`；最后一个永久默认 `false`。
 
-每个执行任务必须先重新读取：
+## 8. Phase 9：只规划的外部上线阻断
 
-1. [`AGENTS.md`](../../AGENTS.md)、[`PROJECT_ENTRY.md`](../../PROJECT_ENTRY.md)、[`BUSINESS_STATUS.md`](../project/BUSINESS_STATUS.md)、[`SOURCE_OF_TRUTH.md`](../project/SOURCE_OF_TRUTH.md)、[`SCOPE_AND_BOUNDARIES.md`](../project/SCOPE_AND_BOUNDARIES.md)。
-2. 当前 `git status --short --branch`、`git remote -v`、`git ls-remote --symref origin HEAD` 与目标分支远端文件。
-3. 业务线、数据分类、是否使用 fixture、是否触发人工批准和是否仍被公开执行闸门阻断。
+Phase 9 不能由技术测试自动开启。未来每一项需要来源、日期、责任人、批准记录、feature flag 和用户明确授权：当地销售主体/许可/品牌授权；TikTok 当前酒类内容、广告、外链与直播边界；账号主体与管理员权限；真实价格、库存、配送、退款、售后与结算；收款与订单路径；年龄与地域限制；数据处理与外发授权。任一缺失保持 `BLOCKED`。
 
-若发现真实客户资料、密钥、未知工作树改动、数据来源冲突、生产账号或业务授权缺失，任务只能完成安全范围内的工作，并按 [测试与回滚策略](TEST_AND_ROLLBACK_STRATEGY.md) 报告 BLOCKED。
+## 9. 本蓝图完成的验收
 
-## 9. 规划完成后的下一步
-
-第一批只启动 Phase 0 的小任务：建立隔离工程骨架、环境/fixture 防护与合约测试基线；随后再进入 Phase 1。实际顺序和每张任务卡见 [Codex 执行包](CODEX_EXECUTION_PACK.md#第一批建议下发顺序)。
+- Phase 0–8 各有依赖、3 个独立任务卡、验证、回退与阻断条件。
+- Phase 8 将真实资料接入收束为标准运行路径，而非再次系统设计。
+- 存在机器可读依赖图，所有高风险外部动作默认 feature flag `off`。
+- 文档中不含 SKU、价格、库存、账号、收款、资质或履约的虚构业务事实。
+- 技术 `run-ready`、供应链确认、平台/合规允许、真实订单和履约是不同状态。

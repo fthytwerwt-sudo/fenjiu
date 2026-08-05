@@ -90,3 +90,14 @@
 - **决定**：建立 `GPT项目资料同步包_gpt_project_mechanism_sync/`，并在根 `AGENTS.md`、`PROJECT_ENTRY.md`、`README.md` 中明确 GPT Project 机制包、GitHub 事实包和 Codex 执行层边界；包内 `project_entry/AGENTS.md` 作为根 AGENTS 的生成时只读镜像。
 - **影响**：新聊天框可通过 GPT Project 包理解汾酒 TikTok 主线、P0/P1/P2、六层需求确认、Codex 下发和复审规则；业务事实仍以 GitHub `main` 当前文件为准。
 - **替代方案**：只创建机制文件夹，不更新 AGENTS；未采用，因为新会话会同时存在仓库入口和 GPT Project 包，若二者不一致会造成事实源冲突。
+
+### ADR-0006：AI Native Sales OS 采用 Phase 0–8 模块化单体实施图
+
+- **日期**：2026-08-06
+- **状态**：Accepted / PLANNED（工程规划，不是已实施状态）
+- **来源**：用户本轮明确要求与当前仓库资产审计。
+- **背景**：已有 GPT Project / GitHub / Codex 治理层，但尚无从工程底座到真实资料导入、fixture 替换和受控运行的逐任务纵向路径。
+- **决定**：采用模块化单体、PostgreSQL 真值中心、adapter-first、fixture 与真实资料严格隔离、人工审批与默认审计的 Phase 0–8 计划；Phase 9 只保留外部上线证据闸门。
+- **影响**：后续 Codex 一次只执行 `docs/implementation/codex_tasks/` 中前置已完成的单卡；真实资料到达后按导入、mapping、批准、回归和 run-ready runbook 操作，而非重设架构。
+- **替代方案**：直接一次开发全部 CRM/客服/视频/采集系统；未采用，因为当前真实资料、账号、授权、合规和履约前置缺失，会扩大耦合和事实污染风险。
+- **状态边界**：本决定不确认任何商品、价格、库存、资质、账号、收款、履约、平台允许、外部上线、订单或销售。
