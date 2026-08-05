@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜GPT Project 配合机制同步包与 AGENTS 交叉审计
+
+- **目标**：补齐汾酒 GPT Project 手动上传用配合机制包，并按 P0 补充要求交叉审计 `AGENTS.md`、`PROJECT_ENTRY.md` 与参考仓库机制。
+- **实际读取**：当前汾酒 AGENTS、PROJECT_ENTRY、业务与协作状态、任务执行单；主参考仓库 `fthytwerwt-sudo/-` 根 AGENTS、完整 GPT Project 上传包和关键提交 `4b535ef`、`8a1350b`、`7402250`；补充参考 `fthytwerwt-sudo/lanxinse--` 根 AGENTS 与同名 GPT Project 机制包。
+- **实际改动**：新增 `GPT项目资料同步包_gpt_project_mechanism_sync/` 23 文件；新增参考机制学习报告、AGENTS 机制对照审计、验证脚本和验证报告；更新 AGENTS、PROJECT_ENTRY、README、协作流程、任务模板、决策和协作状态。
+- **验证结果**：`python3 -m py_compile scripts/validate_gpt_project_mechanism_sync.py` 通过；`python3 scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 通过，文件数 23、系统提示词 3081 字符、Manifest 一致、AGENTS 镜像 SHA 一致、敏感信息/绝对路径/参考项目污染/媒体扫描通过。
+- **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本条不表示供应链资料已回传、TikTok 酒类边界已确认、业务上线、销售或履约成立。
+
 ## 2026-08-05｜协作机制 V2：业务状态与协作状态分离
 
 - **目标**：在不删除原始资料或虚构供应链交付的前提下，修正入口、当前范围、历史研究定位和协作收口状态。

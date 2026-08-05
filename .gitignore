@@ -10,11 +10,14 @@
 !/docs/**
 !/scripts/
 !/scripts/build_project_sync_pack.py
+!/scripts/validate_gpt_project_mechanism_sync.py
 !/project_sync/
 !/project_sync/PROJECT_SYNC_README.md
 !/project_sync/PROJECT_SYNC_MANIFEST.json
 !/project_sync/latest/
 !/project_sync/latest/**
+!/GPT项目资料同步包_gpt_project_mechanism_sync/
+!/GPT项目资料同步包_gpt_project_mechanism_sync/**
 
 # 无论目录规则如何，凭据与系统元数据始终不得提交。
 .env

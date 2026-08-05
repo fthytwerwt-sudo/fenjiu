@@ -81,3 +81,12 @@
 - **决定**：本地私有配置、线索、缓存、媒体、QA 和渲染产物不进入 Git 或同步包，并接受构建前扫描。
 - **影响**：共享内容以最小披露为原则；发现真实凭据时应评估轮换，且不得回显值。
 - **替代方案**：依赖人工逐次挑选；未采用，因为遗漏风险高。
+
+### ADR-0005：GPT Project 配合机制包与 AGENTS 镜像进入正式协作入口
+
+- **日期**：2026-08-06
+- **状态**：Accepted
+- **背景**：上一轮已建立 GitHub 项目事实交接包，但 GPT Project 侧缺少可手动上传的长期配合机制包；新增 P0 要求同时审计 AGENTS 与参考仓库机制。
+- **决定**：建立 `GPT项目资料同步包_gpt_project_mechanism_sync/`，并在根 `AGENTS.md`、`PROJECT_ENTRY.md`、`README.md` 中明确 GPT Project 机制包、GitHub 事实包和 Codex 执行层边界；包内 `project_entry/AGENTS.md` 作为根 AGENTS 的生成时只读镜像。
+- **影响**：新聊天框可通过 GPT Project 包理解汾酒 TikTok 主线、P0/P1/P2、六层需求确认、Codex 下发和复审规则；业务事实仍以 GitHub `main` 当前文件为准。
+- **替代方案**：只创建机制文件夹，不更新 AGENTS；未采用，因为新会话会同时存在仓库入口和 GPT Project 包，若二者不一致会造成事实源冲突。

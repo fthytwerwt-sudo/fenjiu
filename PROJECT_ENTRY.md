@@ -14,14 +14,16 @@
 
 ## 必读顺序
 
-1. [AGENTS.md](AGENTS.md)
-2. 本文件
-3. [业务状态](docs/project/BUSINESS_STATUS.md)
-4. [总览状态](docs/project/CURRENT_STATUS.md)
-5. [事实源地图](docs/project/SOURCE_OF_TRUTH.md)
-6. [范围与边界](docs/project/SCOPE_AND_BOUNDARIES.md)
-7. [协作机制状态](docs/collaboration/COLLABORATION_STATUS.md)
-8. 与当前任务直接相关的原始资料；不要用派生产物替代原始资料。
+1. 用户本轮明确输入，也就是本轮 `P0`。
+2. [AGENTS.md](AGENTS.md)
+3. [GPT Project 配合机制包](GPT项目资料同步包_gpt_project_mechanism_sync/00_GPT_Project上传说明_readme.md)
+4. 本文件
+5. [业务状态](docs/project/BUSINESS_STATUS.md)
+6. [总览状态](docs/project/CURRENT_STATUS.md)
+7. [事实源地图](docs/project/SOURCE_OF_TRUTH.md)
+8. [范围与边界](docs/project/SCOPE_AND_BOUNDARIES.md)
+9. [协作机制状态](docs/collaboration/COLLABORATION_STATUS.md)
+10. 与当前任务直接相关的原始资料；不要用派生产物替代原始资料。
 
 ## 先分清可继续与不可进入的动作
 
@@ -40,3 +42,5 @@
     python3 scripts/build_project_sync_pack.py
 
 把 project_sync/latest 或本地 ZIP 与 [同步包说明](docs/sync/README.md) 一并交给新会话。新会话必须先复述当前范围、阶段、职责、事实分级、阻断和完成标准，再执行。
+
+GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanism_sync/`，用于用户手动上传到 ChatGPT GPT Project。它和 `project_sync/latest/` 不同：前者保存长期配合机制，后者保存 GitHub 项目事实交接快照。包已生成不等于用户已上传 GPT Project UI。

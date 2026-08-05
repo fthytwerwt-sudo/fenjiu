@@ -21,6 +21,9 @@
 ## Execution steps｜执行步骤
 1.
 
+## Validation commands｜验证命令
+-
+
 ## Done when｜完成标准
 - [ ]
 
@@ -35,3 +38,5 @@
 ```
 
 交接方应先填写空项。执行方不得用推测补全空项。
+
+涉及机制修改、Codex 下发或用户反馈“不对”时，交接方必须补齐六层需求确认：目标层、机制层、实现设计层、流程层、判断标准层、反馈层。缺实现设计层时，执行方应标 `blocked_need_implementation_design_layer`。

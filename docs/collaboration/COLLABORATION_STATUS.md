@@ -30,6 +30,14 @@
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。
 
+## GPT Project 配合机制包状态
+
+- **CONFIRMED**：`GPT项目资料同步包_gpt_project_mechanism_sync/` 已创建为 GPT Project 手动上传包；它与 `project_sync/latest/` 分工不同，不能互相替代。
+- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2、GitHub 事实读取、Codex 执行落库、供应链缺口、TikTok 主线、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
+- **CONFIRMED**：`project_entry/AGENTS.md` 是根目录 `AGENTS.md` 的生成时只读镜像；当前验证显示根 AGENTS 与镜像 SHA-256 一致。
+- **CONFIRMED**：`scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 已验证 23 个文件、系统提示词 3081 字符、Manifest 一致、敏感信息扫描通过、绝对路径扫描通过、参考项目污染扫描通过、媒体排除通过。
+- **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本包生成、验证、commit 或 push 不代表用户已上传 GPT Project UI，也不代表供应链、平台、合规、上线、销售或履约成立。
+
 ## GitHub 收口状态
 
 | 字段 | 当前状态 |
@@ -47,6 +55,7 @@
 1. **P0**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
 2. 将 GitHub 默认分支切换为 main，随后删除旧临时远端分支，并回读全部远端状态。
 3. 在包含本次状态回填的 main 上重新生成同步包，并完成解压、哈希和新会话接手验证。
+4. 用户按需将 `GPT项目资料同步包_gpt_project_mechanism_sync/` 上传到 ChatGPT GPT Project，并用上传后验证清单测试新聊天框。
 
 ## 更新规则
 
