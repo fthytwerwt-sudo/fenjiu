@@ -1,0 +1,1394 @@
+{
+  "meta": {
+    "task": "汾酒尼泊尔B2B/B2C深度调研——文化、生活方式、中国文化桥接与平台/酒类传播合规工作流",
+    "scope": "文化与生活方式、人群和场景、节庆季节、本地酒饮、餐饮搭配假设、中国文化认知与桥接、TikTok/Meta/YouTube/Viber传播合规、A/B/C条件方案",
+    "as_of": "2026-07-13",
+    "access_date": "2026-07-13",
+    "legal_disclaimer": "本文件是商业研究，不是尼泊尔法律意见。任何面向公众的品牌传播、广告、促销、赞助、达人合作、直播、导流、电商或活动露出，都必须在执行前由尼泊尔持牌律师、Advertisement Board/MOHP等主管机关及对应平台书面确认。",
+    "status_language": ["[KNOWN]", "[INFERRED]", "[COMPUTED]", "[NEEDS_VERIFY]", "[BLOCKED]"],
+    "skill_context": "未发现与本子任务完全匹配的专用skill；采用政府、WHO、平台官方政策、官方旅游资料与同行评审论文直接核验。",
+    "owner_note": "此文件仅供总报告整合；未生成最终DOCX，未修改其他工作流文件。"
+  },
+  "executive_findings": [
+    {
+      "id": "EF-01",
+      "tag": "[KNOWN]",
+      "finding": "尼泊尔《Public Health Service Act 2075 (2018)》第45条构成酒类广告禁令的核心法源；WHO、尼泊尔Advertisement Board及国营媒体资料显示，该禁令被用于传统媒体、数字媒体、社交媒体、赞助、产品植入、网红与替代广告的执法/监测。",
+      "decision": "在取得书面法律与主管机关许可前，项目默认进入最严格的Plan C，不把市场上仍可见的酒类内容当作合法先例。",
+      "evidence_ids": ["LAW-01", "LAW-02", "LAW-03", "LAW-04", "LAW-05"]
+    },
+    {
+      "id": "EF-02",
+      "tag": "[KNOWN]",
+      "finding": "TikTok在尼泊尔曾被封禁后恢复，2025年又曾因平台注册政策发生短期行业性中断；公开证据只能证明平台曾恢复/注册运行，不能证明酒类广告、达人合作、直播或Shop在尼泊尔获准。",
+      "decision": "平台可用性与酒类商业内容许可分开验收；上线日需重新实测账号、广告库存与审核状态。",
+      "evidence_ids": ["PLAT-01", "PLAT-02", "PLAT-03", "PLAT-04"]
+    },
+    {
+      "id": "EF-03",
+      "tag": "[BLOCKED]",
+      "finding": "TikTok酒类广告要求受支持国家/地区、企业/行业验证、年龄与牌照合规；当前公开的market-specific requirements中未找到Nepal。Google/YouTube酒类广告获准地区清单中同样未找到Nepal。",
+      "decision": "TikTok付费广告、TikTok达人/直播/Shop及Google/YouTube酒类付费广告均不得纳入可执行基线；只有取得平台书面批准后才能从Plan C切换。",
+      "evidence_ids": ["PLAT-05", "PLAT-06", "PLAT-07", "PLAT-12", "PLAT-13"]
+    },
+    {
+      "id": "EF-04",
+      "tag": "[KNOWN]",
+      "finding": "尼泊尔饮酒并非单一文化：NDHS 2022显示男性和女性过去一个月饮酒率差异明显；同行评审研究也显示不同宗教、族群、家庭与仪式规范差异很大。",
+      "decision": "不得把“尼泊尔人”整体当作饮酒人群，也不得按族群/宗教刻板定向；运营上改用合法场所、采购角色、饮酒经验、语言与明确自愿等非敏感行为条件分层。",
+      "evidence_ids": ["CUL-01", "CUL-02", "CUL-03", "CUL-04", "CUL-05"]
+    },
+    {
+      "id": "EF-05",
+      "tag": "[INFERRED]",
+      "finding": "Aila、Raksi、Chhyang/Jand与Tongba/Tumba为理解尼泊尔谷物酒饮文化的入口，但其原料、酒精度、仪式角色和饮用方式不同；任何“尼泊尔白酒=中国白酒”式等同都会失真。",
+      "decision": "文化沟通可采用“谷物发酵/蒸馏工艺对话”和“小杯、慢饮、配餐”的教育框架，但必须明确“不是同一种酒”，并由本地文化顾问和品鉴验证。",
+      "evidence_ids": ["DRINK-01", "DRINK-02", "DRINK-03", "CUL-04"]
+    },
+    {
+      "id": "EF-06",
+      "tag": "[INFERRED]",
+      "finding": "中国在尼泊尔具有旅游、教育与文化活动能见度，但公开调查显示中国文化亲近度不能简单等同于品牌接受度；印度在日常文化可见性和可亲近性上仍更强。",
+      "decision": "中国文化桥接只在中国游客、华商、中文学习者、中尼商务/文化活动等边界清晰的场景中使用；大众叙事优先从尼泊尔生活、餐桌、待客与本地选择出发。",
+      "evidence_ids": ["CN-01", "CN-02", "CN-03", "CN-04", "CN-05"]
+    },
+    {
+      "id": "EF-07",
+      "tag": "[NEEDS_VERIFY]",
+      "finding": "现行Liquor Act英文官方文本规定不得向18岁以下销售/分发酒类；2017政策资料又提出将购买年龄提高到21岁，但其完整、现行、可执行状态在本轮未从整合后的官方法典中确认。",
+      "decision": "商业运营采用21+保守门槛、镜头演员25+，同时将法定年龄写为待本地律师确认；不得对外断言“尼泊尔法定饮酒年龄是21岁”。",
+      "evidence_ids": ["LAW-06", "LAW-07", "LAW-08", "LAW-09"]
+    }
+  ],
+  "evidence_registry": [
+    {
+      "id": "LAW-01",
+      "title": "The Public Health Service Act, 2075 (2018)",
+      "url": "https://hmis.gov.np/media/20/02_The-Public-Health-Service-Act-2075-2018.pdf",
+      "publication_or_update_date": "2018",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔政府法规PDF",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "第45条禁止制作、传播、分发对人体健康有害的广告材料，条文明确涉及酒类。",
+      "limitations": "需要尼泊尔持牌律师就具体商业内容、主体责任、例外及最新修法给出书面意见。"
+    },
+    {
+      "id": "LAW-02",
+      "title": "Technical support for enforcement of alcohol advertising ban in Nepal",
+      "url": "https://cdn.who.int/media/docs/default-source/nepal-documents/procurement/rfp_technical-support-for-enforcement-of-alcohol-advertising-and-enforcement-in-nepal_nepal.pdf?sfvrsn=381548b6_1",
+      "publication_or_update_date": "2022",
+      "access_date": "2026-07-13",
+      "source_type": "WHO Nepal采购/项目文件",
+      "grade": "B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "WHO支持MOHP落实PHSA 2018第45条酒类广告禁令。",
+      "limitations": "不是司法解释或个案法律意见。"
+    },
+    {
+      "id": "LAW-03",
+      "title": "Monitoring of alcohol advertising, sponsorship and promotion in Nepal",
+      "url": "https://cdn.who.int/media/docs/default-source/nepal-documents/procurement/tor_monitoring-of-alcohol-advertising--sponsorship-and-promotion-in-nepal_16-march_nepal.pdf?sfvrsn=6787aacd_1",
+      "publication_or_update_date": "2023-03",
+      "access_date": "2026-07-13",
+      "source_type": "WHO Nepal监测项目TOR",
+      "grade": "B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "监测范围覆盖传统媒体、赞助、产品植入、企业/电商网站、Facebook、Twitter、TikTok、Instagram、App、网红与surrogate advertising；文件还记录2023-02-23最高法院临时命令背景。",
+      "limitations": "描述监测和执法背景，不替代现行判决全文。"
+    },
+    {
+      "id": "LAW-04",
+      "title": "Media urged to remove alcoholic advertisement",
+      "url": "https://radionepalonline.com/en/2023/03/13/348926.html",
+      "publication_or_update_date": "2023-03-13",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔国营公共广播新闻",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Advertisement Board要求从纸媒、电子、数字、社交媒体与广告牌撤除酒类广告，并援引最高法院和相关法律。",
+      "limitations": "新闻报道不是命令原件。"
+    },
+    {
+      "id": "LAW-05",
+      "title": "Press Release Regarding Prohibition of Advertisement Publishing or Broadcast of Alcohol",
+      "url": "https://www.pradhanlaw.com/publications/press-release-regarding-prohibition-of-advertisement-publishing-or-broadcast-of-alcohol",
+      "publication_or_update_date": "2023",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔律师事务所法律简报",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "梳理案件079-WO-0882、2023-02-23临时命令、PHSA第45条与广告监管条款。",
+      "limitations": "二级法律资料；需以判决、法规和律师意见原件为准。"
+    },
+    {
+      "id": "LAW-06",
+      "title": "Liquor Act, 2031 (1974)",
+      "url": "https://ird.gov.np/public/pdf/325298436.pdf",
+      "publication_or_update_date": "1974，官方现行英文汇编页面访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔Inland Revenue Department法规PDF",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "第4A(2)条规定不得向18岁以下者出售或分发酒类；第4A(3)条禁止18岁以下者销售或分发酒类。",
+      "limitations": "需确认其他法规、地方规则或后续修法是否叠加更严格年龄门槛。"
+    },
+    {
+      "id": "LAW-07",
+      "title": "WHO SAFER Country Snapshot: Nepal",
+      "url": "https://cdn.who.int/media/docs/default-source/less-alcohol/safer-country-snapshots/010-gm-country-snapshot-nepal-15122025.pdf?download=true&sfvrsn=39026219_1",
+      "publication_or_update_date": "2025",
+      "access_date": "2026-07-13",
+      "source_type": "WHO国家快照",
+      "grade": "B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "2017年Alcohol Regulation and Control Policy提出将购买年龄从18提高到21、全面禁止广告促销赞助等措施。",
+      "limitations": "该资料将其描述为政策内容，不能单独证明所有条款已通过完整实施法规生效。"
+    },
+    {
+      "id": "LAW-08",
+      "title": "Govt's stringent policy to regulate alcohol products",
+      "url": "https://kathmandupost.com/valley/2017/02/22/govs-stringent-policy-to-regulate-alcohol-products",
+      "publication_or_update_date": "2017-02-22",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔主流媒体",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "报道2017政策包含21岁以下及孕妇不得购买酒类等限制。",
+      "limitations": "媒体报道不能替代实施法规。"
+    },
+    {
+      "id": "LAW-09",
+      "title": "Alcohol control policy in Nepal: implementation status and challenges",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10565236/",
+      "publication_or_update_date": "2023",
+      "access_date": "2026-07-13",
+      "source_type": "同行评审论文",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "讨论2017政策所设想的21岁门槛及其实施差距。",
+      "limitations": "政策研究，不是现行法权威解释。"
+    },
+    {
+      "id": "PLAT-01",
+      "title": "NTA directs ISPs to restore TikTok",
+      "url": "https://radionepalonline.com/en/2024/09/06/388455.html",
+      "publication_or_update_date": "2024-09-06",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔国营公共广播新闻",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "NTA要求ISP恢复TikTok，落实2024-08-22内阁解除禁令的决定。",
+      "limitations": "仅证明网络访问恢复，不证明任何酒类商业内容获准。"
+    },
+    {
+      "id": "PLAT-02",
+      "title": "Government lifts ban on TikTok",
+      "url": "https://kathmandupost.com/national/2024/08/22/government-lifts-ban-on-tiktok",
+      "publication_or_update_date": "2024-08-22",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔主流媒体",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "报道尼泊尔解除TikTok禁令。",
+      "limitations": "运营状态随监管和平台执行变化，需上线日复核。"
+    },
+    {
+      "id": "PLAT-03",
+      "title": "Nepal blocks unregistered social media platforms",
+      "url": "https://radionepalonline.com/en/2025/09/04/416176.html",
+      "publication_or_update_date": "2025-09-04",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔国营公共广播新闻",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "2025年注册争议期间TikTok与Viber被列为已注册运营的平台。",
+      "limitations": "不证明广告产品或酒类行业许可。"
+    },
+    {
+      "id": "PLAT-04",
+      "title": "Nepal’s government lifts social media ban after protests",
+      "url": "https://time.com/7315492/nepal-gen-z-protests-social-media-nepo-kids-corruption-explainer/",
+      "publication_or_update_date": "2025-09",
+      "access_date": "2026-07-13",
+      "source_type": "国际新闻媒体",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "报道2025年短期社交媒体禁令被撤销，平台恢复运行。",
+      "limitations": "国际媒体二级资料；上线状态仍需实测。"
+    },
+    {
+      "id": "PLAT-05",
+      "title": "TikTok Advertising Policies: Alcohol",
+      "url": "https://ads.tiktok.com/help/article/tiktok-ads-policy-alcohol?trk=public_post_comment-text",
+      "publication_or_update_date": "2025-09更新",
+      "access_date": "2026-07-13",
+      "source_type": "TikTok官方广告政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "酒类广告只在获准市场和满足牌照、年龄、免责声明等要求时开放；禁止面向未成年人、使用25岁以下演员、过量/醉酒/驾驶/社会成功暗示等。",
+      "limitations": "具体市场批准仍取决于market-specific requirements与TikTok书面确认。"
+    },
+    {
+      "id": "PLAT-06",
+      "title": "Alcohol market-specific requirements",
+      "url": "https://ads.tiktok.com/help/article/alcohol-market-specific-requirements?lang=en",
+      "publication_or_update_date": "2026-06更新；访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "TikTok官方市场清单",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[BLOCKED]",
+      "claim": "本轮页面检索未找到Nepal条目，因此不能证明TikTok酒类广告在尼泊尔开放。",
+      "limitations": "平台可能通过销售端、账户端或更新页面改变库存；需要书面确认，不能把网页缺席等同于永久禁止。"
+    },
+    {
+      "id": "PLAT-07",
+      "title": "About business registration on TikTok",
+      "url": "https://ads.tiktok.com/help/article/about-business-registration?lang=en&redirected=2",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "TikTok官方帮助",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "受监管商品内容可能要求企业注册/验证、行业与国家批准并遵守市场及年龄限制。",
+      "limitations": "验证资格不覆盖尼泊尔本地法律许可。"
+    },
+    {
+      "id": "PLAT-08",
+      "title": "TikTok Community Guidelines: Regulated Goods and Commercial Activities",
+      "url": "https://www.tiktok.com/community-guidelines/en/regulated-commercial-activities/?enter_method=left_navigation",
+      "publication_or_update_date": "2024-05-17生效版本；访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "TikTok官方社区规则",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "酒类交易/推广属于严格监管内容；导向网页、实体地点、联系方式或站外私信也可能构成facilitating trade；商业内容需披露。",
+      "limitations": "TikTok另有更新版社区规则；执行以账号所在市场和最新政策为准。"
+    },
+    {
+      "id": "PLAT-09",
+      "title": "TikTok Community Guidelines",
+      "url": "https://www.tiktok.com/community-guidelines",
+      "publication_or_update_date": "2025-09-13生效版本",
+      "access_date": "2026-07-13",
+      "source_type": "TikTok官方社区规则",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "受监管商品交易/营销/推广受限；部分严格监管商品仅在企业账户、已验证卖家及市场许可条件下可进行，商业披露为必需。",
+      "limitations": "没有给出尼泊尔酒类内容的肯定授权。"
+    },
+    {
+      "id": "PLAT-10",
+      "title": "Meta Help: About ads for alcohol",
+      "url": "https://www.facebook.com/help/980264326141711/",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Meta官方帮助",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Meta对酒类广告实施年龄和国家/地区适用限制。",
+      "limitations": "本轮未找到对Nepal酒类广告的明确批准；平台规则也不替代尼泊尔法。"
+    },
+    {
+      "id": "PLAT-11",
+      "title": "Instagram Help: Paid partnership label and branded content",
+      "url": "https://www.facebook.com/help/instagram/1109894795810258/?locale=en_GB",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Meta/Instagram官方帮助",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Feed、Stories、Reels、Live等品牌合作内容需使用paid partnership label；受限品类还需受众限制。",
+      "limitations": "正确披露不等于当地酒类推广合法。"
+    },
+    {
+      "id": "PLAT-12",
+      "title": "Google Ads policy: Alcohol information",
+      "url": "https://support.google.com/adspolicy/answer/16427711?hl=en-GB",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Google官方广告政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[BLOCKED]",
+      "claim": "酒类信息/品牌广告仅在获准地区开放；本轮清单未找到Nepal。",
+      "limitations": "清单可能更新；执行前需由Google Ads账户和销售团队书面确认。"
+    },
+    {
+      "id": "PLAT-13",
+      "title": "Google Ads policy: Alcohol sale",
+      "url": "https://support.google.com/adspolicy/answer/16428720?hl=en",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Google官方广告政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[BLOCKED]",
+      "claim": "酒类销售广告仅在获准地区开放；本轮清单未找到Nepal。",
+      "limitations": "清单可能更新；也不覆盖尼泊尔本地法律。"
+    },
+    {
+      "id": "PLAT-14",
+      "title": "YouTube advertiser-friendly content guidelines: Drugs and alcohol",
+      "url": "https://support.google.com/youtube/answer/6162278?hl=en",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "YouTube官方政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "成年人饮酒但不鼓励不负责任饮酒的内容可能符合广告友好规则；未成年人饮酒或向未成年人提供酒类会失去广告收益。",
+      "limitations": "这是内容变现规则，不是尼泊尔公众酒类推广许可。"
+    },
+    {
+      "id": "PLAT-15",
+      "title": "YouTube: Paid product placements and endorsements",
+      "url": "https://support.google.com/youtube/answer/3364658?hl=en",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "YouTube官方政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "创作者付费植入必须遵守Google广告政策与适用法律并进行披露。",
+      "limitations": "不提供Nepal酒类赞助的肯定授权。"
+    },
+    {
+      "id": "PLAT-16",
+      "title": "Viber Advertising Policy",
+      "url": "https://www.viber.com/en/terms/viber-advertising-policy/",
+      "publication_or_update_date": "页面当前版本，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Viber官方广告政策",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "酒类广告须获得Viber事先书面同意并符合全部本地法律、牌照、年龄和行业规则；政策明确承认部分国家存在全面酒类广告/促销禁令。",
+      "limitations": "没有找到Nepal酒类广告书面批准或公开白名单。"
+    },
+    {
+      "id": "CUL-01",
+      "title": "Nepal Demographic and Health Survey 2022",
+      "url": "https://dhsprogram.com/pubs/pdf/FR379/FR379.pdf",
+      "publication_or_update_date": "2023（调查年度2022）",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔MOHP官方国家调查",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "过去一个月饮酒比例男性42%、女性11%；在饮酒者中，每日或几乎每日饮酒男性20%、女性13%，三杯及以上男性21%、女性11%。",
+      "limitations": "自报数据；不直接等于进口烈酒购买意向。"
+    },
+    {
+      "id": "CUL-02",
+      "title": "Religion in Nepal, National Population and Housing Census 2021",
+      "url": "https://censusnepal.cbs.gov.np/results/files/result-folder/Religion%20in%20Nepal.pdf",
+      "publication_or_update_date": "2021人口普查专题报告",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔官方人口普查",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔具有多宗教结构，宗教规范是酒类场景适配的重要边界。",
+      "limitations": "宗教身份不能单独预测个人饮酒行为，也不应被用于歧视性定向。"
+    },
+    {
+      "id": "CUL-03",
+      "title": "Caste/Ethnicity Report, National Population and Housing Census 2021",
+      "url": "https://censusnepal.cbs.gov.np/results/files/result-folder/Caste%20Ethnicity_report_NPHC_2021.pdf",
+      "publication_or_update_date": "2021人口普查专题报告",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔官方人口普查",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔族群/社群结构高度多样，不能以单一全国饮酒叙事覆盖。",
+      "limitations": "族群数据不得转化为刻板营销或敏感属性定向。"
+    },
+    {
+      "id": "CUL-04",
+      "title": "Alcohol use and cultural context across caste/ethnic groups in Nepal",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259021",
+      "publication_or_update_date": "2021",
+      "access_date": "2026-07-13",
+      "source_type": "同行评审论文",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "部分社群在节庆、婚礼、死亡仪式和家庭场景中使用自酿酒，但角色和规范因社群而异。",
+      "limitations": "研究结果不能用于对个体做行为推断或促饮定向。"
+    },
+    {
+      "id": "CUL-05",
+      "title": "Alcohol use, cultural acceptance and social patterning in Nepal",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6740022/",
+      "publication_or_update_date": "2019",
+      "access_date": "2026-07-13",
+      "source_type": "同行评审论文",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "部分Brahmin和穆斯林传统规范对酒更限制，部分其他社群把酒用于待客或仪式；规范存在显著差异。",
+      "limitations": "不能把群体统计当成个人偏好，也不能据此做排他或诱导性营销。"
+    },
+    {
+      "id": "CUL-06",
+      "title": "Cultural Etiquette",
+      "url": "https://trade.ntb.gov.np/travel-essentials/cultural-etiquette/",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方指南",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "jutho（口部接触造成的不洁）等餐桌规范要求避免共杯、共食造成冒犯。",
+      "limitations": "具体家庭和场所做法不同，需由主人/场所确认。"
+    },
+    {
+      "id": "DRINK-01",
+      "title": "Nationwide survey on traditional alcohol in Nepal",
+      "url": "https://elibrary.nhrc.gov.np/handle/20.500.14356/1765",
+      "publication_or_update_date": "2015",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Health Research Council资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔传统酒主要包括蒸馏型Raksi与非蒸馏型Jand/Chhyang/Tumba，原料与酒精度存在较大变化。",
+      "limitations": "传统酒存在家庭/地区差异，不能用单一ABV或工艺概括。"
+    },
+    {
+      "id": "DRINK-02",
+      "title": "Traditional fermented beverages of the Himalayas",
+      "url": "https://link.springer.com/article/10.1186/s42779-024-00260-4",
+      "publication_or_update_date": "2024",
+      "access_date": "2026-07-13",
+      "source_type": "同行评审综述",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Tongba为以发酵小米为基础的饮用体系，Chhyang为常见谷物发酵饮料；两者不同于蒸馏烈酒。",
+      "limitations": "区域性综述，具体尼泊尔配方和服务方式需本地核验。"
+    },
+    {
+      "id": "DRINK-03",
+      "title": "Aila: The Mystical Taste of Nepal",
+      "url": "https://ecs.com.np/features/ailathe-mystical-taste-of-nepal",
+      "publication_or_update_date": "2010",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔文化生活媒体",
+      "grade": "C",
+      "credibility": "中",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Aila与Newar宴席、仪式、节庆和传统器皿相关。",
+      "limitations": "非学术/官方资料，且年代较早；需由Newar文化顾问复核表述和图像。"
+    },
+    {
+      "id": "FOOD-01",
+      "title": "Culture of Nepal",
+      "url": "https://trade.ntb.gov.np/know-nepal/culture/",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔饮食具有显著地区差异，Newari、Thakali等饮食传统与momo等大众食物并存；牛在多数语境中具有宗教禁忌。",
+      "limitations": "官方概览不是餐饮消费频次调查。"
+    },
+    {
+      "id": "FOOD-02",
+      "title": "Dining in Nepal",
+      "url": "https://trade.ntb.gov.np/tourist-activities/dining/",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Kathmandu具备国际餐饮、旅游餐饮及传统表演餐厅场景，Thamel是重要游客餐饮区域。",
+      "limitations": "不证明特定餐厅或客群愿意接受Fenjiu。"
+    },
+    {
+      "id": "FEST-01",
+      "title": "Dashain",
+      "url": "https://ntb.gov.np/dashain",
+      "publication_or_update_date": "页面未标注，节日日期按尼历/阴历变动",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方节庆资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Dashain是长期家庭团聚、祝福、宴饮和返乡的重要节庆；Kathmandu人口会出现返乡流动。",
+      "limitations": "不能据此推断每个家庭接受酒类，且公众酒类推广仍受禁令约束。"
+    },
+    {
+      "id": "FEST-02",
+      "title": "Tihar",
+      "url": "https://ntb.gov.np/en/tihar",
+      "publication_or_update_date": "页面未标注，节日日期按尼历/阴历变动",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方节庆资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Tihar为五日灯节，包含家庭装饰、兄弟姐妹仪式、礼物与宴食。",
+      "limitations": "不应把节庆文化符号直接用于酒类商业传播；需本地审校。"
+    },
+    {
+      "id": "FEST-03",
+      "title": "Welcome to Nepali New Year 2083",
+      "url": "https://ntb.gov.np/en/welcome-to-nepali-new-year-2083",
+      "publication_or_update_date": "2026",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方活动资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔新年在4月附近，是更新、聚会和地方节庆活动窗口。",
+      "limitations": "年度公历日期需按官方尼历确认。"
+    },
+    {
+      "id": "FEST-04",
+      "title": "Climate of Nepal",
+      "url": "https://ntb.gov.np/plan-your-trip/about-nepal/climate",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方旅游资料",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "春季与秋季通常是较佳旅游季，季风期约6月至9月，10月至11月能见度较佳。",
+      "limitations": "全国海拔差异大；客流需结合最新入境与酒店数据。"
+    },
+    {
+      "id": "CN-01",
+      "title": "Nepal Tourism Statistics 2024",
+      "url": "https://www.tourism.gov.np/content/83/nepal-tourism-statistics-2024/",
+      "publication_or_update_date": "2025（统计年度2024）",
+      "access_date": "2026-07-13",
+      "source_type": "尼泊尔旅游主管部门官方统计",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "2024年中国约占尼泊尔入境游客8.88%，约10.19万人，为重要客源市场之一。",
+      "limitations": "入境量不等于烈酒购买意向；需区分旅游目的、年龄与停留地。"
+    },
+    {
+      "id": "CN-02",
+      "title": "Nepal Tourism Insights, January 2026",
+      "url": "https://trade.ntb.gov.np/wp-content/uploads/2026/02/Nepal-Tourism-Insights-January-2026.pdf",
+      "publication_or_update_date": "2026-02",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方月报",
+      "grade": "A",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "2026年1月中国游客9,101人，占入境量约9.8%。",
+      "limitations": "单月数据季节性强，不能外推全年。"
+    },
+    {
+      "id": "CN-03",
+      "title": "Charm Offensive: Shaping perceptions of China in Nepal",
+      "url": "https://csep.org/reports/charm-offensive-shaping-perceptions-of-china-in-nepal/",
+      "publication_or_update_date": "2023",
+      "access_date": "2026-07-13",
+      "source_type": "政策研究机构报告",
+      "grade": "B",
+      "credibility": "中高",
+      "conclusion_tag": "[INFERRED]",
+      "claim": "中国通过教育、媒体、文化与外交提升在尼泊尔的能见度，但公众认知受政治和地缘因素影响。",
+      "limitations": "不是酒类消费者研究，不能直接推断Fenjiu接受度。"
+    },
+    {
+      "id": "CN-04",
+      "title": "A survey of public opinion in Nepal: India and China in competition",
+      "url": "https://www.orcasia.org/article/376/a-survey-of-public-opinion-in-nepal-india-and-china-in-competition",
+      "publication_or_update_date": "2023",
+      "access_date": "2026-07-13",
+      "source_type": "区域研究机构调查",
+      "grade": "B",
+      "credibility": "中",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "调查显示印度在文化和日常可亲近性上普遍强于中国，提醒项目不能把中国国家能见度直接视为消费亲和。",
+      "limitations": "样本与方法限制较大，且不是酒类专项研究。"
+    },
+    {
+      "id": "CN-05",
+      "title": "Confucius Institute at Kathmandu University",
+      "url": "https://ku.edu.np/program/Confucius-Institute-at-ku",
+      "publication_or_update_date": "页面未标注，访问于2026-07-13",
+      "access_date": "2026-07-13",
+      "source_type": "Kathmandu University官方页面",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "尼泊尔存在正式的中文语言与中国文化教育机构和活动网络。",
+      "limitations": "教育参与不等于酒类兴趣；活动合作需保持非酒类、非政治化与依法合规。"
+    },
+    {
+      "id": "CN-06",
+      "title": "Nepal-China Friendship Dragon Boat Race Festival starts in Pokhara",
+      "url": "https://trade.ntb.gov.np/nepal-china-friendship-dragon-boat-race-festival-starts-in-pokhara-nepal/",
+      "publication_or_update_date": "2023",
+      "access_date": "2026-07-13",
+      "source_type": "Nepal Tourism Board官方新闻",
+      "grade": "A/B",
+      "credibility": "高",
+      "conclusion_tag": "[KNOWN]",
+      "claim": "Pokhara曾举办中尼龙舟友谊活动，说明共享体育/旅游/文化活动是现实桥接场景。",
+      "limitations": "酒类赞助或品牌露出不能由活动存在自动推导，仍须单独审批。"
+    }
+  ],
+  "population_and_culture": {
+    "market_truth": [
+      {
+        "tag": "[KNOWN]",
+        "statement": "饮酒行为具有明显性别、社群、宗教、家庭和城乡/地区差异。",
+        "evidence_ids": ["CUL-01", "CUL-02", "CUL-03", "CUL-04", "CUL-05"]
+      },
+      {
+        "tag": "[INFERRED]",
+        "statement": "高端进口烈酒的首批可测试需求更可能来自已有烈酒经验、合法酒店餐饮、商务接待和中国相关客群，而不是全国大众。",
+        "evidence_ids": ["CUL-01", "FOOD-02", "CN-01", "CN-02"]
+      },
+      {
+        "tag": "[NEEDS_VERIFY]",
+        "statement": "Kathmandu/Pokhara的具体高收入、白领、夜生活、酒店和婚宴采购规模需要支付数据、场所访谈、菜单与销售记录验证。",
+        "evidence_ids": ["FOOD-02", "FEST-04"]
+      }
+    ],
+    "operational_segments": [
+      {
+        "segment": "持牌酒店/餐厅/宴会场地的采购、F&B经理和业主",
+        "role": "B2B准入、菜单、员工培训、库存与服务规范",
+        "priority": "P0",
+        "tag": "[INFERRED]",
+        "allowed_now": "仅非公开、非消费者招徕的商务洽谈；样品与品鉴须经律师和牌照核验",
+        "proof_needed": ["场所酒牌", "采购资格", "样品合规路径", "封闭培训范围"]
+      },
+      {
+        "segment": "具有进口烈酒/白酒经验的21+成年饮用者",
+        "role": "产品理解和口味验证",
+        "priority": "P0",
+        "tag": "[NEEDS_VERIFY]",
+        "allowed_now": "只在依法批准的封闭研究/专业品鉴中接触，不做公众招募",
+        "proof_needed": ["年龄和自愿同意", "场所许可", "无驾驶安排", "定量小杯规则"]
+      },
+      {
+        "segment": "中国驻尼商务人员、贸易企业、长期居民及成年游客",
+        "role": "已有品类认知、商务礼赠和中文服务测试",
+        "priority": "P1",
+        "tag": "[INFERRED]",
+        "allowed_now": "仅合法私域/B2B；不得以中国身份推定饮酒偏好",
+        "proof_needed": ["数量、城市、渠道、购买场景", "礼赠/进口/税务合规"]
+      },
+      {
+        "segment": "厨师、调酒师、服务团队",
+        "role": "配餐、杯型、温度、稀释和服务SOP验证",
+        "priority": "P1",
+        "tag": "[NEEDS_VERIFY]",
+        "allowed_now": "封闭专业培训/测试；不得转化为公开达人推广",
+        "proof_needed": ["雇佣/合作关系", "培训地点", "品鉴责任与安全"]
+      },
+      {
+        "segment": "婚礼、企业活动和中尼活动的成年采购决策者",
+        "role": "团购、礼赠、宴会场景",
+        "priority": "P2",
+        "tag": "[NEEDS_VERIFY]",
+        "allowed_now": "只做一对一B2B询盘与合规报价；不做公开节庆促销",
+        "proof_needed": ["活动性质", "参与者年龄", "家庭/宗教规范", "场地酒牌", "礼赠规则"]
+      }
+    ],
+    "non_target_and_safety_exclusions": [
+      "任何未成年人或年龄无法验证者",
+      "孕妇、驾驶者、正在服药/有健康禁忌者",
+      "已醉酒或被同伴/上级施压者",
+      "宗教、社群或家庭规范明确拒绝饮酒者",
+      "以敏感族群、宗教、性别作为促饮/高消费定向依据",
+      "把社交成功、男子气概、地位、健康、保暖、提神或性表现与饮酒绑定"
+    ],
+    "service_guardrails": [
+      "一人一杯，避免jutho与共杯压力；用5/10/15ml量杯控制，不做shots挑战。",
+      "默认提供等量饮水、食物、吐酒杯和无酒精替代品。",
+      "不要求干杯见底，不以拒酒为失礼，不用资历/商务关系施压。",
+      "任何测试后提供安全交通安排；不得表现驾驶、机械操作或高风险活动。",
+      "商业年龄门槛先采用21+，镜头或现场表演人员先采用25+；法律年龄最终待本地律师确认。"
+    ]
+  },
+  "scene_matrix": [
+    {
+      "scene": "持牌中高端酒店/餐厅的封闭专业品鉴",
+      "fit": "高",
+      "tag": "[NEEDS_VERIFY]",
+      "why": "可由F&B团队控制年龄、份量、菜单和服务，适合验证陌生高ABV品类。",
+      "current_action": "仅在场所、进口、样品和传播合规书面确认后开展；不公开招募或直播。",
+      "evidence_ids": ["FOOD-02", "LAW-01", "LAW-03"]
+    },
+    {
+      "scene": "中尼企业闭门商务餐/采购会",
+      "fit": "中高",
+      "tag": "[NEEDS_VERIFY]",
+      "why": "与产品教育、贸易关系和礼赠测试相符，但酒类必须是可拒绝的可选项。",
+      "current_action": "一对一邀请、无公开品牌内容、无促饮KPI；合同前核验礼赠与税务。",
+      "evidence_ids": ["CN-01", "CN-03", "LAW-01"]
+    },
+    {
+      "scene": "中国/亚洲餐厅配餐",
+      "fit": "中高",
+      "tag": "[NEEDS_VERIFY]",
+      "why": "共享餐桌与中文品类教育有利于理解，但需要菜品级品鉴，不能泛称“适合亚洲菜”。",
+      "current_action": "先做厨师盲评和成人小样测试，记录菜谱、辣度、油脂、温度和饮用量。",
+      "evidence_ids": ["FOOD-02", "CUL-06"]
+    },
+    {
+      "scene": "Newari/本地传统菜配餐",
+      "fit": "中",
+      "tag": "[NEEDS_VERIFY]",
+      "why": "Aila和宴席传统提供工艺/器皿对话入口，但文化挪用和错误等同风险高。",
+      "current_action": "必须由Newar文化顾问、厨师和本地成年品鉴者共同设计；不得使用宗教供奉画面做酒类推广。",
+      "evidence_ids": ["DRINK-03", "CUL-04", "FOOD-01"]
+    },
+    {
+      "scene": "婚宴/家庭节庆",
+      "fit": "条件性",
+      "tag": "[BLOCKED]",
+      "why": "采购规模可能大，但家庭、宗教、社群规范和未成年人共场使风险显著。",
+      "current_action": "只有明确成年分区、家庭同意、场地酒牌和法律许可后才可私下供货；不做公开节日营销。",
+      "evidence_ids": ["CUL-02", "CUL-04", "FEST-01", "FEST-02", "LAW-01"]
+    },
+    {
+      "scene": "酒吧/夜生活/现场音乐",
+      "fit": "条件性",
+      "tag": "[BLOCKED]",
+      "why": "可触达烈酒饮用者，但醉酒、年龄、促销、达人与公众传播风险最高。",
+      "current_action": "在监管书面许可前不做品牌夜、买赠、shots、live、KOL或折扣刺激。",
+      "evidence_ids": ["LAW-03", "PLAT-05"]
+    },
+    {
+      "scene": "家庭居家/即时配送/电商",
+      "fit": "低",
+      "tag": "[BLOCKED]",
+      "why": "年龄核验、配送牌照、平台导流和公开促销均未确认。",
+      "current_action": "不得上线Shop、link-in-bio、私信下单或即时配送承诺；先核验电商与末端年龄验证。",
+      "evidence_ids": ["LAW-01", "PLAT-08", "PLAT-13"]
+    },
+    {
+      "scene": "中尼公共文化/旅游活动",
+      "fit": "文化合作高，酒类露出低",
+      "tag": "[BLOCKED]",
+      "why": "共享文化活动真实存在，但公众酒类赞助、logo露出或替代广告可能落入禁令。",
+      "current_action": "可支持不带酒类品牌/商品导向的文化交流；酒类品牌赞助须主管机关书面批准。",
+      "evidence_ids": ["CN-06", "LAW-03"]
+    }
+  ],
+  "festival_and_season_calendar": [
+    {
+      "window": "Dashain（通常9–10月，年度日期变动）",
+      "consumer_context": "返乡、家庭团聚、长辈祝福、宴食；Kathmandu可能阶段性外流",
+      "opportunity": "仅用于B2B库存和物流预测、成年家庭场景研究",
+      "risk": "宗教/家庭差异、未成年人共场、公众节庆酒类推广禁令",
+      "prep": "提前8–10周向国代/酒店收集历年销量、返乡客流、关店/配送日历；不要预排公开广告",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FEST-01", "LAW-01"]
+    },
+    {
+      "window": "Tihar（通常10–11月，年度日期变动）",
+      "consumer_context": "灯饰、家庭、兄弟姐妹、礼物、宴食与Mha Puja",
+      "opportunity": "企业礼赠和酒店餐饮的私域需求访谈",
+      "risk": "把宗教仪式、神祇、tika或Mha Puja商品化；未成年人共场",
+      "prep": "提前8周做合规礼赠清单，只向已确认成年、接受酒类的对象一对一沟通",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FEST-02", "LAW-01"]
+    },
+    {
+      "window": "Nepali New Year（4月中旬附近）",
+      "consumer_context": "新年、地方节庆、聚会、短途旅游",
+      "opportunity": "酒店菜单与旅游场景需求研究",
+      "risk": "公众促销、节庆符号挪用、年度日期错误",
+      "prep": "提前6–8周按官方尼历和城市活动日历核对；未获许可只做B2B供需准备",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FEST-03", "LAW-01"]
+    },
+    {
+      "window": "婚礼季（常见Mangsir约11–12月及1–3月；吉日每年不同）",
+      "consumer_context": "宴会、家庭采购、礼赠、酒店banquet",
+      "opportunity": "场地/婚庆采购一对一B2B",
+      "risk": "宗教/社群差异、未成年人、家庭拒酒、公开折扣促销",
+      "prep": "每年以Nepali Panchang、场地日历和国代历史订单核验，不把固定月份当作已确认销量",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["CUL-04", "LAW-01"]
+    },
+    {
+      "window": "旅游旺季（大体3–5月、10–11月）",
+      "consumer_context": "Kathmandu/Pokhara酒店、餐厅、国际游客和户外旅行",
+      "opportunity": "酒店F&B、中文服务、合法成人品类教育",
+      "risk": "高海拔/户外活动与酒精安全；不得宣称保暖、抗高反或提神",
+      "prep": "提前6–8周核验中国入境客流、航班、酒店入住和菜单；户外活动前后不做促饮",
+      "tag": "[INFERRED]",
+      "evidence_ids": ["FEST-04", "CN-01", "CN-02", "PLAT-05"]
+    },
+    {
+      "window": "中国春节/中秋/国庆等中文客群日历",
+      "consumer_context": "在尼华商、居民、使领馆/商协会及成年游客的特定活动",
+      "opportunity": "中文B2B备货和餐饮服务",
+      "risk": "不能把中国节日扩张为尼泊尔大众节日，也不得使用使领馆/政治背书暗示",
+      "prep": "由国代、商会、酒店按当年活动名单确认；仅在合法私域采购沟通中使用",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["CN-01", "CN-02", "CN-05", "LAW-01"]
+    }
+  ],
+  "local_drink_reference": [
+    {
+      "drink": "Aila/Ayla",
+      "category": "Newar传统蒸馏酒",
+      "known_context": "与宴席、仪式、节庆和传统器皿相关",
+      "bridge_to_fenjiu": "可比较小杯服务、谷物蒸馏与待客礼仪",
+      "do_not_say": ["Aila就是尼泊尔白酒", "Fenjiu是更高级的Aila", "可替代宗教/仪式用酒"],
+      "validation": "Newar文化顾问+厨师+本地成年品鉴者复核",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["DRINK-03", "CUL-04"]
+    },
+    {
+      "drink": "Raksi",
+      "category": "常见谷物蒸馏酒统称/类型",
+      "known_context": "家庭和地区配方、原料、酒精度与品质变化大",
+      "bridge_to_fenjiu": "用于解释“蒸馏”和原料差异，而非风味等同",
+      "do_not_say": ["所有Raksi都相同", "Raksi有统一酒精度", "进口酒天然比本地酒安全/高贵"],
+      "validation": "样品化验、产区和制作方访谈",
+      "tag": "[KNOWN]",
+      "evidence_ids": ["DRINK-01", "CUL-04"]
+    },
+    {
+      "drink": "Chhyang/Jand",
+      "category": "非蒸馏谷物发酵饮料",
+      "known_context": "一般比蒸馏烈酒温和，但配方和酒精度会变化",
+      "bridge_to_fenjiu": "仅用于展示谷物发酵文化的多样性",
+      "do_not_say": ["Chhyang是低度白酒", "可用同一饮法或份量替代"],
+      "validation": "地区配方、ABV与饮用方式实测",
+      "tag": "[KNOWN]",
+      "evidence_ids": ["DRINK-01", "DRINK-02"]
+    },
+    {
+      "drink": "Tongba/Tumba",
+      "category": "发酵小米及特定容器/续水饮用体系",
+      "known_context": "常与东部/山地社群及热水续饮方式联系",
+      "bridge_to_fenjiu": "可讲“器皿、节奏和共享时刻不同”，不做直接产品替代",
+      "do_not_say": ["Tongba是鸡尾酒", "与Fenjiu同度数", "适合混装在同一器皿"],
+      "validation": "由相关社群文化顾问复核地区、称呼和服务演示",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["DRINK-01", "DRINK-02"]
+    }
+  ],
+  "food_pairing_candidates": [
+    {
+      "dish": "Momo（具体肉馅/素馅+achar须分开）",
+      "hypothesis": "油脂、肉香和番茄/芝麻achar可能承接清香型烈酒；辣度和酸度也可能放大灼热感。",
+      "test_serve": "Fenjiu 5ml闻香+10ml室温小口；另设1:1冷水稀释对照；同时供水",
+      "obstruction": "高辣、酸、热汤与高ABV叠加可能压过清香；素馅与肉馅不可合并结论",
+      "decision_rule": "至少24名21+、有烈酒经验的本地成人，按馅料/achar分层盲评；接受度、灼热、余味均达预设阈值才保留",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FOOD-01", "CUL-06"]
+    },
+    {
+      "dish": "Sekuwa/本地烤肉",
+      "hypothesis": "炭烤、脂肪与香料可能与谷物香、清香和短小口形成互补。",
+      "test_serve": "10ml室温小杯，对照15–20%ABV稀释serve；不得做shot",
+      "obstruction": "辣椒和高温会增强刺激；不同肉类与香料差异很大；牛肉文化禁忌必须规避",
+      "decision_rule": "按鸡/羊/水牛等合法常见肉类和辣度分格测试，由本地厨师确认菜名与禁忌",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FOOD-01", "CUL-02"]
+    },
+    {
+      "dish": "Newari khaja / samay baji / choila / bara",
+      "hypothesis": "发酵、烟熏、辛香和小份共享餐可能支持工艺对话，但文化角色不可简化。",
+      "test_serve": "5ml闻香+10ml小杯；与Aila仅做分开品鉴和描述性比较，不做优劣排名",
+      "obstruction": "仪式语境、社群所有权、菜品组合和辣度复杂，最易产生文化挪用",
+      "decision_rule": "Newar主导的顾问/厨师共创；任何宗教供奉或神圣符号画面须排除商业使用",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["DRINK-03", "CUL-04", "FOOD-01"]
+    },
+    {
+      "dish": "Thakali khana set",
+      "hypothesis": "多菜、小份、酸辣咸层次可测试烈酒作为餐中微量点缀的可行性。",
+      "test_serve": "10ml室温与1:1冷水对照，明确不与每道菜都配",
+      "obstruction": "achar、咖喱、酸味和主食组合可能让高ABV疲劳；套餐内部差异太大",
+      "decision_rule": "逐道菜记录搭配，不允许用整套餐一个总分得出“适配”结论",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FOOD-01"]
+    },
+    {
+      "dish": "中餐/亚洲餐厅的共享菜",
+      "hypothesis": "品类教育成本较低，但只有清淡冷菜、烤肉、炖肉等具体菜式才能验证。",
+      "test_serve": "按SKU ABV设计5–10ml小杯；每轮最多3款菜，配水和无酒精对照",
+      "obstruction": "“Asian food”过于笼统；重辣、甜酸、海鲜、油炸的反应不同",
+      "decision_rule": "按具体菜谱、厨师、温度和门店复现；不得用中国经验代替尼泊尔顾客实测",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FOOD-02", "CN-01"]
+    },
+    {
+      "dish": "婚宴/酒店banquet菜单",
+      "hypothesis": "多人宴会和礼赠是潜在销量场景，但适配取决于社区、宗教、菜谱与场地。",
+      "test_serve": "只在成年封闭桌进行5–10ml自愿试饮，提供无酒精替代，不劝酒",
+      "obstruction": "未成年人、拒酒家庭、宗教禁忌、驾驶与公众促销风险",
+      "decision_rule": "没有完整菜单、成年分桌、场地酒牌、家庭同意和律师书面许可即不测试",
+      "tag": "[BLOCKED]",
+      "evidence_ids": ["CUL-02", "CUL-04", "LAW-01"]
+    }
+  ],
+  "china_culture_recognition": {
+    "known": [
+      {
+        "tag": "[KNOWN]",
+        "statement": "中国是尼泊尔重要入境客源之一，2024年约10.19万人、占8.88%；2026年1月占比约9.8%。",
+        "evidence_ids": ["CN-01", "CN-02"]
+      },
+      {
+        "tag": "[KNOWN]",
+        "statement": "Kathmandu University等机构存在中文和中国文化教育网络；Pokhara也有中尼龙舟等文化旅游活动。",
+        "evidence_ids": ["CN-05", "CN-06"]
+      },
+      {
+        "tag": "[KNOWN]",
+        "statement": "现有公众调查不能支持“中国受欢迎=中国酒自然受欢迎”；印度在日常文化接近度上常更强。",
+        "evidence_ids": ["CN-03", "CN-04"]
+      }
+    ],
+    "bounded_audiences": [
+      "中国游客与在尼中国居民中的21+自愿饮酒者",
+      "中尼贸易企业、商协会和酒店采购人员",
+      "已有中文/中国文化参与经历且自愿了解品类的成年人",
+      "服务中国游客的持牌酒店、餐厅和旅行接待团队"
+    ],
+    "do_not_assume": [
+      "会中文不等于饮酒或接受白酒",
+      "参与中尼活动不等于接受酒类赞助",
+      "对中国国家/文化持正面态度不等于购买Fenjiu",
+      "中国游客数量不等于可触达销量，必须结合年龄、停留城市、渠道和价格"
+    ],
+    "sensitive_topics_to_avoid": [
+      "主权、边界、西藏、地缘政治立场",
+      "BRI/官方合作背书与商业酒类混用",
+      "大国优越、文明高低、用进口酒贬低本地酒",
+      "使领馆、政府、宗教机构或节庆主办方的暗示性背书",
+      "把山地、高海拔与酒精的保暖/健康效果绑定"
+    ]
+  },
+  "culture_bridge_matrix": [
+    {
+      "local_fact": "尼泊尔待客与共享餐桌的重要性",
+      "chinese_bridge": "中国宴席中的主人待客和共享菜",
+      "fenjiu_expression": "可拒绝、可量化的5–10ml小杯产品教育；不要求干杯见底",
+      "best_scene": "持牌酒店/餐厅闭门B2B品鉴",
+      "risk": "把热情好客变成劝酒或商务压力",
+      "tag": "[INFERRED]",
+      "evidence_ids": ["FOOD-01", "CUL-06", "PLAT-05"]
+    },
+    {
+      "local_fact": "Dashain/Tihar的家庭团聚、礼物与祝福",
+      "chinese_bridge": "春节/中秋的团聚与礼赠",
+      "fenjiu_expression": "只用于B2B季节备货和成年、接受酒类家庭的一对一礼赠研究",
+      "best_scene": "企业采购/私人礼赠，不做公众传播",
+      "risk": "未成年人共场、宗教符号商品化、公众节庆广告",
+      "tag": "[BLOCKED]",
+      "evidence_ids": ["FEST-01", "FEST-02", "LAW-01"]
+    },
+    {
+      "local_fact": "长辈祝福与家族礼序",
+      "chinese_bridge": "尊长和座次礼仪",
+      "fenjiu_expression": "以茶/水/酒自由选择，拒酒不失礼；不把长辈做健康酒代言",
+      "best_scene": "礼仪培训和私域宴会SOP",
+      "risk": "年龄/权力压力、健康暗示",
+      "tag": "[INFERRED]",
+      "evidence_ids": ["FEST-01", "PLAT-05"]
+    },
+    {
+      "local_fact": "Aila/Raksi等谷物蒸馏传统",
+      "chinese_bridge": "中国谷物发酵与蒸馏传统",
+      "fenjiu_expression": "工艺对话：原料、曲/发酵、蒸馏、香气和小杯节奏；明确不是同一种酒",
+      "best_scene": "厨师/调酒师/文化顾问闭门工作坊",
+      "risk": "文化挪用、优劣比较、把传统仪式商品化",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["DRINK-01", "DRINK-03", "CUL-04"]
+    },
+    {
+      "local_fact": "Newari宴席、Thakali餐与momo等多样餐饮",
+      "chinese_bridge": "中国共享餐桌和菜品级配酒",
+      "fenjiu_expression": "按菜谱做盲评，不宣称万能搭配；小杯、慢饮、配水",
+      "best_scene": "餐厅研发厨房和封闭成人品鉴",
+      "risk": "泛化‘尼泊尔菜’、辣度放大酒精刺激",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["FOOD-01", "FOOD-02"]
+    },
+    {
+      "local_fact": "喜马拉雅自然与手工文化具有强国家形象",
+      "chinese_bridge": "山西产区、谷物和传统酿造手艺",
+      "fenjiu_expression": "只讲产地、工艺和人的手艺，不讲高海拔保暖/健康功效",
+      "best_scene": "B2B产品手册和专业培训",
+      "risk": "山地浪漫化、健康宣称、地理优越论",
+      "tag": "[INFERRED]",
+      "evidence_ids": ["FEST-04", "PLAT-05"]
+    },
+    {
+      "local_fact": "中尼旅游和龙舟等共享文化活动",
+      "chinese_bridge": "体育、旅游、青年和城市交流",
+      "fenjiu_expression": "只可作为不带产品露出/导流的文化知识支持；酒类赞助须另行许可",
+      "best_scene": "非酒类文化合作",
+      "risk": "赞助、logo、产品植入或surrogate ad落入禁令",
+      "tag": "[BLOCKED]",
+      "evidence_ids": ["CN-06", "LAW-03"]
+    },
+    {
+      "local_fact": "中尼商务关系和中国游客需求",
+      "chinese_bridge": "中文服务、产品名称和白酒品类教育",
+      "fenjiu_expression": "中文/英文/尼泊尔语三语B2B产品事实页，不作政府背书或社交成功暗示",
+      "best_scene": "酒店采购、贸易公司、企业餐厅",
+      "risk": "把国家关系政治化或把商务成功与饮酒绑定",
+      "tag": "[NEEDS_VERIFY]",
+      "evidence_ids": ["CN-01", "CN-03", "PLAT-05"]
+    }
+  ],
+  "platform_compliance": {
+    "nepal_law_baseline": {
+      "status": "Plan C / public alcohol promotion blocked",
+      "tag": "[BLOCKED]",
+      "reason": "PHSA第45条及2023年监管/最高法院背景支持广泛酒类广告禁令，监测范围明确包含数字、社交、赞助、网红和替代广告。",
+      "evidence_ids": ["LAW-01", "LAW-02", "LAW-03", "LAW-04", "LAW-05"],
+      "minimum_release_documents": [
+        "尼泊尔持牌律师针对每一内容类型和渠道的书面意见",
+        "Advertisement Board/MOHP或主管机关的书面许可/不反对意见（如适用）",
+        "进口商/经销商和场所的有效酒类牌照、样品和活动许可",
+        "平台对Nepal+alcohol+具体账号/广告账户/功能的书面批准"
+      ]
+    },
+    "tiktok": {
+      "operation_status": "[NEEDS_VERIFY] 曾恢复并被报道为已注册运营；上线日仍需网络和账号实测",
+      "organic_brand_posts": "[BLOCKED] 受监管商品推广规则+尼泊尔公众酒类广告禁令；不允许用‘文化/工艺’外衣做surrogate ad",
+      "paid_ads": "[BLOCKED] 当前market-specific alcohol requirements未找到Nepal，且本地禁令未解决",
+      "creator_branded_content": "[BLOCKED] 商业披露不能治愈本地违法；没有Nepal酒类达人合作肯定授权",
+      "live": "[BLOCKED] 不做饮酒展示、促销、联系方式/私信导流或订单收集",
+      "shop_and_links": "[BLOCKED] 不做TikTok Shop、link-in-bio、站外下单、实体地点/联系方式导流",
+      "conditional_requirements_if_approved": [
+        "企业/行业/国家验证和TikTok书面许可",
+        "21+保守受众门槛；镜头演员25+",
+        "清晰ABV、responsible drinking disclaimer、牌照和地域限制",
+        "无未成年人、孕妇、醉酒、极端饮酒、驾驶、挑战、买赠、奖品、社交/性/健康/职业成功暗示",
+        "所有商业关系使用平台披露工具；落地页与线下履约继续年龄核验"
+      ],
+      "evidence_ids": ["PLAT-01", "PLAT-03", "PLAT-05", "PLAT-06", "PLAT-07", "PLAT-08", "PLAT-09", "LAW-03"]
+    },
+    "meta_facebook_instagram_messenger": {
+      "operation_status": "[NEEDS_VERIFY] 平台在2025年短期行业性禁令后被报道恢复；上线日实测",
+      "organic_brand_posts": "[BLOCKED] 即使Meta允许合法企业的部分受限商品内容，尼泊尔公众酒类广告禁令仍优先",
+      "paid_ads": "[BLOCKED] 本轮未找到Nepal酒类广告的明确官方授权；须Meta书面市场确认+本地法律许可",
+      "creator_branded_content": "[BLOCKED] paid partnership label和年龄限制只是必要条件，不足以合法化",
+      "live": "[BLOCKED] 不做酒类展示、促销、抽奖、询价、私信下单或直播饮酒",
+      "messenger_private_sales": "[BLOCKED] 不把Messenger私信当作规避公开广告或年龄/牌照的渠道",
+      "conditional_requirements_if_approved": [
+        "平台适用市场和广告账户的书面确认",
+        "21+保守定向并排除未知年龄；使用paid partnership label",
+        "合法企业/专业账户、牌照、免责声明、地域与年龄门槛",
+        "不面向青少年，不以礼物/折扣/社交成功鼓励饮酒"
+      ],
+      "evidence_ids": ["PLAT-04", "PLAT-10", "PLAT-11", "LAW-01", "LAW-03"]
+    },
+    "youtube_google": {
+      "organic_editorial": "[BLOCKED] 平台内容规则可能允许不鼓励不负责任饮酒的成人编辑内容，但尼泊尔公众酒类品牌传播仍须本地许可",
+      "paid_ads_alcohol_information": "[BLOCKED] 获准地区清单未找到Nepal",
+      "paid_ads_alcohol_sales": "[BLOCKED] 获准地区清单未找到Nepal",
+      "creator_sponsorship": "[BLOCKED] YouTube要求符合Google Ads政策和当地法律；当前两者均未形成可执行授权",
+      "conditional_requirements_if_approved": [
+        "Google/YouTube对Nepal酒类广告或品牌内容的书面批准",
+        "paid promotion disclosure、21+年龄门槛、无未成年人",
+        "不鼓励过量、不展示醉酒/驾驶、不做健康/成功暗示",
+        "视频、标题、描述、缩略图、链接和置顶评论均纳入审查"
+      ],
+      "evidence_ids": ["PLAT-12", "PLAT-13", "PLAT-14", "PLAT-15", "LAW-01"]
+    },
+    "viber": {
+      "operation_status": "[KNOWN] 2025年注册争议期间被报道为已注册运营；不等于广告许可",
+      "business_messages_and_channels": "[BLOCKED] 不得用Viber公开频道、Business Account或群发规避酒类推广禁令",
+      "paid_ads": "[BLOCKED] Viber政策要求酒类广告取得事先书面同意并遵守全面禁令/年龄等本地规则；未取得Nepal许可",
+      "one_to_one_b2b": "[NEEDS_VERIFY] 仅可考虑真正的既有B2B关系、非消费者招徕的信息沟通；须律师确认消息内容、收件人同意和记录保存",
+      "conditional_requirements_if_approved": [
+        "Viber事先书面同意",
+        "尼泊尔本地法律许可、牌照和年龄控制",
+        "不得暗示社交/性/职业/智力/健康收益，不展示极端饮酒或驾驶",
+        "禁止垃圾群发和未经同意的联系人名单"
+      ],
+      "evidence_ids": ["PLAT-03", "PLAT-16", "LAW-01"]
+    }
+  },
+  "compliance_gate": {
+    "decision_tree": [
+      {
+        "step": 1,
+        "question": "内容是否直接或间接识别Fenjiu/汾酒、瓶型、商标、包装、购买地点、价格或经销商？",
+        "yes": "进入酒类商业内容审查；没有本地书面许可即BLOCKED",
+        "no": "进入第2步"
+      },
+      {
+        "step": 2,
+        "question": "内容是否由品牌资助、置换、赠品、联盟链接、场所合作或达人商业关系驱动？",
+        "yes": "按广告/品牌合作处理；披露只是必要条件，没有许可仍BLOCKED",
+        "no": "进入第3步"
+      },
+      {
+        "step": 3,
+        "question": "是否含酒类、饮用画面、宴席劝酒、品牌色/口号暗示、导流或联系购买？",
+        "yes": "可能构成promotion或surrogate ad；交律师和主管机关书面审查",
+        "no": "可作为纯文化/旅游/教育内容继续，但不得承担品牌替代曝光任务"
+      },
+      {
+        "step": 4,
+        "question": "平台是否明确书面批准Nepal市场、alcohol行业、账号、广告账户和功能？",
+        "yes": "仍需通过尼泊尔法律、年龄、牌照、内容和履约审查",
+        "no": "BLOCKED"
+      },
+      {
+        "step": 5,
+        "question": "是否存在未成年人、孕妇、驾驶、醉酒、健康/成功暗示、挑战、抽奖、折扣刺激或宗教敏感？",
+        "yes": "禁止发布/执行，不通过修改免责声明补救",
+        "no": "完成法务、平台、国代和场所四方签字后才可排期"
+      }
+    ],
+    "universal_no_go": [
+      "surrogate advertising：用茶、文化、山西、宴席或中尼友谊替代展示酒品牌并导流",
+      "暗语、谐音、遮瓶、去logo、品牌色或评论区/私信引导以规避审核",
+      "KOL/KOC、员工、场所或消费者未披露商业关系的软广",
+      "直播喝酒、拼酒、shots、干杯挑战、酒量/男子气概/成功叙事",
+      "未成年人或年轻化校园、动画、玩具、游戏化创意",
+      "买一赠一、抽奖、免费酒、限时折扣、奖品刺激过量消费",
+      "健康、药用、保暖、抗高反、助眠、养生、减压、提神、增强社交/性/职业能力",
+      "驾驶、骑行、登山、滑翔伞、船只、机械或高海拔户外活动前后促饮",
+      "宗教仪式、神祇、tika、长辈祝福或民族身份作为促饮背书",
+      "公开价格、购买链接、电话号码、二维码、门店定位、私信下单或Shop",
+      "把竞争品牌或本地传统酒贬低为低端、不安全或落后"
+    ],
+    "release_checklist": [
+      "法律意见编号、日期、具体渠道/内容/地区/主体/有效期",
+      "主管机关许可或不反对文件",
+      "平台工单/销售邮件，明确Nepal+alcohol+账号+功能",
+      "进口商、经销商、广告主、场所、活动、样品和销售牌照",
+      "21+年龄逻辑、演员25+、地域限制、落地页和线下核验",
+      "英文/尼泊尔语免责声明和ABV，法务核定文本",
+      "素材逐帧、标题、字幕、音乐、评论、链接、达人合同、直播脚本全量审查",
+      "撤稿、投诉、事故、未成年人误触达和平台封禁的响应SOP"
+    ]
+  },
+  "conditional_plans": {
+    "plan_A": {
+      "condition": "尼泊尔律师/主管机关书面确认允许具体类型的公众酒类organic+paid传播，且平台书面开放Nepal酒类库存",
+      "tag": "[BLOCKED]",
+      "actions": [
+        "先以小预算、21+、Kathmandu/Pokhara合法场所做14天受控测试",
+        "只用产品事实、工艺和菜品级配餐；不使用节庆宗教符号、促饮或折扣",
+        "演员25+，明确ABV与responsible drinking，所有落地页同样年龄门控",
+        "以合规通过率、成年有效触达、B2B询盘和封闭品鉴预约为指标，不以播放量或饮酒量为目标"
+      ],
+      "switch_to": "任一许可撤回、平台拒审、未成年人触达或主管机关异议即立即切回Plan C"
+    },
+    "plan_B": {
+      "condition": "书面确认允许品牌自有organic内容，但paid、creator或commerce不允许",
+      "tag": "[BLOCKED]",
+      "actions": [
+        "仅发布获准自有账号内容，不boost、不投放、不找达人、不直播、不导流购买",
+        "内容以产品事实和责任饮用为主，逐条预审；评论区不回复价格、门店或私信下单",
+        "用B2B官网/资料室承接持牌采购者，但是否可公开访问仍需法律确认",
+        "平台规则、法律许可和年龄门控每月复核"
+      ],
+      "switch_to": "无法取得organic肯定许可、监管范围含品牌自有内容或出现投诉，即切回Plan C"
+    },
+    "plan_C": {
+      "condition": "当前基线：公众酒类广告/促销/赞助存在广泛禁令，且平台未对Nepal酒类商业功能给出肯定授权",
+      "tag": "[KNOWN]",
+      "actions": [
+        "停止面向消费者的品牌社媒、广告、达人、直播、赞助、活动logo、价格、折扣、链接、Shop和私信下单",
+        "把90天工作重心转为持牌进口商/经销商/酒店/餐厅的一对一B2B尽调、牌照核验、SKU/价格/库存/销量事实收集",
+        "只在律师确认的非公开专业范围内做厨师/调酒师/采购人员培训和小样品鉴；不形成可转发消费者素材",
+        "建立三语B2B事实资料包、服务SOP、配餐盲评表、责任饮用与年龄核验流程，但不公开发布",
+        "开展不含品牌、产品、瓶型、商标、导流或商业暗示的独立文化研究；严禁把它作为surrogate ad",
+        "每30天由本地律师、主管机关联络人和平台销售共同复核是否具备从C切换到B/A的书面条件"
+      ],
+      "current_recommendation": "立即采用"
+    }
+  },
+  "partner_confirmation_questions": [
+    {
+      "id": "Q-01",
+      "priority": "P0",
+      "question": "请提供国代、进口商、批发商、零售商、酒店/餐厅及活动场地的全部有效酒类牌照、发证机关、有效期和许可范围。",
+      "why": "决定样品、品鉴、供货、活动和B2B培训是否有合法主体。"
+    },
+    {
+      "id": "Q-02",
+      "priority": "P0",
+      "question": "请由尼泊尔持牌律师逐项书面回答：品牌自有社媒、付费广告、KOL、直播、赞助、产品植入、B2B官网、闭门品鉴、企业礼赠、价目表、私信/电话询盘分别是否允许？",
+      "why": "不能用一份泛化意见覆盖不同传播和交易行为。"
+    },
+    {
+      "id": "Q-03",
+      "priority": "P0",
+      "question": "请取得Advertisement Board/MOHP等主管机关对拟执行渠道和样片/文案的书面许可或不反对意见，并说明有效期。",
+      "why": "最高法院/监管背景显示实际执行风险高。"
+    },
+    {
+      "id": "Q-04",
+      "priority": "P0",
+      "question": "请由TikTok、Meta、Google/YouTube、Viber分别书面确认Nepal市场的alcohol organic、paid、creator、LIVE、Shop/links、Business Messaging功能是否开放。",
+      "why": "平台能访问不等于酒类商业功能获准。"
+    },
+    {
+      "id": "Q-05",
+      "priority": "P0",
+      "question": "尼泊尔现行法定最低购买/饮用/销售/配送年龄究竟是18还是21？2017政策的21岁门槛是否已通过实施法规或其他法律生效？",
+      "why": "官方Liquor Act文本与政策资料存在冲突，必须保留。"
+    },
+    {
+      "id": "Q-06",
+      "priority": "P0",
+      "question": "现有合作SKU、ABV、容量、CIF/完税价、批发/零售建议价、条码、英文/尼泊尔语标签、健康警示、批次和库存分别是什么？",
+      "why": "没有SKU事实无法做配餐、份量、价格、标签和内容合规。"
+    },
+    {
+      "id": "Q-07",
+      "priority": "P0",
+      "question": "过去12–24个月按城市、渠道、门店、SKU、月份、客户类型的sell-in、sell-out、退货、断货和应收数据是什么？",
+      "why": "验证季节、客群和场景，避免用文化常识替代销量。"
+    },
+    {
+      "id": "Q-08",
+      "priority": "P1",
+      "question": "现有消费者/采购者实际把Fenjiu与哪些酒类比较？认知来源、首次饮用障碍、可接受份量、温度、稀释和配餐是什么？",
+      "why": "验证白酒品类认知与高ABV障碍。"
+    },
+    {
+      "id": "Q-09",
+      "priority": "P1",
+      "question": "Kathmandu、Pokhara及其他城市中，哪些持牌酒店、餐厅、宴会厅、中国/亚洲餐厅愿意提供采购、菜单和封闭盲评数据？",
+      "why": "把场景从推测转为可执行名单。"
+    },
+    {
+      "id": "Q-10",
+      "priority": "P1",
+      "question": "本地文化顾问是否覆盖Newar、Janajati、Brahmin/Chhetri、穆斯林等不同规范，并能审核Aila/Raksi、婚礼、Dashain/Tihar的文字与画面？",
+      "why": "避免单一顾问代表全国和文化挪用。"
+    },
+    {
+      "id": "Q-11",
+      "priority": "P1",
+      "question": "中国游客/居民/企业客群的数量、城市、采购角色、消费场所、中文服务需求和实际购买记录是什么？",
+      "why": "游客统计不能直接转化为Fenjiu需求。"
+    },
+    {
+      "id": "Q-12",
+      "priority": "P1",
+      "question": "是否有司机、孕妇、药物相互作用、醉酒者、拒酒者、年龄核验、吐酒、饮水、食物和事故响应SOP？",
+      "why": "封闭品鉴也必须有责任饮用与安全门槛。"
+    },
+    {
+      "id": "Q-13",
+      "priority": "P2",
+      "question": "每年Dashain、Tihar、Nepali New Year、Mangsir/Jan–Mar婚礼季和旅游旺季的历史订单、客流、关店、物流、信用周期如何变化？",
+      "why": "节庆日期和销量不能凭常识固定化。"
+    },
+    {
+      "id": "Q-14",
+      "priority": "P2",
+      "question": "是否存在任何政府、使领馆、商会、旅游局或节庆活动合作？授权文件是否明确允许酒类品牌、logo、产品和传播？",
+      "why": "一般合作关系不能被误用为酒类商业背书。"
+    }
+  ],
+  "blocked_items": [
+    {
+      "item": "尼泊尔公众酒类广告、品牌自有社媒、赞助和达人合作的精确合法边界",
+      "status": "[BLOCKED]",
+      "blocker": "缺本地持牌律师+主管机关针对具体内容/渠道的书面意见",
+      "safe_next_step": "按Plan C停发消费者内容，提交逐项法律问题清单"
+    },
+    {
+      "item": "TikTok Nepal酒类organic/paid/creator/LIVE/Shop",
+      "status": "[BLOCKED]",
+      "blocker": "公开市场清单未找到Nepal，且本地禁令未解决",
+      "safe_next_step": "取得TikTok销售/政策团队书面工单"
+    },
+    {
+      "item": "Meta Nepal酒类广告与品牌合作",
+      "status": "[BLOCKED]",
+      "blocker": "无Nepal肯定授权；平台年龄/披露规则不能覆盖本地法律",
+      "safe_next_step": "Meta书面市场确认+律师意见"
+    },
+    {
+      "item": "Google/YouTube Nepal酒类付费广告",
+      "status": "[BLOCKED]",
+      "blocker": "当前alcohol information/sale approved locations未找到Nepal",
+      "safe_next_step": "不投放；仅在书面清单更新后重审"
+    },
+    {
+      "item": "Viber公开频道/广告/群发",
+      "status": "[BLOCKED]",
+      "blocker": "Viber要求事先书面同意并服从本地全面禁令",
+      "safe_next_step": "只研究合规的一对一既有B2B沟通，禁止消费者群发"
+    },
+    {
+      "item": "18岁与21岁的现行法定年龄冲突",
+      "status": "[NEEDS_VERIFY]",
+      "blocker": "官方Liquor Act第4A条为18；2017政策提出21但实施状态不清",
+      "safe_next_step": "运营先采用21+，律师确认后对外表述"
+    },
+    {
+      "item": "具体Fenjiu SKU、ABV、标签、价格和库存",
+      "status": "[BLOCKED]",
+      "blocker": "本工作流未获得合作方商业事实",
+      "safe_next_step": "向国代收集SKU/标签/价格/销量原始文件"
+    },
+    {
+      "item": "菜品搭配结论",
+      "status": "[NEEDS_VERIFY]",
+      "blocker": "缺SKU、厨师、菜谱、盲评和本地成人数据",
+      "safe_next_step": "完成法务许可后执行小样盲评；此前只保留假设"
+    },
+    {
+      "item": "婚宴、节庆、旅游季销量和采购量",
+      "status": "[NEEDS_VERIFY]",
+      "blocker": "缺国代历史订单、场地和支付数据；节日/吉日逐年变化",
+      "safe_next_step": "按年度尼历+客户订单做回溯，不发布静态结论"
+    },
+    {
+      "item": "中国文化认知转化为Fenjiu购买",
+      "status": "[NEEDS_VERIFY]",
+      "blocker": "现有资料只有旅游/软实力/教育证据，没有品牌漏斗数据",
+      "safe_next_step": "合法闭门访谈和采购数据验证，不把国家好感替代购买意向"
+    }
+  ],
+  "research_gaps": [
+    "获取尼泊尔最高法院案件079-WO-0882的完整命令/后续终局裁判及权威英文译本。",
+    "获取Advertisement Regulation Act/Rules及Advertisement Board关于酒类、数字、赞助、KOL、surrogate ad的最新完整通告。",
+    "确认2017 Alcohol Regulation and Control Policy的法律位阶、实施规则与21岁门槛现状。",
+    "取得TikTok、Meta、Google/YouTube、Viber对Nepal酒类行业的账户级书面答复，而非仅依赖公开帮助页。",
+    "获得国代SKU、牌照、标签、价格、库存、销量、客户和应收原始数据。",
+    "由Nepali/Newar等多元本地顾问审核节庆、传统酒、婚礼、宗教和图像规范。",
+    "依法完成菜品级盲评、ABV份量、接受度、灼热感和复购意愿测试。",
+    "建立Kathmandu/Pokhara持牌酒店餐厅、宴会和中国/亚洲餐厅的可验证采购名单。"
+  ]
+}

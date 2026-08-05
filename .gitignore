@@ -1,0 +1,42 @@
+# 本地密钥配置，禁止提交
+.env
+.env.*
+!.env.example
+.env.example
+
+# 协作系统：本地状态、系统文件和可恢复的缓存
+.omx/
+.DS_Store
+._*
+node_modules
+__pycache__/
+*.py[cod]
+*.cache-*
+
+# 生成、渲染、质量检查与媒体产物（可由脚本或本地资料恢复）
+output/
+outputs/
+qa/
+_qa*/
+_qa*
+交付物/
+*_render*/
+*_contact*/
+*.mp4
+*.mov
+*.wav
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.pdf
+
+# 同步包 ZIP 保留在本机交接；最新可读目录受版本控制
+dist/*.zip
+
+# 线索库包含公开联系方式，仍不进入公共仓库或同步包
+research_channels.json
+
+# 文件名本身提示可能含凭据的本地说明
+如何填写阿里API_Key.txt

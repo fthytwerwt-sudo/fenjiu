@@ -1,0 +1,711 @@
+{
+  "meta": {
+    "title": "汾酒尼泊尔90天运营系统与内容设计研究稿",
+    "scope": "B2B从发现到补货SOP、经销商90天试销、评分模型、12周计划、AI与人工SOP、风险矩阵、B2C反馈、短视频、商务外联与内容日历",
+    "generated_on": "2026-07-13",
+    "language": "zh-CN",
+    "status": "structured_research_input_for_final_docx",
+    "not_final_legal_advice": true,
+    "commercial_data_state": "NEEDS_VERIFY：SKU、价格、库存、利润、样品、预算、配送SLA未提供时，不计算最终商业吸引力与ROI",
+    "localization_rule": "所有Nepali文本均为NEEDS_VERIFY草稿，必须经尼泊尔语母语者和当地合规负责人审核后才能公开或正式外联",
+    "platform_rule": "社交内容和广告先过合规闸门；本文件不把任何平台默认判定为可投放酒类广告"
+  },
+  "status_legend": {
+    "KNOWN": "已由来源或内部确认",
+    "INFERRED": "基于证据的执行推论",
+    "COMPUTED": "按本文件公式计算",
+    "NEEDS_VERIFY": "需要合作方、平台、当地专业人士或真实测试确认",
+    "BLOCKED": "未确认前不得执行对应动作"
+  },
+  "evidence_sources": [
+    {
+      "id": "SRC-EX-01",
+      "level": "B",
+      "type": "digital_market_report_based_on_platform_ad_tools",
+      "title": "Digital 2025: Nepal",
+      "url": "https://datareportal.com/reports/digital-2025-nepal",
+      "published_or_updated": "2025",
+      "accessed": "2026-07-13",
+      "claim": "2025年初，Meta广告资源显示Messenger在尼泊尔潜在触达约1090万；LinkedIn广告资源显示约200万member。前者是广告触达估计，后者是注册成员，不能等同月活或互相直接比较。",
+      "confidence": "medium",
+      "use": "证明Messenger适合本地商户首触达、LinkedIn适合窄而精准的B2B决策人搜索；不作为成交率预测"
+    },
+    {
+      "id": "SRC-EX-02",
+      "level": "A",
+      "type": "platform_official",
+      "title": "Business accounts on Viber",
+      "url": "https://help.viber.com/hc/en-us/articles/9755182032669-Business-accounts-on-Viber",
+      "published_or_updated": "current_page_accessed_2026-07-13",
+      "accessed": "2026-07-13",
+      "claim": "Viber官方区分business account/business inbox；用户可屏蔽business，且business message面向已订阅、曾获得服务或曾互动的用户。",
+      "confidence": "high",
+      "use": "Viber不用于冷名单群发；只用于已建立关系、用户同意或服务跟进"
+    },
+    {
+      "id": "SRC-EX-03",
+      "level": "A",
+      "type": "platform_official",
+      "title": "Viber Business Messages: Key benefits and examples",
+      "url": "https://www.forbusiness.viber.com/en/blog/post/what-are-viber-business-messages/",
+      "published_or_updated": "2025-05-01",
+      "accessed": "2026-07-13",
+      "claim": "Viber Business Messages需verified Business Account，并面向opt-in用户；官方建议通过approved messaging partner开通。",
+      "confidence": "high",
+      "use": "把Viber定位为许可后的跟进、预约、售后和反馈通道"
+    },
+    {
+      "id": "SRC-EX-04",
+      "level": "A",
+      "type": "platform_official",
+      "title": "Sales Tool | LinkedIn Sales Navigator",
+      "url": "https://business.linkedin.com/en-us/sales-solutions/sales-navigator",
+      "published_or_updated": "current_page_accessed_2026-07-13",
+      "accessed": "2026-07-13",
+      "claim": "LinkedIn官方将Sales Navigator定位为按职能、资历、公司等筛选决策人的B2B工具，并支持InMail、保存线索和提醒。",
+      "confidence": "high",
+      "use": "酒店采购、F&B经理、企业采购、经销商负责人等角色发现和背景验证"
+    },
+    {
+      "id": "SRC-EX-05",
+      "level": "A",
+      "type": "platform_official",
+      "title": "Sales Navigator Advanced Search Filters",
+      "url": "https://business.linkedin.com/sell/sales-navigator/advanced-search-filters",
+      "published_or_updated": "current_page_accessed_2026-07-13",
+      "accessed": "2026-07-13",
+      "claim": "官方页面列明可按industry、company size、role、recent job changes、mutual connections等精细筛选。",
+      "confidence": "high",
+      "use": "支持职位词表、账户搜索和warm introduction优先级"
+    },
+    {
+      "id": "SRC-EX-06",
+      "level": "A",
+      "type": "platform_official",
+      "title": "Video play metrics",
+      "url": "https://ads.tiktok.com/help/article/video-play",
+      "published_or_updated": "2025-11",
+      "accessed": "2026-07-13",
+      "claim": "TikTok官方定义2秒、6秒、25/50/75/100%播放和average play time；6-second focused view还可能包含前6秒互动，不能与纯6秒观看混为一谈。",
+      "confidence": "high",
+      "use": "统一内容看板口径，避免把focused view误写成纯观看"
+    },
+    {
+      "id": "SRC-EX-07",
+      "level": "A",
+      "type": "platform_official",
+      "title": "See insights for your Page's videos",
+      "url": "https://www.facebook.com/help/1443647412620316/",
+      "published_or_updated": "current_page_accessed_2026-07-13",
+      "accessed": "2026-07-13",
+      "claim": "Meta官方将Page视频3-second video views定义为至少播放3秒，短于3秒时为播放到97%。",
+      "confidence": "high",
+      "use": "Meta内容3秒指标定义；不得与TikTok的2秒或6秒指标直接横比"
+    }
+  ],
+  "b2c_feedback_form": {
+    "purpose": "记录真实品鉴和购买阻力，不收集不必要敏感个人信息",
+    "consent_text_en": "This anonymous form records your tasting experience for product improvement. Do not provide your name, phone number, ID, religion, ethnicity, health information, or exact address. Participation is voluntary.",
+    "consent_text_ne_draft": "NEEDS_VERIFY｜待母语者审核：यो नामरहित फाराम उत्पादन सुधारका लागि तपाईंको स्वाद अनुभव टिपोट गर्न प्रयोग हुन्छ। कृपया नाम, फोन नम्बर, परिचयपत्र, धर्म, जातीयता, स्वास्थ्यसम्बन्धी जानकारी वा ठेगाना नदिनुहोस्। सहभागिता स्वैच्छिक हो।",
+    "eligibility": ["确认达到当地合法饮酒年龄｜NEEDS_VERIFY具体年龄和验证方式", "非驾驶前/工作危险场景", "自愿参与", "一次品鉴设置样品上限｜NEEDS_VERIFY"],
+    "fields": [
+      {"id": "F01", "label": "年龄范围", "type": "single_choice", "options": ["当地合法年龄-24", "25-34", "35-44", "45-54", "55+", "不愿回答"], "required": true},
+      {"id": "F02", "label": "城市", "type": "single_choice", "options": ["Kathmandu", "Lalitpur", "Bhaktapur", "Pokhara", "Bharatpur/Chitwan", "Other city", "不愿回答"], "required": true},
+      {"id": "F03", "label": "本次场景", "type": "multi_choice", "options": ["家庭聚餐", "朋友聚会", "商务宴请", "礼赠", "婚礼/宴会", "酒店餐饮", "酒吧", "中餐/亚洲餐", "品鉴活动", "其他"], "required": true},
+      {"id": "F04", "label": "平时喝什么", "type": "multi_choice", "options": ["Whisky", "Vodka", "Rum", "Wine", "Beer", "Local spirits", "Baijiu", "通常不喝", "其他"], "required": true},
+      {"id": "F05", "label": "品鉴前对白酒认知", "type": "single_choice", "options": ["从未听说", "听说过未喝过", "喝过1-2次", "经常喝"], "required": true},
+      {"id": "F06", "label": "香气感受", "type": "scale_1_5_plus_text", "anchors": {"1": "不喜欢", "3": "一般", "5": "很喜欢"}, "required": true},
+      {"id": "F07", "label": "入口刺激度", "type": "scale_1_5", "anchors": {"1": "很柔和", "3": "可接受", "5": "过强"}, "required": true},
+      {"id": "F08", "label": "回味感受", "type": "scale_1_5_plus_text", "anchors": {"1": "不喜欢", "3": "一般", "5": "很喜欢"}, "required": true},
+      {"id": "F09", "label": "再次饮用意愿", "type": "single_choice", "options": ["愿意", "可能", "不确定", "不愿意"], "required": true},
+      {"id": "F10", "label": "可接受场景", "type": "multi_choice", "options": ["与食物搭配", "礼赠", "商务宴请", "朋友分享", "家庭节庆", "调酒", "暂时没有"], "required": true},
+      {"id": "F11", "label": "可接受价格区间", "type": "single_choice", "options": ["由国代按真实SKU设置区间A", "区间B", "区间C", "高于区间C", "无法判断"], "required": true, "note": "BLOCKED：价格区间须填入真实零售价，不能编造"},
+      {"id": "F12", "label": "偏好饮用方式", "type": "multi_choice", "options": ["纯饮", "小杯慢饮", "加水", "加冰", "调酒", "无法判断"], "required": true},
+      {"id": "F13", "label": "搭配食物", "type": "single_choice_plus_text", "options": ["Momo", "Sekuwa", "Newari food", "Thakali food", "Chinese food", "Bar snack", "未搭配", "其他"], "required": true},
+      {"id": "F14", "label": "礼赠适合度", "type": "scale_1_5", "required": true},
+      {"id": "F15", "label": "推荐意愿", "type": "scale_0_10", "required": true},
+      {"id": "F16", "label": "最大购买阻力", "type": "single_choice_plus_text", "options": ["不知道是什么", "酒精度/刺激", "香气", "价格", "包装", "不知道哪里买", "不会喝", "更熟悉其他品类", "其他"], "required": true},
+      {"id": "F17", "label": "最喜欢的一个点", "type": "short_text", "required": false},
+      {"id": "F18", "label": "终端/活动编号", "type": "coded_id", "required": true, "note": "不记录个人身份；用于归因"},
+      {"id": "F19", "label": "SKU批次编号", "type": "coded_id", "required": true},
+      {"id": "F20", "label": "是否实际购买", "type": "single_choice", "options": ["现场购买", "计划7天内购买", "未购买"], "required": true}
+    ],
+    "derived_metrics": ["再饮意愿率=(愿意+可能)/有效样本", "强刺激率=F07选择4或5/有效样本", "场景匹配Top3", "购买转化率=现场购买/有效样本", "7天意向跟踪仅做匿名终端聚合", "NPS仅在样本>=30时方向性报告"],
+    "data_quality": ["同一场次同一设备防重复", "缺关键字段不进统计", "样品、赠品、购买分开", "不把朋友/员工反馈与真实消费者混合", "样本<30不输出总体市场结论"]
+  },
+  "short_video_topics": [
+    {"id": "T01", "pillar": "产品教育", "title": "Fenjiu到底是什么？20秒品类解释", "hook": "It is not wine, and it is not whisky.", "sales_scene": "门店首次认知", "risk": "不做优越性宣称"},
+    {"id": "T02", "pillar": "产品教育", "title": "第一次喝白酒，先闻还是先喝？", "hook": "Your first sip should begin before the glass reaches your lips.", "sales_scene": "品鉴", "risk": "不鼓励多饮"},
+    {"id": "T03", "pillar": "产品教育", "title": "为什么用小杯慢饮", "hook": "A smaller glass changes the whole first experience.", "sales_scene": "店员推荐", "risk": "责任饮酒提示"},
+    {"id": "T04", "pillar": "品类比较", "title": "Baijiu、whisky、vodka怎么向新手解释", "hook": "Three spirits, three different starting points.", "sales_scene": "消费者异议", "risk": "不贬低竞品、不做未经证实香气结论"},
+    {"id": "T05", "pillar": "食物搭配", "title": "Momo搭配候选盲测", "hook": "Can one small sip work with momo? We tested, not guessed.", "sales_scene": "餐厅", "risk": "必须真实品鉴，结论标样本"},
+    {"id": "T06", "pillar": "食物搭配", "title": "Sekuwa与清香型白酒候选测试", "hook": "Smoke, spice, and one unfamiliar spirit.", "sales_scene": "烧烤/餐厅", "risk": "必须真实品鉴"},
+    {"id": "T07", "pillar": "食物搭配", "title": "Newari菜桌上的三种搭配反馈", "hook": "We asked the table, not the brand team.", "sales_scene": "高端尼泊尔餐厅", "risk": "文化与食物称谓母语审核"},
+    {"id": "T08", "pillar": "食物搭配", "title": "Thakali餐该不该搭？", "hook": "Sometimes the best answer is: test it first.", "sales_scene": "餐饮品鉴", "risk": "不预设适配"},
+    {"id": "T09", "pillar": "食物搭配", "title": "中餐老板如何给尼泊尔客人解释Fenjiu", "hook": "One sentence can remove the fear of the first sip.", "sales_scene": "中餐厅", "risk": "真实老板授权"},
+    {"id": "T10", "pillar": "食物搭配", "title": "纯饮、加水、加冰、调酒四格测试", "hook": "There is no single first-sip rule for every guest.", "sales_scene": "酒吧/品鉴", "risk": "SKU适配与做法需真实验证"},
+    {"id": "T11", "pillar": "当地生活", "title": "朋友聚餐：一瓶如何分享而不豪饮", "hook": "Sharing does not have to mean drinking fast.", "sales_scene": "朋友聚会", "risk": "不出现干杯见底"},
+    {"id": "T12", "pillar": "当地生活", "title": "家庭节庆礼赠：先问对方是否饮酒", "hook": "A respectful gift starts with one question.", "sales_scene": "节庆礼赠", "risk": "宗教/家庭边界审核"},
+    {"id": "T13", "pillar": "当地生活", "title": "商务宴请的第一杯怎么介绍", "hook": "Do not start with 6,000 years. Start with the guest.", "sales_scene": "商务宴请", "risk": "不把饮酒与成功绑定"},
+    {"id": "T14", "pillar": "当地生活", "title": "婚礼采购前的五个问题", "hook": "Before choosing a wedding spirit, ask who is actually drinking.", "sales_scene": "婚宴", "risk": "年龄、宗教、场所合规"},
+    {"id": "T15", "pillar": "当地生活", "title": "酒店客人第一次问Fenjiu，服务员怎么答", "hook": "Twenty seconds. Four facts. No lecture.", "sales_scene": "酒店餐饮", "risk": "不作健康或高端身份暗示"},
+    {"id": "T16", "pillar": "文化桥接", "title": "中尼待客：共同点是尊重，不是强劝酒", "hook": "Hospitality should never remove a guest's choice.", "sales_scene": "宴请/文化", "risk": "避免文化泛化"},
+    {"id": "T17", "pillar": "文化桥接", "title": "小杯分享：两种餐桌礼仪的温和连接", "hook": "A small cup can carry a big gesture.", "sales_scene": "礼赠/宴请", "risk": "需当地文化顾问复核"},
+    {"id": "T18", "pillar": "文化桥接", "title": "从山地与自然讲清香，不讲神秘东方", "hook": "Less mystery. More place, craft, and aroma.", "sales_scene": "品牌认知", "risk": "避免把山地文化强行等同"},
+    {"id": "T19", "pillar": "文化桥接", "title": "中国来源如何只占内容的最后5秒", "hook": "First the Nepal table, then the origin story.", "sales_scene": "内容方法", "risk": "不要政治化"},
+    {"id": "T20", "pillar": "文化桥接", "title": "礼物不是越贵越尊重：场景比价格重要", "hook": "The right gift begins with the relationship.", "sales_scene": "企业礼赠", "risk": "价格待确认"},
+    {"id": "T21", "pillar": "真实人物", "title": "厨师的第一口：先描述，不打分", "hook": "We asked a chef for words, not praise.", "sales_scene": "餐厅背书", "risk": "真实自愿反馈，不预写好评"},
+    {"id": "T22", "pillar": "真实人物", "title": "调酒师的15毫升实验", "hook": "What can 15 ml change in a familiar serve?", "sales_scene": "酒吧", "risk": "配方与标准杯NEEDS_VERIFY"},
+    {"id": "T23", "pillar": "真实人物", "title": "酒店F&B经理看重什么", "hook": "A new bottle needs more than a story to earn menu space.", "sales_scene": "酒店采购", "risk": "不得泄露商业信息"},
+    {"id": "T24", "pillar": "真实人物", "title": "消费者第一口三词反馈", "hook": "Three words. No brand briefing.", "sales_scene": "真实反馈", "risk": "成年人、授权、不过度饮用"},
+    {"id": "T25", "pillar": "真实人物", "title": "门店老板为何愿意做90天试销", "hook": "Not exclusivity. Evidence first.", "sales_scene": "B2B招募", "risk": "商业条款须真实"},
+    {"id": "T26", "pillar": "工艺与品牌", "title": "瓶身三处信息怎么读", "hook": "Before tasting, read these three details.", "sales_scene": "门店教育", "risk": "酒精度/SKU以实物为准"},
+    {"id": "T27", "pillar": "工艺与品牌", "title": "清香型是什么：只说可验证的感官词", "hook": "Aroma first, adjectives second.", "sales_scene": "产品教育", "risk": "感官词须SKU实测"},
+    {"id": "T28", "pillar": "购买渠道", "title": "在哪里可以合规品鉴", "hook": "Curious? Start at a licensed venue.", "sales_scene": "到店转化", "risk": "仅在公开CTA获批后发布"},
+    {"id": "T29", "pillar": "购买渠道", "title": "本周新增终端地图", "hook": "Three verified places, one clear route.", "sales_scene": "门店查询", "risk": "库存、地址、营业时间当天核验"},
+    {"id": "T30", "pillar": "购买渠道", "title": "预约企业品鉴需要准备什么", "hook": "A useful tasting starts with the guest list, not the bottle count.", "sales_scene": "企业品鉴", "risk": "只面向成年人并经场地/资质确认"}
+  ],
+  "shoot_ready_scripts": [
+    {
+      "id": "S01",
+      "topic_id": "T01",
+      "title": "Fenjiu是什么：20秒新手版",
+      "duration_seconds": 25,
+      "hook_first_3s": "It is not wine. It is not whisky. So what is Fenjiu?",
+      "actors": "1名25+成年本地主持人；年龄与授权留档",
+      "scene": "持牌餐厅安静餐桌或中性工作台",
+      "props": ["已核准SKU实瓶", "10-15ml小杯，仅作展示", "grain/ingredient visual仅在品牌资料证实后使用"],
+      "shots": [
+        {"sec": "0-3", "visual": "主持人将酒杯置于三张品类卡之间", "line_en": "It is not wine. It is not whisky. So what is Fenjiu?"},
+        {"sec": "3-8", "visual": "瓶身与Fenjiu/Baijiu字卡", "line_en": "Fenjiu is a Chinese baijiu, a grain spirit with its own aroma and drinking tradition."},
+        {"sec": "8-15", "visual": "小杯、闻香动作，不吞咽", "line_en": "For a first taste, start small: look, smell, then take your time."},
+        {"sec": "15-21", "visual": "与whisky/vodka品类卡并列，不打高低", "line_en": "Do not expect whisky or vodka. Learn it as a different spirit."},
+        {"sec": "21-25", "visual": "合规品鉴场所占位卡", "line_en": "Taste only where it is legal, verified, and intended for adults."}
+      ],
+      "subtitle_en": ["It is not wine. It is not whisky. So what is Fenjiu?", "Fenjiu is a Chinese baijiu, a grain spirit with its own aroma and drinking tradition.", "Start small: look, smell, then take your time.", "Learn it as a different spirit.", "For adults, at a legal and verified venue."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["यो वाइन होइन। यो व्हिस्की पनि होइन। त्यसो भए फेन्जिउ के हो?", "फेन्जिउ चीनको बाइजिउ हो—अन्नबाट बनाइने, आफ्नै सुगन्ध र पिउने परम्परा भएको मदिरा।", "पहिलो स्वाद सानोबाट सुरु गर्नुहोस्: हेर्नुहोस्, सुँघ्नुहोस् र बिस्तारै अनुभव गर्नुहोस्।", "यसलाई व्हिस्की वा भोड्का जस्तो नठान्नुहोस्; फरक स्पिरिटका रूपमा बुझ्नुहोस्।", "कानुनी उमेर पुगेका वयस्कका लागि, अनुमति प्राप्त स्थानमा मात्र।"]},
+      "caption_en": "New to baijiu? Begin with the category, a small glass, and no pressure to drink. Venue and product details must be verified before publishing.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：बाइजिउ नयाँ हो? पहिले यसको प्रकार बुझ्नुहोस्, सानो गिलासबाट सुरु गर्नुहोस् र पिउन दबाब नदिनुहोस्।",
+      "search_keywords": ["Fenjiu Nepal", "what is baijiu", "Chinese grain spirit", "responsible tasting"],
+      "risk_check": ["不使用健康、高端身份或成功暗示", "酒精度、原料、工艺须与SKU资料一致", "未确认公开内容规则时不发布产品露出"],
+      "target_metrics": ["6秒率相对同长度cohort", "高质量品类问题>=2", "品鉴咨询"],
+      "sales_scene": "门店/品鉴首次认知"
+    },
+    {
+      "id": "S02",
+      "topic_id": "T03",
+      "title": "为什么第一杯要小",
+      "duration_seconds": 22,
+      "hook_first_3s": "Your first baijiu pour does not need to be big.",
+      "actors": "1名25+成年服务员或主持人",
+      "scene": "餐厅餐桌",
+      "props": ["三种杯型", "量杯", "水", "产品实瓶仅在获批时"],
+      "shots": [
+        {"sec": "0-3", "visual": "大杯被轻轻移开，小杯入镜", "line_en": "Your first baijiu pour does not need to be big."},
+        {"sec": "3-8", "visual": "展示10-15ml候选杯量字样NEEDS_VERIFY", "line_en": "A small pour helps a new guest focus on aroma, not volume."},
+        {"sec": "8-14", "visual": "三步卡：look-smell-sip", "line_en": "Look. Smell. If you choose, take a small sip slowly."},
+        {"sec": "14-19", "visual": "主持人手掌示意no pressure", "line_en": "No bottom-up toast. No pressure."},
+        {"sec": "19-22", "visual": "水杯和责任饮酒卡", "line_en": "Water, food, and choice come first."}
+      ],
+      "subtitle_en": ["Your first baijiu pour does not need to be big.", "A small pour helps you focus on aroma, not volume.", "Look. Smell. If you choose, sip slowly.", "No bottom-up toast. No pressure.", "Water, food, and choice come first."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["तपाईंको पहिलो बाइजिउ ठूलो मात्रामा हुनुपर्दैन।", "सानो मात्राले परिमाणभन्दा सुगन्धमा ध्यान दिन मद्दत गर्छ।", "हेर्नुहोस्। सुँघ्नुहोस्। चाहनुहुन्छ भने बिस्तारै सानो चुस्की लिनुहोस्।", "एकैचोटि सक्नुपर्ने टोस्ट होइन। कुनै दबाब होइन।", "पानी, खाना र व्यक्तिगत रोजाइ पहिले आउँछन्।"]},
+      "caption_en": "A better first taste begins with less pressure and a smaller pour. Suggested pour size is NEEDS_VERIFY for the selected SKU and local service rules.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：राम्रो पहिलो अनुभव सानो मात्रा र दबाबरहित छनोटबाट सुरु हुन्छ।",
+      "search_keywords": ["how to taste baijiu", "small cup", "responsible drinking Nepal"],
+      "risk_check": ["候选杯量必须由SKU和当地规则确认", "不拍吞咽特写，除非内容规则确认", "不鼓励挑战或豪饮"],
+      "target_metrics": ["完播率", "收藏", "店员转发", "关于饮用法的问题"],
+      "sales_scene": "店员培训/品鉴"
+    },
+    {
+      "id": "S03",
+      "topic_id": "T05",
+      "title": "Momo搭配：先测试再下结论",
+      "duration_seconds": 35,
+      "hook_first_3s": "Does Fenjiu work with momo? We refused to guess.",
+      "actors": "1名25+主持人、1名25+厨师、2名25+自愿品鉴者",
+      "scene": "持牌餐厅；真实Momo出餐",
+      "props": ["两种Momo", "盲测编号杯", "水和吐酒杯", "匿名反馈卡"],
+      "shots": [
+        {"sec": "0-3", "visual": "Momo与编号杯俯拍", "line_en": "Does Fenjiu work with momo? We refused to guess."},
+        {"sec": "3-8", "visual": "厨师说明两种口味", "line_en": "Two momo styles. One measured pour. No brand briefing."},
+        {"sec": "8-16", "visual": "品鉴者闻香、吃一口、记录；不要求吞咽", "line_en": "Each adult tester records aroma, heat, aftertaste, and food fit."},
+        {"sec": "16-26", "visual": "匿名词云占位，不出现预设好评", "line_en": "We keep positive and negative words. A real test can say no."},
+        {"sec": "26-32", "visual": "样本量卡片", "line_en": "This result is one small test, not a rule for Nepal."},
+        {"sec": "32-35", "visual": "反馈表二维码仅内部或合规获批后", "line_en": "What pairing should be tested next?"}
+      ],
+      "subtitle_en": ["Does Fenjiu work with momo? We refused to guess.", "Two momo styles. One measured pour. No brand briefing.", "Adults record aroma, heat, aftertaste, and food fit.", "We keep positive and negative feedback.", "One small test is not a rule for Nepal.", "What should we test next?"],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["फेन्जिउ मोमोसँग मिल्छ? हामीले अनुमान गर्न मानेनौँ।", "दुई प्रकारका मोमो, एक मापन गरिएको मात्रा, र ब्रान्डबारे पहिले कुनै निर्देशन छैन।", "वयस्क सहभागीले सुगन्ध, तिखोपन, पछिल्लो स्वाद र खानासँगको मेल टिपोट गर्छन्।", "हामी सकारात्मक र नकारात्मक दुवै प्रतिक्रिया राख्छौँ।", "यो सानो परीक्षण हो, नेपालका लागि सार्वभौम नियम होइन।", "अर्को पटक केसँग परीक्षण गर्ने?"]},
+      "caption_en": "Pairing is a hypothesis until real people test it. Sample size, recipe, SKU, and venue must be shown with every result.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：वास्तविक परीक्षण नभएसम्म खानासँगको मेल केवल परिकल्पना हो।",
+      "search_keywords": ["momo pairing", "Fenjiu tasting", "Kathmandu food experiment"],
+      "risk_check": ["真实品鉴前不能发布结论", "成年人授权", "食物和民族文化称谓母语审核", "不得剪掉负面反馈制造假好评"],
+      "target_metrics": ["分享", "高质量搭配评论", "餐厅合作询盘", "反馈表完成率"],
+      "sales_scene": "Momo餐厅/品鉴活动"
+    },
+    {
+      "id": "S04",
+      "topic_id": "T06",
+      "title": "Sekuwa的烟熏与烈酒：厨师测试",
+      "duration_seconds": 38,
+      "hook_first_3s": "Smoke and spice can challenge any spirit.",
+      "actors": "1名25+本地厨师、1名25+主持人",
+      "scene": "合规餐厅后厨与餐桌",
+      "props": ["Sekuwa", "香料展示", "编号杯", "评分表", "水"],
+      "shots": [
+        {"sec": "0-3", "visual": "烤架烟气转到小杯", "line_en": "Smoke and spice can challenge any spirit."},
+        {"sec": "3-9", "visual": "厨师介绍肉类和辣度", "line_en": "Before pairing, record the meat, spice, smoke, and sauce."},
+        {"sec": "9-17", "visual": "先闻香再试食物", "line_en": "Taste the food first. Then test only a measured amount."},
+        {"sec": "17-27", "visual": "厨师给出三词反馈", "line_en": "The chef gives three words: one match, one conflict, one question."},
+        {"sec": "27-34", "visual": "屏幕显示candidate/not confirmed", "line_en": "A pairing earns a recommendation only after repeated tests."},
+        {"sec": "34-38", "visual": "下次测试投票", "line_en": "Mild or spicy sekuwa next?"}
+      ],
+      "subtitle_en": ["Smoke and spice can challenge any spirit.", "Record the meat, spice, smoke, and sauce.", "Taste the food first; test only a measured amount.", "One match. One conflict. One question.", "A recommendation needs repeated tests.", "Mild or spicy next?"],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["धुवाँको स्वाद र मसालाले कुनै पनि मदिरालाई चुनौती दिन सक्छ।", "मासु, मसला, धुवाँ र ससको विवरण पहिले टिपोट गर्नुहोस्।", "पहिले खाना चाख्नुहोस्; त्यसपछि मापन गरिएको सानो मात्रा मात्र परीक्षण गर्नुहोस्।", "एउटा मेल, एउटा असहमति र एउटा प्रश्न।", "सिफारिस गर्न दोहोरिएको परीक्षण चाहिन्छ।", "अर्को पटक हल्का कि पिरो सेकुवा?"]},
+      "caption_en": "Food pairing is documented, repeated, and allowed to fail. This is a test format, not a pre-written endorsement.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：खानासँगको मेल अभिलेख गरिन्छ, दोहोर्‍याइन्छ र असफल हुन पनि सक्छ।",
+      "search_keywords": ["sekuwa pairing", "Nepal food tasting", "Fenjiu with food"],
+      "risk_check": ["厨师意见不得预写", "酒类拍摄场所与饮用画面合规确认", "不宣传解腻或健康功效"],
+      "target_metrics": ["6秒率", "评论投票", "厨师/餐厅询盘", "真实搭配复测人数"],
+      "sales_scene": "Sekuwa/高端尼泊尔餐厅"
+    },
+    {
+      "id": "S05",
+      "topic_id": "T12",
+      "title": "送酒前，先问一个问题",
+      "duration_seconds": 28,
+      "hook_first_3s": "A respectful gift starts before the bottle is wrapped.",
+      "actors": "2名25+成年人；一名送礼者、一名接收者",
+      "scene": "家庭门口或企业接待区，中性不指向特定节庆",
+      "props": ["礼袋", "未展示价格的产品", "礼卡"],
+      "shots": [
+        {"sec": "0-3", "visual": "礼袋停在门口", "line_en": "A respectful gift starts before the bottle is wrapped."},
+        {"sec": "3-9", "visual": "送礼者先发消息", "line_en": "First ask: is alcohol welcome in this home or event?"},
+        {"sec": "9-15", "visual": "三个图标：家庭/宗教/个人选择", "line_en": "Tradition never replaces personal choice, family rules, or faith."},
+        {"sec": "15-22", "visual": "对方接受后才递交礼物", "line_en": "If the answer is yes, explain what it is and who it is for."},
+        {"sec": "22-28", "visual": "no pressure卡", "line_en": "A gift creates no duty to drink."}
+      ],
+      "subtitle_en": ["A respectful gift starts before the bottle is wrapped.", "Ask whether alcohol is welcome in the home or event.", "Tradition never replaces personal choice, family rules, or faith.", "If yes, explain what it is and who it is for.", "A gift creates no duty to drink."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["सम्मानजनक उपहार बोतल बेर्नुअघि नै सुरु हुन्छ।", "पहिले सोध्नुहोस्: यो घर वा कार्यक्रममा मदिरा स्वीकार्य छ?", "परम्पराले व्यक्तिगत रोजाइ, परिवारका नियम वा आस्थालाई कहिल्यै प्रतिस्थापन गर्दैन।", "उत्तर हो भने, यो के हो र कसका लागि हो भनेर स्पष्ट गर्नुहोस्।", "उपहारले पिउनुपर्ने दायित्व बनाउँदैन।"]},
+      "caption_en": "Hospitality and gifting begin with consent and context. Local cultural review is required before adapting this to any named festival or community.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：आतिथ्य र उपहार सहमति तथा सन्दर्भबाट सुरु हुन्छ।",
+      "search_keywords": ["responsible gifting", "Nepal business gifts", "Fenjiu gift"],
+      "risk_check": ["不得泛化宗教民族", "不得把酒与家庭和谐绑定", "具体节庆版需当地审核"],
+      "target_metrics": ["收藏", "高质量文化评论", "企业礼赠询盘"],
+      "sales_scene": "家庭/企业礼赠"
+    },
+    {
+      "id": "S06",
+      "topic_id": "T13",
+      "title": "商务宴请的第一句，不是品牌历史",
+      "duration_seconds": 30,
+      "hook_first_3s": "Do not begin with a long brand lecture.",
+      "actors": "3名30+商务人士；不展示真实公司机密",
+      "scene": "持牌餐厅包间或会议餐叙",
+      "props": ["菜单", "小杯", "水", "1页品类卡"],
+      "shots": [
+        {"sec": "0-3", "visual": "厚品牌册被合上", "line_en": "Do not begin with a long brand lecture."},
+        {"sec": "3-9", "visual": "主人先询问宾客", "line_en": "Ask what your guest usually drinks and whether they want to taste."},
+        {"sec": "9-16", "visual": "一页卡四点", "line_en": "Then explain: Chinese baijiu, grain spirit, aromatic style, small pour."},
+        {"sec": "16-23", "visual": "主人同时倒水，宾客可选择不喝", "line_en": "Offer water and a clear choice to decline."},
+        {"sec": "23-30", "visual": "餐桌对话而非碰杯见底", "line_en": "The goal is a good conversation, not a finished glass."}
+      ],
+      "subtitle_en": ["Do not begin with a long brand lecture.", "Ask what your guest drinks and whether they want to taste.", "Chinese baijiu. Grain spirit. Aromatic style. Small pour.", "Offer water and a clear choice to decline.", "The goal is a good conversation, not a finished glass."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["लामो ब्रान्ड कथा सुनाएर सुरु नगर्नुहोस्।", "अतिथिले सामान्यतया के पिउँछन् र चाख्न चाहन्छन् कि चाहँदैनन् भनेर सोध्नुहोस्।", "चिनियाँ बाइजिउ। अन्नबाट बनेको स्पिरिट। सुगन्धित शैली। सानो मात्रा।", "पानी दिनुहोस् र नपिउने स्पष्ट विकल्प राख्नुहोस्।", "लक्ष्य राम्रो संवाद हो, गिलास सक्नु होइन।"]},
+      "caption_en": "Business hospitality should make the guest comfortable, informed, and free to say no.",
+      "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：व्यावसायिक आतिथ्यले अतिथिलाई सहज, सूचित र ‘हुँदैन’ भन्न स्वतन्त्र बनाउनुपर्छ।",
+      "search_keywords": ["business dinner etiquette", "Fenjiu introduction", "responsible hospitality"],
+      "risk_check": ["不把饮酒与成交、关系或成功绑定", "出镜均为成年人", "不出现劝酒"],
+      "target_metrics": ["企业收藏/转发", "商务品鉴询盘", "20秒解释复述率"],
+      "sales_scene": "商务宴请/中尼商务活动"
+    },
+    {
+      "id": "S07", "topic_id": "T04", "title": "三种烈酒，三种起点", "duration_seconds": 30,
+      "hook_first_3s": "Do not ask which spirit is best. Ask what is different.",
+      "actors": "1名25+饮品教育者", "scene": "中性吧台或培训桌", "props": ["whisky/vodka/baijiu三张品类卡", "不展示竞品商标", "水"],
+      "shots": [
+        {"sec": "0-3", "visual": "三张卡并列", "line_en": "Do not ask which spirit is best. Ask what is different."},
+        {"sec": "3-11", "visual": "原料与工艺图标，信息待SKU核对", "line_en": "Whisky, vodka, and baijiu begin with different traditions and processes."},
+        {"sec": "11-20", "visual": "香气轮空白卡", "line_en": "Describe what you actually smell. Do not borrow whisky words."},
+        {"sec": "20-27", "visual": "小杯和水", "line_en": "For baijiu, begin with a small, unhurried taste."},
+        {"sec": "27-30", "visual": "difference not ranking字卡", "line_en": "Difference, not ranking."}
+      ],
+      "subtitle_en": ["Do not ask which spirit is best. Ask what is different.", "They begin with different traditions and processes.", "Describe what you actually smell.", "Begin with a small, unhurried taste.", "Difference, not ranking."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["कुन मदिरा सबैभन्दा राम्रो हो भनेर नसोध्नुहोस्; के फरक छ भनेर सोध्नुहोस्।", "व्हिस्की, भोड्का र बाइजिउ फरक परम्परा र प्रक्रियाबाट सुरु हुन्छन्।", "वास्तवमै आएको सुगन्ध वर्णन गर्नुहोस्।", "बाइजिउलाई सानो र हताररहित स्वादबाट सुरु गर्नुहोस्।", "तुलनात्मक श्रेणी होइन, फरकपन।"]},
+      "caption_en": "Category education should clarify difference without attacking familiar choices.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：परिचित रोजाइलाई होच्याए बिना फरकपन बुझाऔँ।",
+      "search_keywords": ["baijiu vs whisky", "spirits education", "Fenjiu Nepal"], "risk_check": ["不贬低竞品", "原料工艺须核证", "不做健康比较"], "target_metrics": ["收藏", "高质量比较问题", "门店培训使用次数"], "sales_scene": "消费者异议/店员培训"
+    },
+    {
+      "id": "S08", "topic_id": "T10", "title": "四种饮用方式小样测试", "duration_seconds": 36,
+      "hook_first_3s": "One spirit, four serves—but only one question: what works here?",
+      "actors": "1名25+调酒师、3名25+品鉴者", "scene": "持牌酒吧", "props": ["纯饮/加水/加冰/调酒编号杯", "量具", "匿名表"],
+      "shots": [
+        {"sec": "0-3", "visual": "四杯编号", "line_en": "One spirit, four serves—but what works here?"},
+        {"sec": "3-10", "visual": "调酒师按固定量制作", "line_en": "Same SKU. Measured amounts. Random order."},
+        {"sec": "10-22", "visual": "品鉴者独立记录", "line_en": "Adults score aroma, heat, balance, and willingness to try again."},
+        {"sec": "22-31", "visual": "结果卡含sample size", "line_en": "We report the sample and the negatives, not just the winner."},
+        {"sec": "31-36", "visual": "NEEDS_VERIFY卡", "line_en": "A serve is recommended only after recipe and compliance review."}
+      ],
+      "subtitle_en": ["One spirit, four serves—but what works here?", "Same SKU. Measured amounts. Random order.", "Score aroma, heat, balance, and willingness to try again.", "Report the sample and negative feedback.", "Recommendation follows recipe and compliance review."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["एउटै स्पिरिट, चार तरिका—यहाँ कुन उपयुक्त हुन्छ?", "एउटै एसकेयू, मापन गरिएको मात्रा र अनियमित क्रम।", "सुगन्ध, तिखोपन, सन्तुलन र फेरि चाख्ने इच्छा अंक दिनुहोस्।", "नमुना संख्या र नकारात्मक प्रतिक्रिया पनि देखाउनुहोस्।", "रेसिपी र अनुपालन समीक्षा पछि मात्र सिफारिस गरिन्छ।"]},
+      "caption_en": "Pure, water, ice, or mixed: none is declared a winner before a controlled local test.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：स्थानीय परीक्षणअघि कुनै तरिकालाई विजेता घोषणा गरिँदैन।",
+      "search_keywords": ["baijiu serve test", "Fenjiu cocktail", "Kathmandu bartender"], "risk_check": ["配方/SKU/标准杯待验证", "不展示快速连续饮用", "酒吧与演员授权"], "target_metrics": ["评论选择", "酒吧询盘", "再饮意愿差异"], "sales_scene": "酒吧/餐饮品鉴"
+    },
+    {
+      "id": "S09", "topic_id": "T26", "title": "瓶身三处信息怎么读", "duration_seconds": 24,
+      "hook_first_3s": "Before you taste, read these three details.",
+      "actors": "1名25+店员", "scene": "持牌门店货架", "props": ["真实SKU", "放大镜动效", "SKU事实卡"],
+      "shots": [
+        {"sec": "0-3", "visual": "实瓶标签特写", "line_en": "Before you taste, read these three details."},
+        {"sec": "3-9", "visual": "品类/产地字段", "line_en": "First: what category it is and where it comes from."},
+        {"sec": "9-15", "visual": "酒精度与容量", "line_en": "Second: alcohol by volume and bottle size."},
+        {"sec": "15-21", "visual": "合法进口/责任信息位置，由国代确认", "line_en": "Third: the local label and responsible-use information."},
+        {"sec": "21-24", "visual": "ask staff卡", "line_en": "If a label is unclear, ask before buying."}
+      ],
+      "subtitle_en": ["Before you taste, read these three details.", "Category and origin.", "Alcohol by volume and bottle size.", "Local label and responsible-use information.", "If unclear, ask before buying."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["चाख्नुअघि यी तीन विवरण पढ्नुहोस्।", "पहिलो: प्रकार र उत्पत्ति।", "दोस्रो: मदिराको प्रतिशत र बोतलको मात्रा।", "तेस्रो: स्थानीय लेबल र जिम्मेवार प्रयोगसम्बन्धी जानकारी।", "अस्पष्ट भए किन्नुअघि सोध्नुहोस्।"]},
+      "caption_en": "All label details must be read from the actual Nepal-market SKU, not copied from another market.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：सबै विवरण नेपाल बजारको वास्तविक एसकेयूबाट मात्र लिनुपर्छ।",
+      "search_keywords": ["Fenjiu label", "ABV", "baijiu bottle guide"], "risk_check": ["不得用其他市场标签", "本地标签和责任信息由国代确认", "不隐藏酒精度"], "target_metrics": ["收藏", "门店问询", "标签理解正确率"], "sales_scene": "门店教育"
+    },
+    {
+      "id": "S10", "topic_id": "T24", "title": "第一口，只说三个词", "duration_seconds": 32,
+      "hook_first_3s": "No script. No rating. Just three honest words.",
+      "actors": "3名25+真实成年消费者，书面授权", "scene": "合规品鉴", "props": ["编号杯", "水", "三词卡", "吐酒杯"],
+      "shots": [
+        {"sec": "0-3", "visual": "三张空白卡", "line_en": "No script. No rating. Just three honest words."},
+        {"sec": "3-10", "visual": "主持人说明可拒绝", "line_en": "Each adult may smell, taste, or decline."},
+        {"sec": "10-24", "visual": "三人分别说词，保留负面词", "line_en": "Aroma. First impression. Aftertaste."},
+        {"sec": "24-29", "visual": "样本量与SKU卡", "line_en": "Three people are three experiences—not a market verdict."},
+        {"sec": "29-32", "visual": "next test卡", "line_en": "What should we test next?"}
+      ],
+      "subtitle_en": ["No script. No rating. Just three honest words.", "Each adult may smell, taste, or decline.", "Aroma. First impression. Aftertaste.", "Three experiences are not a market verdict.", "What should we test next?"],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["कुनै तयार स्क्रिप्ट छैन, अंक छैन—केवल तीन इमानदार शब्द।", "हरेक वयस्कले सुँघ्न, चाख्न वा अस्वीकार गर्न सक्छ।", "सुगन्ध। पहिलो अनुभूति। पछिल्लो स्वाद।", "तीन अनुभव बजारको अन्तिम निष्कर्ष होइन।", "अर्को पटक के परीक्षण गर्ने?"]},
+      "caption_en": "Real feedback includes surprise, confusion, and dislike. Consent and adult eligibility are required.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：वास्तविक प्रतिक्रियामा मनपर्ने र नपर्ने दुवै समावेश हुन्छन्।",
+      "search_keywords": ["first baijiu taste", "Fenjiu review Nepal", "adult tasting"], "risk_check": ["不预写好评", "成年人/授权", "不展示醉态", "样本量明确"], "target_metrics": ["高质量评论", "反馈表完成率", "再饮意愿"], "sales_scene": "消费者品鉴"
+    },
+    {
+      "id": "S11", "topic_id": "T28", "title": "在哪里可以合规品鉴", "duration_seconds": 20,
+      "hook_first_3s": "Curious about Fenjiu? Start with a verified venue.",
+      "actors": "1名25+主持人", "scene": "已核验持牌终端外景", "props": ["门店外观", "地图卡", "预约方式"],
+      "shots": [
+        {"sec": "0-3", "visual": "门店招牌与verified字卡", "line_en": "Curious about Fenjiu? Start with a verified venue."},
+        {"sec": "3-9", "visual": "地图定位", "line_en": "Check the address, hours, stock, and adult-entry rules first."},
+        {"sec": "9-15", "visual": "预约消息", "line_en": "Ask for a small guided tasting—if local rules allow it."},
+        {"sec": "15-20", "visual": "responsible/transport卡", "line_en": "Plan food, water, and a safe trip home."}
+      ],
+      "subtitle_en": ["Start with a verified venue.", "Check address, hours, stock, and adult-entry rules.", "Ask for a small guided tasting if allowed.", "Plan food, water, and a safe trip home."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["फेन्जिउबारे जिज्ञासा छ? पुष्टि गरिएको स्थानबाट सुरु गर्नुहोस्।", "ठेगाना, समय, स्टक र वयस्क प्रवेश नियम पहिले जाँच्नुहोस्।", "अनुमति भए सानो मार्गदर्शित स्वाद माग्नुहोस्।", "खाना, पानी र सुरक्षित घर फर्कने योजना बनाउनुहोस्।"]},
+      "caption_en": "BLOCKED until public purchase/tasting CTA, venue licence, current stock, and age controls are confirmed.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：स्थान, स्टक र उमेर नियन्त्रण पुष्टि भएपछि मात्र प्रकाशित गर्न मिल्ने मस्यौदा।",
+      "search_keywords": ["Fenjiu Kathmandu", "baijiu tasting Nepal", "licensed venue"], "risk_check": ["CTA获批前不发布", "当日核验库存/时间", "不承诺配送或价格"], "target_metrics": ["地图点击", "品鉴预约", "到店归因码"], "sales_scene": "到店转化"
+    },
+    {
+      "id": "S12", "topic_id": "T15", "title": "店员20秒解释卡", "duration_seconds": 26,
+      "hook_first_3s": "A guest asks, 'What is Fenjiu?' You have twenty seconds.",
+      "actors": "1名25+真实店员、1名25+顾客", "scene": "持牌酒店/餐厅/门店", "props": ["20秒店员卡", "小杯", "水", "产品"],
+      "shots": [
+        {"sec": "0-3", "visual": "顾客指向产品", "line_en": "What is Fenjiu? You have twenty seconds."},
+        {"sec": "3-9", "visual": "店员第一句", "line_en": "It is a Chinese baijiu—an aromatic grain spirit."},
+        {"sec": "9-15", "visual": "店员询问偏好", "line_en": "What spirits do you usually enjoy?"},
+        {"sec": "15-21", "visual": "小杯+可拒绝", "line_en": "If you are an adult and wish to try, begin with a small guided taste."},
+        {"sec": "21-26", "visual": "四禁语卡", "line_en": "Never promise health, status, courage, or success."}
+      ],
+      "subtitle_en": ["What is Fenjiu? You have twenty seconds.", "A Chinese baijiu—an aromatic grain spirit.", "What spirits do you usually enjoy?", "Adults may choose a small guided taste.", "Never promise health, status, courage, or success."],
+      "subtitle_ne_draft": {"status": "NEEDS_VERIFY｜待母语者审核", "lines": ["फेन्जिउ के हो? तपाईंसँग बीस सेकेन्ड छ।", "यो चिनियाँ बाइजिउ हो—अन्नबाट बनेको सुगन्धित स्पिरिट।", "तपाईं सामान्यतया कुन स्पिरिट रुचाउनुहुन्छ?", "कानुनी उमेर पुगेका वयस्कले चाहे सानो मार्गदर्शित स्वाद लिन सक्छन्।", "स्वास्थ्य, हैसियत, साहस वा सफलताको वाचा कहिल्यै नगर्नुहोस्।"]},
+      "caption_en": "Four facts beat a long lecture: category, taste expectation, guest preference, and a safe way to begin.", "caption_ne_draft": "NEEDS_VERIFY｜待母语者审核：लामो कथाभन्दा चार स्पष्ट तथ्य उपयोगी हुन्छन्।",
+      "search_keywords": ["Fenjiu staff training", "baijiu introduction", "hotel beverage training"], "risk_check": ["感官词与SKU实测一致", "公开拍摄获授权", "禁健康/成功/社交功效"], "target_metrics": ["店员测验>=80%", "顾客品类理解", "试饮到购买转化"], "sales_scene": "酒店/餐厅/门店培训"
+    }
+  ],
+  "outreach_templates": {
+    "rules": ["仅联系公开企业账号/公开商务地址", "首句引用一个真实公开事实", "不附大文件；先征求发送1页资料许可", "不得承诺未确认价格、利润、独家、库存或配送", "Nepali必须母语审核", "Viber仅用于已同意或既有关系", "明确拒绝立即停止"],
+    "templates": [
+      {
+        "id": "O01", "channel": "Messenger", "use": "首次联系餐厅/酒店/门店",
+        "en": "Hello {{business_name}} team—I'm reaching out because your {{verified_fact: imported-spirits list / dining concept / guest profile}} appears relevant to a small, evidence-led Fenjiu trial in {{city}}. Fenjiu is a Chinese baijiu supplied locally through Nepal's authorized national distributor. We are not asking for a long-term commitment or exclusivity. Would the person responsible for beverages or purchasing be open to a one-page overview and a short call?",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार {{business_name}} टोली। तपाईंहरूको {{verified_fact}} काठमाडौंमा सानो, प्रमाणमा आधारित फेन्जिउ परीक्षणसँग सान्दर्भिक देखिएकाले सम्पर्क गरेको हुँ। फेन्जिउ चिनियाँ बाइजिउ हो र नेपालमा आधिकारिक राष्ट्रिय वितरकमार्फत आपूर्ति हुन्छ। हामी दीर्घकालीन प्रतिबद्धता वा एकाधिकार मागिरहेका छैनौँ। पेयपदार्थ वा खरिद हेर्ने व्यक्तिलाई एक पृष्ठको परिचय र छोटो कुराकानी पठाउन मिल्छ?",
+        "cta": "Name/role of decision-maker or permission to send one-page overview"
+      },
+      {
+        "id": "O02", "channel": "Messenger", "use": "D3跟进",
+        "en": "Hello {{name}}, one useful detail from our proposed trial: the venue can start with a defined SKU, a small agreed quantity, staff guidance, and weekly sell-through tracking—without long-term exclusivity. If beverage trials are not your area, could you point me to the right colleague?",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार {{name}}। प्रस्तावित परीक्षणबारे एउटा उपयोगी कुरा: निश्चित एसकेयू, सहमति गरिएको सानो मात्रा, कर्मचारी मार्गदर्शन र साप्ताहिक बिक्री अभिलेखबाट सुरु गर्न सकिन्छ—दीर्घकालीन एकाधिकार बिना। यदि यो तपाईंको जिम्मेवारी होइन भने, सही सहकर्मी बताइदिनुहुन्छ?",
+        "cta": "Right contact or polite close"
+      },
+      {
+        "id": "O03", "channel": "Messenger", "use": "D14最后一次",
+        "en": "Hello {{name}}, I'll close this thread after this note so we do not over-message you. If a small adult-only tasting or a 90-day non-exclusive trial becomes relevant, reply with 'overview' and I will send the one-page details. Otherwise, no action is needed. Thank you.",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार {{name}}। धेरै सन्देश नहोस् भनेर यो सन्देशपछि यो सम्पर्क बन्द गर्छु। वयस्कका लागि सानो स्वाद कार्यक्रम वा ९०-दिने गैर-एकाधिकार परीक्षण सान्दर्भिक भए 'overview' भनेर जवाफ दिनुहोस्। नत्र कुनै कार्य आवश्यक छैन। धन्यवाद।",
+        "cta": "Opt-in keyword; otherwise close"
+      },
+      {
+        "id": "O04", "channel": "LinkedIn connection", "use": "酒店采购/F&B/企业采购加好友",
+        "en": "Hello {{name}}, I work on an evidence-led Nepal market trial for Fenjiu with the authorized national distributor. Your role in {{function}} at {{company}} is relevant to how we are evaluating adult-only tastings and limited trials. May I connect?",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार {{name}}। म आधिकारिक राष्ट्रिय वितरकसँग फेन्जिउको प्रमाणमा आधारित नेपाल बजार परीक्षणमा काम गर्छु। {{company}} मा तपाईंको {{function}} भूमिका वयस्क स्वाद कार्यक्रम र सीमित परीक्षण मूल्याङ्कनसँग सान्दर्भिक छ। जोडिन मिल्छ?",
+        "cta": "Accept connection; no attachment"
+      },
+      {
+        "id": "O05", "channel": "LinkedIn after accept", "use": "接受后首次沟通",
+        "en": "Thank you for connecting. We are testing one narrow question: can Fenjiu earn repeat sales in a small number of suitable Nepal venues, with staff training and weekly data? We are not proposing an immediate exclusive arrangement. Would a one-page trial outline be useful, or is another colleague responsible for beverages/procurement?",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：जोडिनुभएकोमा धन्यवाद। हामी एउटा स्पष्ट प्रश्न परीक्षण गर्दैछौँ: कर्मचारी प्रशिक्षण र साप्ताहिक तथ्याङ्कसहित थोरै उपयुक्त नेपाली स्थानमा फेन्जिउले पुनः बिक्री गर्न सक्छ कि सक्दैन? तुरुन्त एकाधिकार प्रस्ताव होइन। एक पृष्ठको परीक्षण रूपरेखा उपयोगी हुन्छ कि पेय/खरिद अर्को सहकर्मीले हेर्नुहुन्छ?",
+        "cta": "Permission or referral"
+      },
+      {
+        "id": "O06", "channel": "Email", "use": "经销商/酒店正式首封",
+        "subject_en": "90-day non-exclusive Fenjiu trial for {{company}}",
+        "en": "Dear {{name}},\n\nI am contacting you through public business information because {{specific_verified_reason}}. We are working with Fenjiu's authorized national distributor in Nepal, which handles local supply and fulfilment. The proposed first step is deliberately small: verify fit, conduct an adult-only tasting where permitted, agree a limited SKU/quantity, train relevant staff, and review weekly sales and stock. No long-term exclusivity is proposed at this stage.\n\nIf this fits your portfolio, may I send a one-page outline and arrange a 15-minute call? If not, please tell me and I will close the contact.\n\nRegards,\n{{sender_real_name_and_company}}",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：आदरणीय {{name}}, सार्वजनिक व्यावसायिक जानकारी र {{specific_verified_reason}} का आधारमा सम्पर्क गरेको हुँ। हामी नेपालमा स्थानीय आपूर्ति र वितरण गर्ने फेन्जिउको आधिकारिक राष्ट्रिय वितरकसँग काम गर्दैछौँ। पहिलो चरण सानो छ: उपयुक्तता जाँच, अनुमति भए वयस्क स्वाद, सीमित एसकेयू/मात्रा, कर्मचारी प्रशिक्षण र साप्ताहिक बिक्री तथा स्टक समीक्षा। अहिले दीर्घकालीन एकाधिकार प्रस्ताव गरिएको छैन। यो तपाईंको पोर्टफोलियोसँग मेल खान्छ भने एक पृष्ठको रूपरेखा पठाएर १५ मिनेटको कुरा गर्न मिल्छ?",
+        "cta": "15-minute call"
+      },
+      {
+        "id": "O07", "channel": "Viber/WhatsApp", "use": "已同意后的品鉴预约",
+        "en": "Hello {{name}}, thank you for agreeing to continue here. Proposed tasting: {{date/time}}, {{verified_licensed_venue}}, {{adult_attendee_count}} adult participants, {{approved_SKU}}. We will bring measured samples, water, a short category card, and an anonymous feedback form. Please confirm the attendee count and whether the venue has any restrictions. Reply STOP at any time to end messages.",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार {{name}}। यहाँ कुराकानी जारी राख्न सहमति दिनुभएकोमा धन्यवाद। प्रस्तावित स्वाद: {{date/time}}, {{verified_licensed_venue}}, {{adult_attendee_count}} वयस्क सहभागी, {{approved_SKU}}। मापन गरिएको नमुना, पानी, छोटो परिचय कार्ड र नामरहित प्रतिक्रिया फाराम ल्याइनेछ। सहभागी संख्या र स्थानका कुनै प्रतिबन्ध पुष्टि गर्नुहोस्। सन्देश रोक्न जुनसुकै बेला STOP लेख्नुहोस्।",
+        "cta": "Confirm date, adults, venue restrictions"
+      },
+      {
+        "id": "O08", "channel": "Phone", "use": "前台确认负责人",
+        "en": "Hello, my name is {{real_name}} from {{company}}. I am calling about a small beverage trial supplied through Fenjiu's authorized national distributor in Nepal. I am not calling for a consumer promotion. Could you tell me which role handles imported spirits, beverage purchasing, or F&B decisions? I only need the correct business contact or transfer.",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：नमस्कार, म {{company}} बाट {{real_name}} बोल्दैछु। नेपालमा फेन्जिउको आधिकारिक राष्ट्रिय वितरकमार्फत आपूर्ति हुने सानो पेय परीक्षणबारे फोन गरेको हुँ। यो उपभोक्ता प्रचार फोन होइन। आयातित मदिरा, पेय खरिद वा F&B निर्णय कसले हेर्नुहुन्छ? सही व्यावसायिक सम्पर्क वा ट्रान्सफर मात्र चाहिएको हो।",
+        "cta": "Role/name or transfer; do not pressure"
+      },
+      {
+        "id": "O09", "channel": "All", "use": "礼貌拒绝确认",
+        "en": "Thank you for letting me know. I have marked this contact as closed and will not follow up further. If you contact us in the future, we can reopen the conversation.",
+        "ne_draft": "NEEDS_VERIFY｜待母语者审核：जानकारी दिनुभएकोमा धन्यवाद। यो सम्पर्क बन्द गरिएको छ र अब थप सन्देश पठाइने छैन। भविष्यमा तपाईंले सम्पर्क गर्नुभयो भने मात्र कुराकानी फेरि सुरु गर्न सकिन्छ।",
+        "cta": "Close record"
+      }
+    ]
+  },
+  "content_calendar": {
+    "publishing_gate": "每条在发布前24小时核验平台/当地规则、演员年龄与授权、SKU事实、场地许可、Nepali母语审核、CTA与库存；任一缺失则改为内部培训或不发布",
+    "cadence": "获批后每周3条；不机械日更；同一时长和支柱至少3条后才比较",
+    "weeks": [
+      {"week": 1, "status": "preproduction", "items": ["合规清单", "受众年龄规则", "术语表", "本地母语/文化审校人"], "publish": []},
+      {"week": 2, "status": "preproduction", "items": ["真实SKU事实卡", "场地/演员授权模板", "基线门店销量", "6条样片拍摄"], "publish": []},
+      {"week": 3, "theme": "品类入门", "publish": [{"day": "Tue", "topic": "T01", "script": "S01"}, {"day": "Thu", "topic": "T03", "script": "S02"}, {"day": "Sat", "topic": "T04", "script": "S07"}], "test": "hook: question vs contradiction"},
+      {"week": 4, "theme": "标签与店员", "publish": [{"day": "Tue", "topic": "T26", "script": "S09"}, {"day": "Thu", "topic": "T15", "script": "S12"}, {"day": "Sat", "topic": "T02", "script": null}], "test": "20s education vs 30s education"},
+      {"week": 5, "theme": "Momo/Sekuwa真实测试", "publish": [{"day": "Tue", "topic": "T05", "script": "S03"}, {"day": "Thu", "topic": "T06", "script": "S04"}, {"day": "Sat", "topic": "T08", "script": null}], "test": "chef vs consumer voice"},
+      {"week": 6, "theme": "更多搭配", "publish": [{"day": "Tue", "topic": "T07", "script": null}, {"day": "Thu", "topic": "T09", "script": null}, {"day": "Sat", "topic": "T10", "script": "S08"}], "test": "food close-up vs human first frame"},
+      {"week": 7, "theme": "当地生活与责任", "publish": [{"day": "Tue", "topic": "T11", "script": null}, {"day": "Thu", "topic": "T12", "script": "S05"}, {"day": "Sat", "topic": "T13", "script": "S06"}], "test": "save/share intent"},
+      {"week": 8, "theme": "礼赠与场景", "publish": [{"day": "Tue", "topic": "T14", "script": null}, {"day": "Thu", "topic": "T20", "script": null}, {"day": "Sat", "topic": "T16", "script": null}], "test": "cultural relevance; local review mandatory"},
+      {"week": 9, "theme": "文化桥接", "publish": [{"day": "Tue", "topic": "T17", "script": null}, {"day": "Thu", "topic": "T18", "script": null}, {"day": "Sat", "topic": "T19", "script": null}], "test": "local-life share >=50% of footage"},
+      {"week": 10, "theme": "真实人物", "publish": [{"day": "Tue", "topic": "T21", "script": null}, {"day": "Thu", "topic": "T22", "script": null}, {"day": "Sat", "topic": "T24", "script": "S10"}], "test": "unscripted feedback and quality comments"},
+      {"week": 11, "theme": "B2B真实执行", "publish": [{"day": "Tue", "topic": "T23", "script": null}, {"day": "Thu", "topic": "T25", "script": null}, {"day": "Sat", "topic": "T27", "script": null}], "test": "B2B inquiry and staff usage"},
+      {"week": 12, "theme": "渠道转化（仅方案A/B且CTA获批）", "publish": [{"day": "Tue", "topic": "T28", "script": "S11"}, {"day": "Thu", "topic": "T29", "script": null}, {"day": "Sat", "topic": "T30", "script": null}], "test": "map click, tasting inquiry, attributable visit"}
+    ],
+    "weekly_review": ["按时长分组的2/3/6秒与完播", "高质量评论", "主页/地图/私信/品鉴", "对应终端销量", "负面和合规信号", "下周只改一个主要变量"],
+    "creative_mix_target": "INFERRED初始测试：50%尼泊尔真实生活、20%饮用教育、15%中尼共同文化、10%品牌工艺、5%高端形象；W6后按真实数据调整"
+  },
+  "handoff_notes": {
+    "confirmed_complete_in_this_file": ["B2B从发现到补货SOP", "经销商90天试销机制", "4类评分逻辑", "12周计划与继续/调整/停止阈值", "9 Agent与人工队列", "25项风险矩阵", "B2C反馈表", "30个选题", "12条可拍脚本", "商务外联英文与Nepali草稿", "12周内容日历"],
+    "still_needs_human_or_other_workstream": ["当地酒类与平台最终书面确认", "SKU/价格/库存/利润", "真实企业名单与双来源核验", "真实品鉴与搭配结果", "Nepali母语审核", "演员/场地/消费者授权", "Claude复核是否真实调用"],
+    "truth_boundary": "本文件是最终DOCX的结构化研究输入，不等于已执行外联、已发布内容、已完成品鉴、已产生销售或已获得平台/法律批准"
+  },
+  "communications_platform_basis": [
+    {
+      "platform": "Facebook Page + Messenger",
+      "role": "本地商户发现、营业状态验证、公开主页首触达",
+      "evidence": ["SRC-EX-01"],
+      "decision": "INFERRED：第一优先的本地商户消息通道，但每条线索先核对主页近90天动态、地址、电话和第二来源。",
+      "allowed": ["针对公开企业主页发送一次个性化商务信息", "对主动回复者转入预约或资料发送", "记录已读、回复、拒绝和下一步"],
+      "not_allowed": ["批量复制粘贴骚扰", "向个人非公开账号搜集联系方式", "将广告触达人数当月活或成交人数"],
+      "cadence": "D1首次；D3一次简短跟进；D7电话或第二公开渠道；D14价值明确的最后一次；无回复转低优先级90天"
+    },
+    {
+      "platform": "Viber",
+      "role": "已建立联系后的预约、样品、订单、配送、反馈",
+      "evidence": ["SRC-EX-02", "SRC-EX-03"],
+      "decision": "KNOWN：官方business messaging强调verified account与opt-in；因此不作为冷名单群发工具。",
+      "allowed": ["客户主动提供Viber并同意后跟进", "预约提醒", "试销周报和补货确认", "消费者或终端反馈"],
+      "not_allowed": ["购买号码群发", "未经同意的促销", "冒充个人账号或真人"],
+      "gate": "批量business messaging前由国代确认当地账号主体、approved partner、opt-in记录及酒类内容规则"
+    },
+    {
+      "platform": "LinkedIn",
+      "role": "决策人发现、职业身份交叉验证、企业采购和酒店管理层触达",
+      "evidence": ["SRC-EX-01", "SRC-EX-04", "SRC-EX-05"],
+      "decision": "INFERRED：总触达规模小于Messenger，但在酒店采购、F&B、企业采购、中尼贸易等角色上信噪比更高。",
+      "search_titles": ["Owner", "Founder", "Managing Director", "General Manager", "Procurement Manager", "Purchasing Manager", "F&B Manager", "Food and Beverage Manager", "Beverage Manager", "Restaurant Manager", "Corporate Sales Manager", "Events Manager"],
+      "boolean_examples": ["(procurement OR purchasing OR \"food and beverage\" OR F&B) AND (hotel OR resort OR restaurant) AND Nepal", "(owner OR founder OR \"managing director\") AND (liquor OR beverage OR distributor OR wholesale) AND Nepal", "(procurement OR gifting OR administration) AND (corporate OR trading OR construction) AND (Kathmandu OR Nepal)"],
+      "rule": "先看共同联系人/近期动态；连接请求不发附件；接受后再问是否可发送一页资料"
+    }
+  ],
+  "content_metric_definitions": [
+    {
+      "metric": "3秒停留率",
+      "formula": "3秒观看次数/视频开始播放次数",
+      "source": "Meta使用SRC-EX-07；TikTok若organic analytics不提供3秒口径，则标NEEDS_VERIFY并以2秒view rate + 6秒view rate替代",
+      "warning": "平台口径不同，不跨平台直接比较"
+    },
+    {
+      "metric": "6秒停留率",
+      "formula": "纯6秒观看次数/视频开始播放次数",
+      "source": "SRC-EX-06",
+      "warning": "不得把包含互动的6-second focused view直接当纯6秒观看"
+    },
+    {
+      "metric": "完播率",
+      "formula": "100% video views/video starts",
+      "source": "SRC-EX-06",
+      "warning": "必须按时长分组比较：15-20秒、21-35秒、36-60秒"
+    },
+    {
+      "metric": "平均播放时长",
+      "formula": "total play time/video views",
+      "source": "SRC-EX-06",
+      "warning": "注明是否含replay，并同时记录视频长度"
+    },
+    {
+      "metric": "高质量评论率",
+      "formula": "含口味、场景、价格、门店或品鉴问题的评论数/reach",
+      "source": "项目自定义",
+      "warning": "表情、泛赞、机器人评论不计"
+    },
+    {
+      "metric": "销售意向率",
+      "formula": "门店查询+地图点击+品鉴咨询+商务询盘/unique viewers",
+      "source": "项目自定义",
+      "warning": "仅在CTA合规且追踪链路可用时统计"
+    },
+    {
+      "metric": "内容辅助动销",
+      "formula": "发布后7天对应终端日均销量-发布前14天对应终端日均销量",
+      "source": "项目自定义",
+      "warning": "样本小只作方向性证据；需记录促销、节庆、缺货等干扰"
+    }
+  ],
+  "b2b_sop": {
+    "north_star": "不是上架数，而是可追踪的真实终端销售与补货",
+    "stages": [
+      {"stage": 1, "name": "发现企业", "owner": "Agent 3", "input": "公开地图、官网、企业主页、协会名录", "output": "原始线索", "exit": "企业名称+城市+类型+至少1个公开来源", "reject": "只有个人号码或来源不可追溯"},
+      {"stage": 2, "name": "验证企业", "owner": "Agent 3", "input": "原始线索", "output": "营业状态与第二来源", "exit": "近12个月仍有经营信号；高优先级至少2来源", "reject": "永久关闭、地址冲突且无法解释"},
+      {"stage": 3, "name": "找到负责人", "owner": "Agent 3+人工", "input": "企业公开信息", "output": "角色或姓名", "exit": "找到Owner/GM/Procurement/F&B等角色，或由前台确认转接路径", "reject": "仅未经验证私人联系方式"},
+      {"stage": 4, "name": "评分与分层", "owner": "Agent 4", "input": "验证记录", "output": "S/A/B/C/D与理由", "exit": "评分字段完整度>=70%且无硬否决", "reject": "身份未确认或合规风险"},
+      {"stage": 5, "name": "首次接触", "owner": "Agent 5起草+人工发送", "input": "个性化事实+价值主张", "output": "消息记录", "exit": "获得回复、拒绝或完成D14节奏", "reject": "模板群发或无退出机制"},
+      {"stage": 6, "name": "需求判断", "owner": "人工销售", "input": "回复", "output": "客户场景/客群/现有品类/异议", "exit": "确认至少一个真实销售场景及决策链", "reject": "只问独家、无执行承诺"},
+      {"stage": 7, "name": "发送简版资料", "owner": "Agent 5+人工批准", "input": "匹配场景", "output": "1页资料+SKU待确认项", "exit": "客户同意接收且资料无未核实价格", "reject": "堆叠品牌历史、无卖法"},
+      {"stage": 8, "name": "电话或线上沟通", "owner": "人工销售", "input": "资料与问题清单", "output": "会议纪要", "exit": "明确是否品鉴、谁参加、下一日期", "reject": "无负责人或无下一步"},
+      {"stage": 9, "name": "预约见面", "owner": "人工销售", "input": "合格意向", "output": "日历邀请", "exit": "时间、地点、参与人、样品数量确认", "reject": "无法确认成年人或合法场所"},
+      {"stage": 10, "name": "现场品鉴", "owner": "人工+国代", "input": "样品与反馈表", "output": "结构化品鉴反馈", "exit": "记录口感、场景、价格预期、下一步", "reject": "无授权场地、无责任饮酒控制"},
+      {"stage": 11, "name": "试销谈判", "owner": "人工+国代", "input": "90天试销条款", "output": "试销确认", "exit": "SKU、区域、首批量、终端、价格边界、回款、数据、补货条件书面化", "reject": "先给长期独家或无数据义务"},
+      {"stage": 12, "name": "上架", "owner": "经销商/终端+人工", "input": "已到货", "output": "上架证据", "exit": "照片、菜单/POS、数量、日期、价格记录", "reject": "只报口头上架"},
+      {"stage": 13, "name": "店员培训", "owner": "人工+Agent 6材料", "input": "10分钟培训卡", "output": "参训名单+测验", "exit": "店员能在20秒内说清是什么、卖给谁、怎么喝、不能说什么", "reject": "只发PDF无确认"},
+      {"stage": 14, "name": "7天回访", "owner": "Agent 8提醒+人工", "input": "销售与异议", "output": "首周日志", "exit": "销量、消费者问题、员工推荐行为有记录", "reject": "只问卖得怎么样"},
+      {"stage": 15, "name": "14/30天动销检查", "owner": "Agent 8", "input": "库存、销量、反馈", "output": "sell-through与动作", "exit": "选择继续、培训、换场景、换SKU或退出", "reject": "以折扣掩盖无动销"},
+      {"stage": 16, "name": "补货或淘汰", "owner": "人工+国代", "input": "库存与回款", "output": "补货单或退出记录", "exit": "真实补货/明确淘汰原因/复盘入库", "reject": "把调货或赠品补充记作补货"}
+    ],
+    "follow_up_policy": {
+      "touches": ["D1个性化首次", "D3补充一个价值点", "D7电话或第二公开渠道", "D14最后一次明确价值+退出选项"],
+      "stop": "明确拒绝、要求停止、身份不符、D14后无回复",
+      "recycle": "90天后仅在有新品、活动或新场景时重新验证一次"
+    }
+  },
+  "dealer_90_day_trial": {
+    "entry_conditions": ["企业与负责人已验证", "至少一个真实覆盖区域和终端清单", "愿意提供每周销售与库存数据", "接受不立即授予长期独家", "价格、账期、回款由国代书面批准", "无重大信誉或乱价风险"],
+    "trial_contract_minimum": ["区域", "SKU", "首批量", "目标终端数", "上架日期", "建议价格边界", "付款与回款", "周数据字段", "样品用途", "培训责任", "补货条件", "退换/破损处理", "不合规推广禁止项", "终止条款"],
+    "phases": [
+      {"days": "0-14", "goal": "落地而非承诺", "actions": ["确认目标终端", "首批到货", "上架照片", "完成店员培训", "至少一次合规品鉴"], "gate": ">=70%承诺终端真实上架；低于则暂停新增供货"},
+      {"days": "15-30", "goal": "发现真实阻力", "actions": ["周销量与库存", "至少10份消费者反馈", "记录员工推荐率", "复盘价格/口感/认知异议"], "gate": "至少产生消费者销售；0销售则先改场景/培训，不以铺货替代动销"},
+      {"days": "31-60", "goal": "验证可复制场景", "actions": ["保留前2个场景", "淘汰无执行终端", "第二次培训", "测试1个内容或活动联动"], "gate": "至少30%活跃终端达到初始库存50% sell-through，阈值NEEDS_VERIFY按包装量校准"},
+      {"days": "61-90", "goal": "验证补货与合作升级", "actions": ["核验真实补货", "检查乱价与回款", "复盘终端质量", "提出下一季计划"], "gate": "补货终端占试销终端>=30%，并能稳定回传数据，才进入升级讨论"}
+    ],
+    "weekly_data": ["期初库存", "进货", "消费者销售数量", "赠样/破损/调拨", "期末库存", "终端数", "有销售终端数", "价格", "消费者异议", "店员反馈", "下周动作"],
+    "upgrade": ["真实进货", "真实终端", "真实消费者销售", "真实补货", "按时回款", "无乱价", "数据完整率>=90%", "具备维护人员"],
+    "no_exclusive_rule": "90天内默认不授予长期独家；如谈阶段性保护，必须绑定区域、最低有效终端、回款、补货、数据与退出条款，并由国代批准"
+  },
+  "scoring_models": {
+    "common_rules": {
+      "scale": "每维0-5分；加权分=维度分/5*权重",
+      "evidence_multiplier": {"two_recent_independent_sources": 1.0, "one_recent_reliable_source": 0.9, "old_or_indirect_source": 0.7, "unverified_claim": 0.5},
+      "final": "COMPUTED：raw_weighted_score * evidence_multiplier；保留raw和confidence_adjusted两列",
+      "missing": "缺失不自动记0，记NEEDS_VERIFY；字段完整度<70%不得列S级",
+      "hard_veto": ["企业或身份疑似虚假", "要求违规广告/灰色账户", "明确涉及未成年人", "重大信誉/回款风险", "要求伪造资质", "拒绝价格与数据边界"]
+    },
+    "city": {
+      "weights": {"中高端消费能力": 15, "酒店餐厅酒吧密度": 15, "进口烈酒消费基础": 15, "商务旅游宴请": 10, "经销商门店资源": 10, "中国亚洲餐饮场景": 10, "数字传播能力": 10, "竞品空缺": 10, "执行配送难度反向": 5},
+      "tiers": {"P1": "75-100，进入90天验证", "P2": "60-74，建名单不重投入", "P3": "45-59，监测", "P4": "<45，暂不进入"},
+      "entry_gate": "除总分外，配送可行、至少30条可验证终端线索、1名人工执行者、合规路径均必须成立",
+      "expansion_gate": "进入Pokhara前，加德满都有约10家有效终端、>=30%补货、至少1个复制场景、团队有余量"
+    },
+    "dealer": {
+      "weights": {"目标客户匹配": 15, "渠道覆盖": 15, "销售执行": 15, "试销意愿": 15, "决策人可达": 10, "信誉回款": 10, "终端动销": 10, "数据回传": 5, "价格管理": 5},
+      "tiers": {"S": "80-100，优先见面", "A": "65-79，重点接触", "B": "50-64，补充", "C": "35-49，低优先", "D": "<35，不投入人工"},
+      "special_rule": "只要提出独家但拒绝试销KPI，试销意愿<=1/5且不能为S/A"
+    },
+    "terminal": {
+      "weights": {"客群消费能力": 20, "场景匹配": 15, "进口酒经验": 15, "客流动销": 15, "决策人可达": 10, "试销品鉴": 10, "形象匹配": 5, "位置": 5, "数据回传": 5},
+      "tiers": {"T1": "75-100，首批试销", "T2": "60-74，第二批", "T3": "45-59，观察", "T4": "<45，不铺货"},
+      "special_rule": "愿上架但不培训、不记录销量、不允许回访者，数据回传与试销配合均<=1/5"
+    },
+    "creator": {
+      "weights": {"成年受众": 20, "本地可信": 15, "餐饮酒店生活方式相关": 15, "真实互动": 15, "目标城市": 10, "品牌安全": 10, "制作能力": 10, "成本效率": 5},
+      "tiers": {"C1": "80-100，人工尽调后试拍", "C2": "65-79，小额测试", "C3": "50-64，仅内容共创候选", "C4": "<50，不合作"},
+      "checks": ["受众18+比例NEEDS_VERIFY，酒类项目建议品牌自定更高年龄阈值", "近30条内容抽样", "评论真实性", "无危险饮酒、未成年人、仇恨、政治宗教高风险", "报价含使用权和删除条款"],
+      "special_rule": "粉丝数不单独加分；成年受众无法证明时不得进入公开酒类合作"
+    }
+  },
+  "twelve_week_plan": [
+    {"week": 1, "focus": "输入与合规闸门", "actions": ["收集SKU/价格/库存/利润/资质", "建立平台与内容合规问题单", "城市初评", "CRM字段和证据规则"], "kpi": ["内部数据完成率>=70%或明确BLOCKED字段", "3城评分框架完成", "0条未经审批酒类公开内容"], "gate": "平台酒类规则不明时只做方案B/C准备"},
+    {"week": 2, "focus": "文化与名单地图", "actions": ["生活/饮酒/场景研究", "文化桥接", "Kathmandu区域词表", "150条原始线索"], "kpi": ["原始线索>=150", "高优先候选>=25", "每个文化结论有证据或NEEDS_VERIFY"]},
+    {"week": 3, "focus": "300线索与评分", "actions": ["扩至300", "去重", "高优先双来源", "首批50接触队列", "外联A/B模板"], "kpi": ["原始>=300或如实报告市场上限", "已验证>=100", "50条优先队列", "重复率<5%"]},
+    {"week": 4, "focus": "销售工具与样片预制", "actions": ["1页经销商资料", "90天试销单", "品鉴表", "店员卡", "6条样片shot list"], "kpi": ["资料无编造价格", "6条脚本合规预审", "至少2个真实场景可测试"]},
+    {"week": 5, "focus": "首轮外联", "actions": ["联系15-25家", "D3跟进", "电话资格确认", "记录拒绝原因"], "kpi": ["contacted 15-25", "reply>=3为方向信号", "所有接触有next_action"]},
+    {"week": 6, "focus": "第二轮外联与预约", "actions": ["累计30-50家", "D7第二渠道", "5-10次有效沟通", "预约3-8次"], "kpi": ["累计reply 10-20为目标", "meeting_or_tasting 3-8", "拒绝原因覆盖率>=90%"]},
+    {"week": 7, "focus": "品鉴与首批试销", "actions": ["合规品鉴", "首批3-5终端", "店员培训", "发布样片若获批"], "kpi": ["反馈>=10", "试销终端>=3", "培训通过率>=80%"]},
+    {"week": 8, "focus": "扩至5-10终端", "actions": ["第二批试销", "内容支柱测试", "终端销售记录", "淘汰无执行渠道"], "kpi": ["试销终端5-10", "内容>=6条累计", "周数据完整率>=85%"]},
+    {"week": 9, "focus": "动销诊断", "actions": ["sell-through", "口感异议聚类", "话术迭代", "保留前2内容方向"], "kpi": ["反馈>=20", "有销售终端率>=50%作为测试阈值", "每个弱终端有单一纠偏动作"]},
+    {"week": 10, "focus": "补货前验证", "actions": ["库存检查", "高质渠道加码", "内容到店归因", "第一次补货请求"], "kpi": ["至少1个真实补货信号", "累计内容12-20", "高质量询盘可追踪"]},
+    {"week": 11, "focus": "城市与渠道复盘", "actions": ["渠道转化漏斗", "终端分层", "SKU/场景复盘", "Pokhara gate检查"], "kpi": ["漏斗字段完整>=90%", "明确继续/调整/淘汰清单", "不以铺货替代补货"]},
+    {"week": 12, "focus": "90天决策", "actions": ["补货率", "贡献毛利待数据", "合规事件", "复制场景", "下季资源方案"], "kpi": ["试销8-15目标", "反馈30-50", "补货率>=30%目标", "至少1个复制场景"]}
+  ],
+  "decision_thresholds": {
+    "continue": ["试销终端>=8", "真实补货终端/试销终端>=30%", "至少1个可复制场景", "消费者反馈>=30且主要阻力有应对", "无重大合规/乱价/回款事件", "填入真实商业数据后单位贡献毛利为正"],
+    "adjust": ["试销3-7家或补货率10%-29%", "至少一个渠道或内容方向显著优于项目中位数", "问题可定位为话术、培训、场景、SKU或价格之一", "允许追加一个30天单变量实验"],
+    "pause_or_stop": ["已接触>=50个已验证客户且完成2轮话术实验，仍少于3家试销", ">=5家试销且到D90没有真实补货，并排除缺货/配送/记录错误", "真实价格数据表明渠道各方无法获得正贡献且无合法调整空间", "重大合规、品牌安全、回款或身份风险", "数据造假或无法建立真实销售记录"],
+    "content_rules": {"continue": "同支柱至少3条后，其6秒率或完播率高于同长度cohort median，且出现>=2个高质量评论/私信/门店查询", "adjust": "观看高于中位数但无意向，改CTA或销售场景；意向高但观看低，改前3秒和长度", "stop": "同一方向连续3条低于同长度cohort median的50%且0高质量意向；不使用外部通用阈值冒充保证"}
+  },
+  "ai_human_sop": {
+    "principle": "AI整理、检索、评分、生成和复盘；人工只承担身份、法律、语言、现实商务、品鉴、授权、资金和现场动作",
+    "agents": [
+      {"id": 1, "name": "Codex总控", "inputs": "任务、状态、文件", "outputs": "任务图、合并、冲突表、最终状态", "cannot": "把未验证项改成已确认"},
+      {"id": 2, "name": "市场研究", "inputs": "公开证据", "outputs": "城市/人群/竞品/场景/节庆", "cannot": "用单一D级来源定结论"},
+      {"id": 3, "name": "线索挖掘", "inputs": "允许的公开来源", "outputs": "原始线索、去重、缺失字段", "cannot": "绕过登录/验证码或编造联系方式"},
+      {"id": 4, "name": "线索评分", "inputs": "验证后的字段", "outputs": "评分、理由、每日队列", "cannot": "把缺失字段自动记高分"},
+      {"id": 5, "name": "外联内容", "inputs": "客户类型与公开事实", "outputs": "邮件/消息/电话草稿", "cannot": "未经授权自动发送、拨号或冒充真人"},
+      {"id": 6, "name": "内容策略", "inputs": "文化、反馈、平台数据", "outputs": "选题、脚本、日历、迭代", "cannot": "跳过酒类合规闸门"},
+      {"id": 7, "name": "合规与证据", "inputs": "政策和内容", "outputs": "证据等级、风险标记、人工问题", "cannot": "代替当地律师/监管/平台批准"},
+      {"id": 8, "name": "CRM与复盘", "inputs": "接触、销售、库存、反馈", "outputs": "提醒、漏斗、周报、预警", "cannot": "把调拨、赠品或口头意向记为销售/补货"},
+      {"id": 9, "name": "Claude复核", "inputs": "长文、策略、文化表达", "outputs": "反方检查、逻辑冲突、人感问题", "cannot": "环境不可调用时不得声称已复核；应生成复核任务包"}
+    ],
+    "workflow": ["Agent 2/3产出candidate", "Agent 7查证与分级", "Agent 4评分", "Agent 1去重并进入CRM", "Agent 5/6生成草稿", "Agent 7合规检查", "满足触发条件才进人工队列", "人工处理最小动作", "Agent 8回收结果并更新周报", "Agent 9做反方复核或标记未调用"],
+    "human_triggers": ["AI置信度<80%", "两个A级来源冲突", "法律/平台资质", "价格/账期/折扣", "区域或渠道独家", "正式商务谈判", "客户要求电话/见面", "送样", "真实品鉴/搭配", "Nepali公开发布", "宗教民族政治", "平台警告/限流/封禁", "投诉", "高价值客户负面反馈", "企业身份无法确认"],
+    "human_queue_schema": ["queue_id", "事项", "触发原因", "风险等级", "AI已完成", "人工最小动作", "可选方案", "建议方案", "最晚节点", "不处理影响", "owner", "状态", "处理结果", "是否交回AI"],
+    "sla": {"critical": "2小时内确认负责人并暂停相关动作", "high": "1个工作日", "medium": "3个工作日", "low": "周会处理"},
+    "reentry": "人工只填写决定、证据和结果；Agent 8自动更新CRM、模板、评分或风险状态，避免人工重复整理"
+  },
+  "risk_matrix": [
+    {"id": 1, "risk": "消费者不知道白酒", "probability": "高", "impact": "高", "early_signal": "把Fenjiu问成wine/whisky或不知道怎么喝", "ai": "生成20秒品类解释与FAQ", "human_trigger": "10份反馈中>50%仍无法复述品类", "solution": "先说aromatic Chinese grain spirit、小杯慢饮，再讲品牌", "fallback": "只在有培训的终端销售"},
+    {"id": 2, "risk": "入口刺激度过高", "probability": "高", "impact": "高", "early_signal": "首口后拒绝第二次或只说too strong", "ai": "聚类酒精度/温度/杯量反馈", "human_trigger": "真实品鉴与SKU选择", "solution": "小杯、闻香、慢饮；加水/加冰/调酒只作待验证候选", "fallback": "换SKU或聚焦熟悉烈酒人群"},
+    {"id": 3, "risk": "只用威士忌比价", "probability": "高", "impact": "中", "early_signal": "问同价能买哪款whisky", "ai": "生成非贬低的品类差异卡", "human_trigger": "价格策略", "solution": "比较场景、香气、杯量与分享方式，不宣称优越", "fallback": "转礼赠/中餐场景"},
+    {"id": 4, "risk": "被误认为普通中国烈酒", "probability": "中", "impact": "高", "early_signal": "只问China liquor", "ai": "统一Fenjiu/baijiu/清香型解释", "human_trigger": "品牌素材审批", "solution": "用具体工艺与饮用法建立类别记忆", "fallback": "弱化宏大品牌叙事"},
+    {"id": 5, "risk": "经销商只要独家不执行", "probability": "高", "impact": "高", "early_signal": "先谈exclusive但拒绝终端/KPI", "ai": "评分降级并生成条件清单", "human_trigger": "独家谈判", "solution": "90天非独家试销，保护与补货/回款/终端绑定", "fallback": "并行发展其他经销商"},
+    {"id": 6, "risk": "渠道不回复", "probability": "高", "impact": "中", "early_signal": "D7无回复", "ai": "换价值点/渠道并排程", "human_trigger": "S级线索D7仍无回复时电话", "solution": "4触点上限，个性化首句", "fallback": "D14转低优先池"},
+    {"id": 7, "risk": "找不到决策人", "probability": "中", "impact": "高", "early_signal": "只有前台/通用邮箱", "ai": "LinkedIn职位与官网反查", "human_trigger": "电话确认角色", "solution": "先问角色而非私人号码", "fallback": "协会活动或共同联系人"},
+    {"id": 8, "risk": "线索多质量差", "probability": "高", "impact": "高", "early_signal": "验证率<40%", "ai": "按来源分层和去重", "human_trigger": "高分线索实地抽验", "solution": "缩减低质来源、提高双来源比例", "fallback": "真实数量低于300也不造假"},
+    {"id": 9, "risk": "上架但不推荐", "probability": "高", "impact": "高", "early_signal": "有库存、0推荐、0反馈", "ai": "生成店员卡和回访问题", "human_trigger": "现场培训", "solution": "20秒话术+推荐场景+小测", "fallback": "调出无执行终端"},
+    {"id": 10, "risk": "店员不会介绍", "probability": "高", "impact": "中", "early_signal": "把品类或饮用法说错", "ai": "生成双语卡和测验", "human_trigger": "母语审核与实训", "solution": "是什么/卖给谁/怎么喝/不能说四句", "fallback": "只由受训人员推荐"},
+    {"id": 11, "risk": "首单无补货", "probability": "高", "impact": "高", "early_signal": "30天sell-through<20%", "ai": "按场景/终端找原因", "human_trigger": "价格、SKU、陈列决策", "solution": "单变量纠偏14天", "fallback": "淘汰终端/经销商"},
+    {"id": 12, "risk": "播放高无销售", "probability": "高", "impact": "高", "early_signal": "观看高但0门店查询/私信", "ai": "分解hook与CTA", "human_trigger": "门店归因链路", "solution": "内容绑定一个销售场景和可追踪CTA", "fallback": "停止纯曝光方向"},
+    {"id": 13, "risk": "Nepali不自然", "probability": "高", "impact": "高", "early_signal": "母语者指出书面腔/歧义", "ai": "保留英文源文和术语表", "human_trigger": "任何公开Nepali", "solution": "母语者翻译+回译+合规审校", "fallback": "只发布英文或无台词视觉内容"},
+    {"id": 14, "risk": "中国文化过重", "probability": "中", "impact": "中", "early_signal": "完播低、评论说距离感", "ai": "计算本地生活占比", "human_trigger": "文化顾问复核", "solution": "本地生活为主，中国来源为次", "fallback": "改为产品使用教育"},
+    {"id": 15, "risk": "当地文化元素错误", "probability": "中", "impact": "高", "early_signal": "民族/宗教/节庆称谓争议", "ai": "标记敏感元素", "human_trigger": "当地文化审核", "solution": "真实人物、具体场景、避免泛化", "fallback": "删除该元素"},
+    {"id": 16, "risk": "酒类内容/账号受限", "probability": "中", "impact": "极高", "early_signal": "拒登、限流、警告", "ai": "自动暂停相似素材并归因", "human_trigger": "立即由合规负责人处理", "solution": "A/B/C方案切换，保留证据", "fallback": "转B2B/门店内部/私域"},
+    {"id": 17, "risk": "创作者受众年龄不符", "probability": "中", "impact": "极高", "early_signal": "无法提供18+受众截图", "ai": "评分硬降级", "human_trigger": "人工验真截图与合同", "solution": "成年受众与25+出镜门槛", "fallback": "不合作"},
+    {"id": 18, "risk": "平台规则变化", "probability": "中", "impact": "高", "early_signal": "政策页更新时间/审核口径变", "ai": "月度链接复查", "human_trigger": "规则冲突或广告拒绝", "solution": "版本化合规清单", "fallback": "暂停发布/投放"},
+    {"id": 19, "risk": "AI编造企业/联系方式", "probability": "中", "impact": "高", "early_signal": "链接打不开、字段无出处", "ai": "来源必填和URL验证", "human_trigger": "S级线索身份仍不清", "solution": "两来源+最近验证日期", "fallback": "删除并记录模型错误"},
+    {"id": 20, "risk": "企业重复", "probability": "高", "impact": "中", "early_signal": "名称不同但电话/地址相同", "ai": "标准化名称、电话、坐标", "human_trigger": "连锁/分店判断", "solution": "parent_account+location_id", "fallback": "保留一条主记录"},
+    {"id": 21, "risk": "企业停业", "probability": "中", "impact": "中", "early_signal": "近12月无更新/地图关闭", "ai": "营业信号评分", "human_trigger": "电话确认高分线索", "solution": "标待验证，不直接联系", "fallback": "淘汰"},
+    {"id": 22, "risk": "乱价", "probability": "中", "impact": "极高", "early_signal": "公开价低于书面边界", "ai": "价格监测并告警", "human_trigger": "国代商务处理", "solution": "试销协议、批次追踪、整改时限", "fallback": "停供/终止"},
+    {"id": 23, "risk": "反馈不统一", "probability": "高", "impact": "中", "early_signal": "自由文本无法比较", "ai": "强制结构化字段", "human_trigger": "现场补录关键项", "solution": "统一表+选项+少量开放题", "fallback": "不完整记录不进入统计"},
+    {"id": 24, "risk": "国代配送/跟进慢", "probability": "中", "impact": "高", "early_signal": "超过承诺SLA、缺货未告警", "ai": "订单与SLA预警", "human_trigger": "运营负责人协调", "solution": "每日待履约表和升级路径", "fallback": "限制新试销、先保现有终端"},
+    {"id": 25, "risk": "过早扩第二城", "probability": "中", "impact": "高", "early_signal": "Kathmandu补货<30%仍讨论扩张", "ai": "城市gate自动阻断", "human_trigger": "管理层例外批准", "solution": "满足扩城条件再进Pokhara", "fallback": "继续加德满都30天"}
+  ]
+}
