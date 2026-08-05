@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P01-02` / `phase_01` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P01-01` / 无 |
 | writes_to | `docker-compose.yml`、`Makefile`、`.env.example`、CI/test config、docs |
 | forbidden_paths | `.env`、生产 secrets、legacy 脚本、原始/媒体/outputs、同步包 |

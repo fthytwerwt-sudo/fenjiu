@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P05-01` / `phase_05` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 04 / `P06-01`, `P07-01` |
 | writes_to | `modules/leads/`、`adapters/crawl/`、contracts/tests/fixtures |
 | forbidden_paths | real website crawl, login/CAPTCHA bypass, `research_channels.json`, private contacts, external send |

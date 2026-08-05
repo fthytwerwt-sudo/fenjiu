@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P03-02` / `phase_03` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P03-01` / 无 |
 | writes_to | mapping service/contracts/quality rules/tests/fixtures |
 | forbidden_paths | approved write path、真实供应链资料、外部 adapters、legacy |

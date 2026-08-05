@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P00-01` / `phase_00` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | 无 / 无 |
 | writes_to | `docs/implementation/`, `docs/collaboration/EXECUTION_HISTORY.md`（如有真实结果） |
 | forbidden_paths | 原始研究、DOCX/XLSX/PDF、媒体、`outputs/`、`.env*`、`research_channels.json`、`project_sync/latest/` |

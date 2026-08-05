@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P08-01` / `phase_08` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P03-03,P04-03,P05-03,P06-03,P07-03` + 真实资料到达 | 无 |
 | writes_to | 私有 storage/reference、ingestion job、审计、脱敏报告；少量 runbook 状态 docs |
 | forbidden_paths | Git、`fixtures/`、`.env*`、媒体/资料包本体、production external actions |

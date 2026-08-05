@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P01-01` / `phase_01` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 00 / 无 |
 | writes_to | `apps/ core/ modules/ adapters/ workflows/ fixtures/ migrations/ tests/`、项目配置 |
 | forbidden_paths | 顶层 legacy 脚本、原始资料、`.env*`、`outputs/`、同步包 |

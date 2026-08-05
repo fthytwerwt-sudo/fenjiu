@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P02-02` / `phase_02` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P02-01` / 无 |
 | writes_to | `modules/truth_center/`、contracts/migrations/tests |
 | forbidden_paths | ingestion parser、CRM/support/video adapters、真实资料、legacy |

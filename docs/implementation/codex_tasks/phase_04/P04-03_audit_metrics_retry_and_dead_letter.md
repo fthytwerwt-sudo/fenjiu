@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P04-03` / `phase_04` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P04-02` / 无 |
 | writes_to | `observability/`、queue port、audit module、tests/docs |
 | forbidden_paths | real monitoring SaaS credentials, external action adapters, raw content/PII |

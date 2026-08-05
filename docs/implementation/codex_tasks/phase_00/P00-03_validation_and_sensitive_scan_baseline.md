@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P00-03` / `phase_00` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P00-01` / `P00-02` |
 | writes_to | `tests/regression/`、`scripts/`、`docs/implementation/`（实施时） |
 | forbidden_paths | legacy 业务脚本实现、`.env*`、原始资料、媒体、`outputs/` |

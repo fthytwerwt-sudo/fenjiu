@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P03-03` / `phase_03` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P03-02` / 无 |
 | writes_to | truth/ingestion application services、approval contracts、tests/docs |
 | forbidden_paths | 自动外发/发布、真实数据、CRM/support/video implementation、legacy |

@@ -108,11 +108,11 @@ make run-ready-report BUSINESS_LINE=fenjiu
 
 | 状态 | 定义 | 可做什么 | 不能据此推断 |
 |---|---|---|---|
-| `system_technical_ready` | 系统在受控环境可启动、回归和 rollback | 内部 demo、报告、审计 | 数据已正确或可销售。 |
-| `data_usable` | 指定业务线资料已来源化、映射、通过质量检查并 `approved` | 客服/内容/CRM/视频读取 approved 真值做内部草稿 | 平台、合规、账号、收款和履约已允许。 |
-| `external_execution_allowed` | 所有 Phase 9 书面证据、feature flag 和用户授权共同满足 | 仅在明确白名单范围执行外部动作 | 已产生订单、销售成功或履约完成。 |
+| `technical_ready` | 系统在受控环境可启动、回归和 rollback（即“技术系统就绪”） | 内部 demo、报告、审计 | 数据已正确或可销售。 |
+| `data_ready` | 指定业务线资料已来源化、映射、通过质量检查并 `approved`（即“数据可用”） | 客服/内容/CRM/视频读取 approved 真值做内部草稿 | 平台、合规、账号、收款和履约已允许。 |
+| `business_external_ready` | 所有 Phase 9 书面证据、feature flag 和用户授权共同满足 | 仅在明确白名单范围执行外部动作 | 已产生订单、销售成功或履约完成。 |
 
-默认：前两个状态都为 `false`；最后一个永久默认 `false`。
+默认：前两个状态都为 `false`；`business_external_ready` 永久默认 `false`。运行时策略字段 `external_execution_allowed` 也永久默认 `false`，它只能作为最后一层拒绝，不能自行把状态改为就绪。
 
 ## 8. Phase 9：只规划的外部上线阻断
 

@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P03-01` / `phase_03` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 02 / 无 |
 | writes_to | `modules/ingestion/`、`adapters/storage/`、contracts/tests/fixtures |
 | forbidden_paths | 真实供应链包、原始 DOCX/XLSX/PDF、生产聊天/API、Git/sync archive |

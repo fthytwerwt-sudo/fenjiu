@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P02-01` / `phase_02` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 01 / 无 |
 | writes_to | `core/contracts/`、`migrations/`、database adapter、tests/fixtures |
 | forbidden_paths | 真实数据/文件、legacy/outputs、external adapters、业务状态 docs |

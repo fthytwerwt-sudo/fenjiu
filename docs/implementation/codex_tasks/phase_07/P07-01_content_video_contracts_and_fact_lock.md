@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P07-01` / `phase_07` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 04 / `P05-01`, `P06-01` |
 | writes_to | `modules/content_video/`、contracts/migrations/tests/fixtures |
 | forbidden_paths | legacy script implementation, real assets/video calls, `.env*`, external publish |

@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P05-02` / `phase_05` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P05-01` / `P06-02`, `P07-02` |
 | writes_to | `modules/leads/ modules/crm/`、migrations/contracts/tests |
 | forbidden_paths | real contacts, Twenty/CRM service install, external sending, supplier data |

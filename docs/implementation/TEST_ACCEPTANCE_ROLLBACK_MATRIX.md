@@ -35,4 +35,4 @@
 
 ## 4. 发布/业务判定边界
 
-测试全绿只可证明 `system_technical_ready`（并在资料 approved 后可能证明 `data_usable`）。任何 `external_execution_allowed` 仍需 Phase 9 的用户授权、当地许可、品牌授权、平台酒类边界、账号权限、价格/库存、收款和履约/售后证据；测试不得替代它们。
+测试全绿只可证明 `technical_ready`（并在资料 approved 后可能证明 `data_ready`）。`business_external_ready` 与策略字段 `external_execution_allowed` 仍需 Phase 9 的用户授权、当地许可、品牌授权、平台酒类边界、账号权限、价格/库存、收款和履约/售后证据；测试不得替代它们。

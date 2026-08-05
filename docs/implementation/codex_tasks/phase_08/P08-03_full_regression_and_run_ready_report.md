@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P08-03` / `phase_08` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P08-02` | 无 |
 | writes_to | test reports/private evidence/run-ready report、sanitized execution history/docs |
 | forbidden_paths | real external sending/publishing/quotes/orders/payment/refunds, raw data/PII, fixture-to-real copy |
@@ -22,7 +23,7 @@ Phase 8 目标是技术受控运行；Phase 9 外部上线闸门仍独立 blocke
 
 ## 六层需求确认
 
-- 目标层：prove system_technical_ready/data_usable, not external execution.
+- 目标层：prove `technical_ready` / `data_ready`, not external execution.
 - 机制层：all tests/audit/rollback/flags must pass; failure disables affected modules.
 - 实现设计层：`primary_route=make regression+demo+report`；`fallback_route=partial report with BLOCKED`；`capability_status=controlled internal`；`probe_required=full E2E`。
 - 流程层：approved truth→modules→negative tests→rollback→report→human review.
@@ -64,7 +65,7 @@ runbook, test matrix, run-ready template, all Phase 5–7 reports, current BUSIN
 
 ## Done when
 
-report evidence supports named `system_technical_ready`/`data_usable` values; fixture isolation, full regression and rollback pass; `external_execution_allowed=false` is explicit.
+report evidence supports named `technical_ready` / `data_ready` values; fixture isolation, full regression and rollback pass; `business_external_ready=false` and `external_execution_allowed=false` are explicit.
 
 ## Blocked if
 

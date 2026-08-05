@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P07-02` / `phase_07` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P07-01` / `P05-02`, `P06-02` |
 | writes_to | `adapters/video/`、content/video application/tests/docs |
 | forbidden_paths | changes to existing video scripts, `.env*`, real DashScope request, outputs/media, publish adapter |

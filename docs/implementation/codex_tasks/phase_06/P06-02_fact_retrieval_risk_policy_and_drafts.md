@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P06-02` / `phase_06` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P06-01` / `P05-02`, `P07-02` |
 | writes_to | customer-service application/policy/AI port/fakes/tests |
 | forbidden_paths | real LLM API, model key, send adapter, unapproved truth, legacy |

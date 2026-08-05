@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P04-01` / `phase_04` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 03 / 无 |
 | writes_to | `workflows/`、application/queue port、contracts/tests |
 | forbidden_paths | real external adapters, production accounts, truth schemas, legacy scripts |

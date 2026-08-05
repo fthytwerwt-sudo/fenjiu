@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P06-03` / `phase_06` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P06-02` / `P05-03`, `P07-03` |
 | writes_to | `adapters/support/`、customer-service workflow/admin/tests/docs |
 | forbidden_paths | production Chatwoot/WhatsApp/Meta/TikTok credentials, send endpoint, real conversations |

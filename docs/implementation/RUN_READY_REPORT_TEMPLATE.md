@@ -6,9 +6,10 @@
 # Run-ready Report｜<business_line>｜<report_id>
 
 ## 结论
-- system_technical_ready: true | false | blocked
-- data_usable: true | false | blocked
-- external_execution_allowed: false（除非 Phase 9 独立证据逐项列明）
+- technical_ready: true | false | blocked
+- data_ready: true | false | blocked
+- business_external_ready: false（除非 Phase 9 独立证据逐项列明）
+- external_execution_allowed policy flag: false（状态字段与策略字段不得互相代替）
 - 结论范围：内部受控运行 / 仅指定模块 / 不含外部执行
 
 ## 资料入场与真值
@@ -54,4 +55,4 @@
 - owner / action / completion evidence / stop condition:
 ```
 
-当 `system_technical_ready=true`、`data_usable=true` 且 `external_execution_allowed=false` 时，报告标题和结论必须明确“内部受控运行”，不得写“已上线”“可销售”“已获许可”或“已开始履约”。
+当 `technical_ready=true`、`data_ready=true`、`business_external_ready=false` 且 `external_execution_allowed=false` 时，报告标题和结论必须明确“内部受控运行”，不得写“已上线”“可销售”“已获许可”或“已开始履约”。

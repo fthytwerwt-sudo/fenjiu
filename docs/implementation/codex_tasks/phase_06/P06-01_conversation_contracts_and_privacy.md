@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P06-01` / `phase_06` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | Phase 04 / `P05-01`, `P07-01` |
 | writes_to | `modules/customer_service/`、contracts/migrations/tests |
 | forbidden_paths | real WhatsApp/TikTok/Meta/email adapters, raw chats/PII, `.env*`, legacy |

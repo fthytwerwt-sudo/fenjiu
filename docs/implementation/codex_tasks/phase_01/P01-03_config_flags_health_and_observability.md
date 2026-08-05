@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P01-03` / `phase_01` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P01-02` / 无 |
 | writes_to | `core/security/`、`observability/`、`apps/`、tests/docs |
 | forbidden_paths | `.env*`、真实 webhook/provider 配置、业务模块、legacy/资料 |

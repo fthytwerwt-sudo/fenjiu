@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P02-03` / `phase_02` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P02-02` / 无 |
 | writes_to | `core/security/`、repositories、fixtures、tests、docs |
 | forbidden_paths | 原始资料、任何 external send/publish adapter、legacy、`.env*` |

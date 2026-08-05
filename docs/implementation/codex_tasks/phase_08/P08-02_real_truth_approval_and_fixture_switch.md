@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P08-02` / `phase_08` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P08-01`，所有关键缺口/冲突已由书面资料解决 | 无 |
 | writes_to | 私有数据库的 approval/data-version/feature configuration/audit；脱敏 run report |
 | forbidden_paths | Git fixtures replacement, raw files, external send/publish/quote/payment/order adapters |
@@ -22,7 +23,7 @@ AI 不可批准；禁止 `fixture → real` 原地转换；不得删除旧版本
 
 ## 六层需求确认
 
-- 目标层：data_usable candidate, not business launch.
+- 目标层：`data_ready` candidate, not business launch.
 - 机制层：separate reviewer, evidence, current policy/freshness, conflict none.
 - 实现设计层：`primary_route=approval command+versioned publish`；`fallback_route=remain staging/manual`；`capability_status=requires human approval`；`probe_required=version/invalidation tests`。
 - 流程层：reviewer decision→approved facts→TruthFactsChanged→downstream recheck.
@@ -63,7 +64,7 @@ approval/audit query; fact freshness/fixture isolation/cross-scope tests; downst
 
 ## Done when
 
-data_usable may be true for named internal capabilities, fixture remains test-only, external_execution_allowed remains false.
+`data_ready` may be true for named internal capabilities; fixture remains test-only, while `business_external_ready=false` and `external_execution_allowed=false` remain explicit.
 
 ## Blocked if
 

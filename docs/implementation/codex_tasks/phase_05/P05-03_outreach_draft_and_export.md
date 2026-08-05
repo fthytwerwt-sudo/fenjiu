@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P05-03` / `phase_05` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P05-02` / `P06-03`, `P07-03` |
 | writes_to | CRM application/workflow/policy/tests/docs |
 | forbidden_paths | send/email/WhatsApp/social adapters, real contacts, automatic B2B activation, legacy |

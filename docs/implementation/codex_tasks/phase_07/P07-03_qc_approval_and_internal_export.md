@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P07-03` / `phase_07` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P07-02` / `P05-03`, `P06-03` |
 | writes_to | content/video QC/workflow/admin/tests/docs |
 | forbidden_paths | publish/social adapters, real media/model call, raw output archive, legacy scripts |

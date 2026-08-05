@@ -55,8 +55,8 @@
 
 ## Follow-ups
 
-1. 按 [分阶段路线](../PHASED_ROADMAP_AND_ACCEPTANCE.md) 先执行 Phase 0，冻结目录与依赖方向。
+1. 按 [Phase 0–8 执行图](../PHASE_0_TO_8_EXECUTION_MAP.md) 先执行 Phase 0，冻结目录与依赖方向。
 2. 实施 Phase 1 前对 [核心数据合同](../CORE_DATA_CONTRACTS.md) 进行 schema/权限审查。
-3. 每个外部组件在接入前通过 [开源组件选型矩阵](../OPEN_SOURCE_SELECTION_MATRIX.md) 的替换与 license 核验。
+3. 每个外部组件在接入前通过 [开源组件选择与退出策略](../OPEN_SOURCE_SELECTION_AND_EXIT_STRATEGY.md) 的替换与 license 核验。
 4. 真实资料进入前，在 synthetic E2E 中证明 fixture、审批、审计、幂等与隔离。
 5. 任何生产 adapter 单独建立 ADR/风险评审与用户授权记录。

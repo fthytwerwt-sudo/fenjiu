@@ -71,7 +71,7 @@ make run-ready-report BUSINESS_LINE=fenjiu
 | 仅 product/spec approved | 内部内容/FAQ 草稿（不报价） | 价格、库存、配送、订单、公开内容。 |
 | 价格有效但库存缺失/过期 | 内部价格校验报告 | 所有可售、交期、报价、客服价格回答。 |
 | 商品/价格/库存 complete，但资质/履约/平台边界缺失 | 内部 CRM/客服/视频受控 demo | 发布、外联、收款、下单、发货、广告。 |
-| 全部资料 approved，外部前置仍未核 | `system_technical_ready` + `data_usable` 可以为 true | `external_execution_allowed` 保持 false。 |
+| 全部资料 approved，外部前置仍未核 | `technical_ready` + `data_ready` 可以为 true | `business_external_ready` 与 `external_execution_allowed` 均保持 false。 |
 
 ## 7. 周期性真实对话数据更新
 

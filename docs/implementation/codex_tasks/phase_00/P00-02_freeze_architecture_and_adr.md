@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P00-02` / `phase_00` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P00-01` / `P00-03` |
 | writes_to | `docs/implementation/`, `docs/implementation/adr/` |
 | forbidden_paths | 运行时代码目录、原始资料、`.env*`、媒体、同步包生成产物 |

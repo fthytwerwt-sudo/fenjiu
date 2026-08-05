@@ -3,6 +3,7 @@
 | 元数据 | 值 |
 |---|---|
 | task_id / phase | `P04-02` / `phase_04` |
+| status | `PLANNED` |
 | depends_on / can_run_in_parallel_with | `P04-01` / 无 |
 | writes_to | `core/security/`、approval/admin application、tests/docs |
 | forbidden_paths | external sending/publishing/payment adapters, real identities/data, legacy |
