@@ -133,13 +133,29 @@ def git_value(*args: str) -> str:
     return completed.stdout.strip() or "unavailable"
 
 
+def git_worktree_status() -> str:
+    """空输出是干净状态，不应被误报为 Git 不可用。"""
+
+    completed = subprocess.run(
+        ["git", "status", "--short"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return "unavailable"
+    return completed.stdout.strip() or "clean"
+
+
 def git_state() -> dict[str, str]:
     return {
         "repository_root": str(ROOT),
         "branch": git_value("branch", "--show-current"),
         "commit": git_value("rev-parse", "HEAD"),
         "short_commit": git_value("rev-parse", "--short", "HEAD"),
-        "worktree_status": git_value("status", "--short"),
+        "worktree_status": git_worktree_status(),
         "remote_origin": git_value("remote", "get-url", "origin"),
     }
 
@@ -379,7 +395,16 @@ def copy_allowlist(source_files: list[Path], destination: Path) -> None:
         relative = source.relative_to(ROOT).as_posix()
         target = destination / (source.name if relative in flattened else relative)
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+        # copyfile 不复制扩展属性，避免外置盘生成 ._ AppleDouble 文件。
+        shutil.copyfile(source, target)
+
+
+def remove_system_metadata(directory: Path) -> None:
+    """清理 macOS/FAT 外置盘生成的元数据，确保不会进入包或 manifest。"""
+
+    for path in directory.rglob("*"):
+        if path.is_file() and (path.name.startswith("._") or path.name == ".DS_Store"):
+            path.unlink()
 
 
 def package_file_records(package_dir: Path) -> list[dict[str, object]]:
@@ -396,13 +421,17 @@ def package_file_records(package_dir: Path) -> list[dict[str, object]]:
     return records
 
 
-def make_archive(package_dir: Path, timestamp_for_name: str) -> Path:
+def archive_destination(timestamp_for_name: str) -> Path:
     DIST_DIR.mkdir(parents=True, exist_ok=True)
     archive_base = DIST_DIR / f"{PACKAGE_NAME_PREFIX}_{timestamp_for_name}"
     archive_path = archive_base.with_suffix(".zip")
     if archive_path.exists():
         raise SyncPackError(f"为避免覆盖历史同步包，已存在同名 ZIP：{archive_path}")
-    shutil.make_archive(str(archive_base), "zip", root_dir=package_dir.parent, base_dir=package_dir.name)
+    return archive_path
+
+
+def make_archive(package_dir: Path, archive_path: Path) -> Path:
+    shutil.make_archive(str(archive_path.with_suffix("")), "zip", root_dir=package_dir.parent, base_dir=package_dir.name)
     return archive_path
 
 
@@ -437,8 +466,13 @@ def verify_package(package_dir: Path, archive_path: Path | None = None) -> dict[
             try:
                 with zipfile.ZipFile(archive_path) as archive:
                     bad_member = archive.testzip()
+                    member_names = archive.namelist()
                 if bad_member:
                     failures.append(f"ZIP 损坏成员：{bad_member}")
+                if not any(name.endswith("/PROJECT_SYNC_MANIFEST.json") for name in member_names):
+                    failures.append("ZIP 缺少 PROJECT_SYNC_MANIFEST.json")
+                if any(Path(name).name.startswith("._") or Path(name).name == ".DS_Store" for name in member_names):
+                    failures.append("ZIP 含 macOS 系统元数据文件")
             except zipfile.BadZipFile:
                 failures.append("ZIP 无法读取")
     if failures:
@@ -464,7 +498,8 @@ def build() -> tuple[Path, Path, dict[str, object]]:
         (package_dir / "FILE_INDEX.md").write_text(render_file_index(top_level, reasons), encoding="utf-8")
         (package_dir / "PROJECT_SYNC_README.md").write_text(render_sync_readme(timestamp, state), encoding="utf-8")
 
-        archive_path = make_archive(package_dir, timestamp_for_name)
+        remove_system_metadata(package_dir)
+        archive_path = archive_destination(timestamp_for_name)
         manifest: dict[str, object] = {
             "schema_version": 1,
             "project": "fenjiu_nepal",
@@ -485,11 +520,14 @@ def build() -> tuple[Path, Path, dict[str, object]]:
         (package_dir / "PROJECT_SYNC_MANIFEST.json").write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+        remove_system_metadata(package_dir)
+        make_archive(package_dir, archive_path)
         verify_package(package_dir, archive_path)
 
         if LATEST_DIR.exists():
             shutil.rmtree(LATEST_DIR)
-        shutil.copytree(package_dir, LATEST_DIR)
+        shutil.copytree(package_dir, LATEST_DIR, copy_function=shutil.copyfile)
+        remove_system_metadata(LATEST_DIR)
         (SYNC_ROOT / "PROJECT_SYNC_MANIFEST.json").write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
