@@ -38,7 +38,6 @@ FORBIDDEN_SUFFIXES = {
     ".zip",
 }
 CONTENT_SKIP_PREFIXES = {
-    ".git",
     ".git/",
     ".omx/",
     "project_sync/latest/",
@@ -91,7 +90,29 @@ def run_git(root: Path, args: list[str], *, required: bool) -> list[str]:
 
 
 def tracked_files(root: Path) -> list[str]:
-    return run_git(root, ["ls-files"], required=False)
+    return run_git(root, ["ls-files"], required=True)
+
+
+def parse_porcelain_path(line: str) -> str | None:
+    if not line.startswith("!! "):
+        return None
+    path = line[3:]
+    if path.startswith('"') and path.endswith('"'):
+        return path.strip('"')
+    return path
+
+
+def ignored_files(root: Path, findings: list[Finding]) -> list[str]:
+    try:
+        lines = run_git(
+            root,
+            ["status", "--porcelain=v1", "--ignored=matching", "--untracked-files=all"],
+            required=True,
+        )
+    except GitCommandError as error:
+        findings.append(Finding("git_scan_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
+        return []
+    return sorted(path for line in lines if (path := parse_porcelain_path(line)))
 
 
 def changed_files(root: Path, base_sha: str | None, findings: list[Finding]) -> list[str]:
@@ -102,7 +123,7 @@ def changed_files(root: Path, base_sha: str | None, findings: list[Finding]) -> 
         paths.update(run_git(root, ["diff", "--cached", "--name-only", base_sha, "--"], required=True))
         paths.update(run_git(root, ["ls-files", "--others", "--exclude-standard"], required=True))
     except GitCommandError as error:
-        findings.append(Finding("git_command_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
+        findings.append(Finding("git_scan_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
         return []
     return sorted(paths)
 
@@ -110,9 +131,15 @@ def changed_files(root: Path, base_sha: str | None, findings: list[Finding]) -> 
 def walk_files(root: Path) -> list[str]:
     paths: list[str] = []
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [name for name in dirnames if name not in {".git", ".omx"}]
+        dirnames[:] = [
+            name
+            for name in dirnames
+            if name not in {".git", ".omx"} and not (Path(dirpath) / name).is_symlink()
+        ]
         for filename in filenames:
             path = Path(dirpath) / filename
+            if path.is_symlink():
+                continue
             paths.append(rel_path(root, path))
     return sorted(paths)
 
@@ -141,16 +168,19 @@ def content_scan_allowed(path: str) -> bool:
     return not any(path.startswith(prefix) for prefix in CONTENT_SKIP_PREFIXES)
 
 
-def scan_paths(paths: Iterable[str], root: Path, *, changed_only: bool) -> list[Finding]:
+def scan_paths(paths: Iterable[str], root: Path, *, changed_only: bool, ignored_only: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     for path in sorted(set(paths)):
         candidate = root / path
         if Path(path).name.startswith("._"):
             findings.append(Finding("appledouble", path, "AppleDouble metadata file is forbidden"))
         if path_is_forbidden(path):
-            category = "forbidden_changed_path" if changed_only else "forbidden_path"
+            if ignored_only:
+                category = "forbidden_ignored_path"
+            else:
+                category = "forbidden_changed_path" if changed_only else "forbidden_path"
             findings.append(Finding(category, path, "path matches forbidden baseline policy"))
-        if candidate.is_file() and candidate.stat().st_size > 10 * 1024 * 1024:
+        if not candidate.is_symlink() and candidate.is_file() and candidate.stat().st_size > 10 * 1024 * 1024:
             findings.append(Finding("large_file", path, "file is larger than 10 MiB"))
     return findings
 
@@ -162,13 +192,28 @@ def read_text_safely(path: Path) -> str | None:
         return None
 
 
+def is_safe_regular_file(root: Path, candidate: Path) -> bool:
+    if candidate.is_symlink() or not candidate.is_file():
+        return False
+    try:
+        root_resolved = root.resolve(strict=True)
+        candidate_resolved = candidate.resolve(strict=True)
+    except OSError:
+        return False
+    try:
+        candidate_resolved.relative_to(root_resolved)
+    except ValueError:
+        return False
+    return True
+
+
 def scan_content(root: Path, paths: Iterable[str]) -> list[Finding]:
     findings: list[Finding] = []
     for path in sorted(set(paths)):
         if not content_scan_allowed(path):
             continue
         candidate = root / path
-        if not candidate.is_file():
+        if not is_safe_regular_file(root, candidate):
             continue
         text = read_text_safely(candidate)
         if text is None:
@@ -228,16 +273,23 @@ def render_findings(findings: list[Finding]) -> str:
 
 
 def run_scan(root: Path, *, base_sha: str | None, all_files: bool, legacy: bool) -> list[Finding]:
+    findings: list[Finding] = []
     if all_files:
         scanned_paths = walk_files(root)
     else:
-        scanned_paths = tracked_files(root)
-        if not scanned_paths:
+        try:
+            scanned_paths = tracked_files(root)
+        except GitCommandError as error:
+            findings.append(Finding("git_scan_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
             scanned_paths = walk_files(root)
 
-    findings: list[Finding] = []
     findings.extend(scan_paths(scanned_paths, root, changed_only=False))
     findings.extend(scan_content(root, scanned_paths))
+
+    if base_sha:
+        ignored = ignored_files(root, findings)
+        if ignored:
+            findings.extend(scan_paths(ignored, root, changed_only=False, ignored_only=True))
 
     changed = changed_files(root, base_sha, findings)
     if changed:
