@@ -6,11 +6,13 @@ import ast
 import importlib
 from pathlib import Path
 import subprocess
+import tempfile
 from typing import Iterable
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTECTED_DIRS = ("core/domain", "modules")
+FILESYSTEM_METADATA_NAMES = {".DS_Store"}
 LOCAL_TOP_LEVELS = {"adapters", "apps", "core", "modules", "workflows"}
 FORBIDDEN_LOCAL_PREFIXES = (
     "adapters",
@@ -60,6 +62,37 @@ IMPORTABLE_PACKAGES = (
     "adapters.video",
     "workflows",
 )
+
+
+def _is_filesystem_metadata(path: Path) -> bool:
+    return any(
+        part in FILESYSTEM_METADATA_NAMES or part.startswith("._")
+        for part in path.parts
+    )
+
+
+def _is_eligible_python_source(path: Path) -> bool:
+    if path.suffix != ".py":
+        return False
+    if _is_filesystem_metadata(path):
+        return False
+    if path.is_symlink():
+        return False
+    return path.is_file()
+
+
+def _iter_eligible_python_sources(root: Path, directories: Iterable[str]) -> Iterable[Path]:
+    for directory in directories:
+        for path in (root / directory).rglob("*.py"):
+            if _is_eligible_python_source(path):
+                yield path
+
+
+def _read_eligible_python_source(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise AssertionError(f"eligible Python source is not UTF-8: {path}") from exc
 
 
 def _path_to_module(path: Path) -> tuple[str, bool]:
@@ -174,15 +207,38 @@ class ImportBoundaryTests(unittest.TestCase):
                 importlib.import_module(package)
 
     def test_domain_and_modules_do_not_import_outer_layers_or_sdks(self) -> None:
-        for directory in PROTECTED_DIRS:
-            for path in (ROOT / directory).rglob("*.py"):
-                module_name, source_is_package = _path_to_module(path)
-                with self.subTest(path=path.relative_to(ROOT)):
-                    assert_no_forbidden_imports(
-                        path.read_text(encoding="utf-8"),
-                        source_module=module_name,
-                        source_is_package=source_is_package,
-                    )
+        for path in _iter_eligible_python_sources(ROOT, PROTECTED_DIRS):
+            module_name, source_is_package = _path_to_module(path)
+            with self.subTest(path=path.relative_to(ROOT)):
+                assert_no_forbidden_imports(
+                    _read_eligible_python_source(path),
+                    source_module=module_name,
+                    source_is_package=source_is_package,
+                )
+
+    def test_metadata_python_lookalikes_are_skipped_before_decoding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package = root / "modules" / "example"
+            package.mkdir(parents=True)
+            source = package / "__init__.py"
+            metadata = package / ".___init__.py"
+            source.write_text(
+                "from core.application import interfaces\n",
+                encoding="utf-8",
+            )
+            metadata.write_bytes(b"\xff\xfe\x00not utf8")
+
+            sources = list(_iter_eligible_python_sources(root, ("modules",)))
+            ordinary_source = source.read_text(encoding="utf-8")
+
+        self.assertEqual([source], sources)
+        with self.assertRaises(AssertionError):
+            assert_no_forbidden_imports(
+                ordinary_source,
+                source_module="modules.example",
+                source_is_package=True,
+            )
 
     def test_safe_relative_imports_remain_allowed(self) -> None:
         assert_no_forbidden_imports(
