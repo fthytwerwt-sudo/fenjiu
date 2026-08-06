@@ -141,8 +141,6 @@ class InMemoryTruthRepository:
         grant: RepositoryReadGrant,
         entity_kind: TruthEntityKind,
         subject_ref: str,
-        *,
-        actor_ref: str,
     ) -> TruthVersion | None:
         """Audit, then return truth through a policy-issued exact grant."""
 
@@ -154,7 +152,6 @@ class InMemoryTruthRepository:
         if not isinstance(entity_kind, TruthEntityKind):
             raise ContractValidationError("truth_entity_kind_required")
         _require_identifier(subject_ref, "truth_subject_ref_required")
-        _require_identifier(actor_ref, "actor_ref_required")
         records = tuple(
             record
             for record in self._versions_by_id.values()
@@ -188,7 +185,7 @@ class InMemoryTruthRepository:
             raise ContractValidationError("repository_grant_target_metadata_mismatch")
         self.__audit_recorder.record_repository_read_allowed(
             scope=validated.scope,
-            actor_ref=actor_ref,
+            actor_ref=validated.actor_ref,
             target_ref=subject_ref,
             data_version_id=current.version.id,
             data_state=current.data_state,
