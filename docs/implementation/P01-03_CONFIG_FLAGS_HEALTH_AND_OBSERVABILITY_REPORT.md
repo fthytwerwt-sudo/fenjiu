@@ -1,6 +1,6 @@
 # P01-03｜配置、默认关闭 flags、健康检查与基础日志报告
 
-> **状态：completed_on_task_branch_remote_readback_verified**
+> **状态：followup_fix_verified_locally_pending_remote_readback**
 > **执行日期：2026-08-06**
 > **任务卡：** `docs/implementation/codex_tasks/phase_01/P01-03_config_flags_health_and_observability.md`
 > **基线提交：** `0c4a699d0cf20cad9090581230e70649e0d7665d`
@@ -24,7 +24,9 @@
 
 - `JsonLogEvent` 强制携带 `correlation_id`、component、event 和 result，输出单行 JSON。
 - message/file/content/payload/API key/Cookie/authorization/token/password/secret/path 类 metadata 键值全部保守脱敏。
-- 值级检查拒绝本机绝对路径、Windows 绝对路径、authorization/cookie/token 特征、多行或过长字符串。
+- metadata 的任意字符串值默认 fail-closed：只允许完整匹配严格 safe identifier/code 格式的 ASCII 字符串；其余自由文本、URL、endpoint、DSN、多行或过长字符串统一输出 `[REDACTED]`。
+- `url`、`uri`、`endpoint`、`dsn` 也属于敏感键 token；原有本机绝对路径、Windows 绝对路径和 authorization/cookie/token 特征拒绝仍保留。
+- numeric、boolean 以及 `flag_disabled`、`provider_unavailable` 等安全 policy/status code 仍保持结构化可用。
 - 未知对象不调用 `repr`，避免意外输出内容。
 
 ## 4. 技术与业务边界
@@ -33,10 +35,10 @@
 
 ## 5. 本地验证证据
 
-- control-plane 目标测试：14 项通过，覆盖 typed settings、invalid/unknown fail-closed、feature flag 拒绝、HTTP liveness/readiness 与 secret/path 脱敏负例。
-- `make regression`：8 项 architecture、14 项 scanner regression、8 项 local-runtime 与 14 项 control-plane 全部通过。
+- control-plane 目标测试：16 项通过，覆盖 typed settings、invalid/unknown fail-closed、feature flag 拒绝、HTTP liveness/readiness、secret/path 脱敏，以及中性键自由文本、URL/endpoint/DSN 不泄露负例。
+- `make regression`：8 项 architecture、14 项 scanner regression、8 项 local-runtime 与 16 项 control-plane 全部通过。
 - P00 scanner：对指定 base SHA 的 default 与 `--all-files` 模式在修改前、修改后均通过。
 - Docker 生命周期：isolated `dev-up`、liveness、migration no-op、fixture no-op 与 `dev-down` 通过；API/admin/worker readiness 均按预期拒绝，未留下该 project 容器。
 - `git diff --check`：通过。
 
-任务分支的实现提交已完成 push，且 remote HEAD 与 settings、flags、health、logging 及本报告的远程内容已回读一致。该状态仅适用于 task branch，不表示已合并 `main`、已开启远程 CI 或已具备外部业务条件。
+原 P01-03 实现提交已完成 push 和 remote readback。本次日志 fail-closed 跟进修复已完成本地验证，须在新 Lore commit push 且远程核心文件回读一致后才可写为 task branch 跟进完成。无论该技术状态如何，都不表示已合并 `main`、已开启远程 CI 或已具备外部业务条件。

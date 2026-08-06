@@ -169,13 +169,14 @@ class JsonLogRedactionTests(unittest.TestCase):
             component="api",
             event="policy.denied",
             result="blocked",
-            metadata={"attempt": 1, "policy_code": "flag_disabled"},
+            metadata={"attempt": 1, "policy_code": "flag_disabled", "retryable": False},
         )
         payload = json.loads(render_json_log(event))
 
         self.assertEqual(payload["correlation_id"], "corr-123")
         self.assertEqual(payload["metadata"]["attempt"], 1)
         self.assertEqual(payload["metadata"]["policy_code"], "flag_disabled")
+        self.assertIs(payload["metadata"]["retryable"], False)
 
     def test_message_file_key_cookie_key_and_absolute_path_are_redacted(self) -> None:
         secret_value = "sk_" + "live_" + "redaction_test_value_123456"
@@ -204,6 +205,53 @@ class JsonLogRedactionTests(unittest.TestCase):
         self.assertEqual(payload["metadata"]["file_name"], "[REDACTED]")
         self.assertEqual(payload["metadata"]["source_location"], "[REDACTED]")
         self.assertEqual(payload["metadata"]["nested"]["attachment_path"], "[REDACTED]")
+
+    def test_neutral_metadata_key_cannot_leak_free_text(self) -> None:
+        private_text = "arbitrary private message body supplied under a neutral key"
+        event = JsonLogEvent(
+            correlation_id="corr-457",
+            component="worker",
+            event="input.rejected",
+            result="blocked",
+            metadata={"detail": private_text, "policy_code": "flag_disabled"},
+        )
+
+        payload = json.loads(render_json_log(event))
+
+        self.assertEqual(payload["metadata"]["detail"], "[REDACTED]")
+        self.assertNotIn(private_text, render_json_log(event))
+        self.assertEqual(payload["metadata"]["policy_code"], "flag_disabled")
+
+    def test_neutral_metadata_key_cannot_leak_url_endpoint_or_dsn(self) -> None:
+        private_url = "https" + "://example.invalid/resource?q=private"
+        private_dsn = "postgresql" + "://db.invalid/schema"
+        private_endpoint = "api/v1/private-resource"
+        event = JsonLogEvent(
+            correlation_id="corr-458",
+            component="api",
+            event="adapter.blocked",
+            result="blocked",
+            metadata={
+                "detail": private_url,
+                "target": private_dsn,
+                "route": private_endpoint,
+                "attempt": 2,
+                "status_code": "provider_unavailable",
+            },
+        )
+
+        rendered = render_json_log(event)
+        payload = json.loads(rendered)
+
+        for field_name, private_value in (
+            ("detail", private_url),
+            ("target", private_dsn),
+            ("route", private_endpoint),
+        ):
+            self.assertEqual(payload["metadata"][field_name], "[REDACTED]")
+            self.assertNotIn(private_value, rendered)
+        self.assertEqual(payload["metadata"]["attempt"], 2)
+        self.assertEqual(payload["metadata"]["status_code"], "provider_unavailable")
 
     def test_identifier_fields_fail_closed_and_stream_is_json_lines(self) -> None:
         unsafe_correlation = "/" + "Volumes/private/correlation"

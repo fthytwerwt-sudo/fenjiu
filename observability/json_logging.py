@@ -9,6 +9,7 @@ import re
 from typing import TextIO
 
 _SAFE_IDENTIFIER = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+_SAFE_METADATA_STRING = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$")
 _SENSITIVE_KEY_TOKENS = {
     "api",
     "authorization",
@@ -16,6 +17,8 @@ _SENSITIVE_KEY_TOKENS = {
     "content",
     "cookie",
     "credential",
+    "dsn",
+    "endpoint",
     "file",
     "message",
     "password",
@@ -23,6 +26,8 @@ _SENSITIVE_KEY_TOKENS = {
     "payload",
     "secret",
     "token",
+    "uri",
+    "url",
 }
 _UNIX_PATH_MARKERS = tuple("/" + root + "/" for root in ("Users", "Volumes", "private", "tmp", "var"))
 _WINDOWS_PATH = re.compile(r"[A-Za-z]:[\\/]")
@@ -49,9 +54,7 @@ def _string_is_sensitive(value: str) -> bool:
         return True
     if any(marker in lowered for marker in _VALUE_MARKERS):
         return True
-    if "\n" in value or "\r" in value or len(value) > 256:
-        return True
-    return False
+    return _SAFE_METADATA_STRING.fullmatch(value) is None
 
 
 def _redact_value(key: str, value: object) -> object:
