@@ -1,5 +1,11 @@
 # P03-03｜审批、版本化发布与下游刷新执行交接
 
+## Repair note｜2026-08-06
+
+- 初始任务分支提交 `8f2914844894a0a6bd721d640b99678a89c82e4d` 经控制器/独立复审标记 `CHANGES_REQUIRED`，不得作为可接受完成态引用。
+- 本 repair 只在 `codex/p03-03-approval-publish-refresh` 上修复：canonical P03-01/P03-02 lineage gate、synthetic reviewer capability registry、publisher canonical decision/audit dependency、publish expiry recheck、ledger/outbox/idempotency atomic transaction、append-only revoke、P02 boundary assertion。
+- 修复仍是 synthetic/value-free/internal proof only；P03 internal publication record 不是 P02 `TruthVersion`，不能被 P02 current-truth consumer 当成真值，也不代表真实 reviewer、真实业务资料、真实人工审批、生产 RBAC 或外部执行授权。
+
 ## Goal｜目标
 
 - 只执行 `P03-03`：建立 synthetic/value-free 的 `mapped candidate -> approval request -> human decision -> immutable internal publication proof -> supersede/refresh` 闭环合同。
