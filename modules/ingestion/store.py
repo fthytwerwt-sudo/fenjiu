@@ -127,14 +127,6 @@ class InMemoryIngestionStore:
         self.__jobs[record.id] = updated
         return updated
 
-    def append_result(self, record: ExtractionResultRecord) -> ExtractionResultRecord:
-        results, _ = self.append_staging_batch((record,), ())
-        return results[0]
-
-    def append_candidate(self, record: StagingCandidateRecord) -> StagingCandidateRecord:
-        _, candidates = self.append_staging_batch((), (record,))
-        return candidates[0]
-
     def append_staging_batch(
         self,
         results: Tuple[ExtractionResultRecord, ...],
@@ -144,13 +136,29 @@ class InMemoryIngestionStore:
 
         if not isinstance(results, tuple) or not isinstance(candidates, tuple):
             raise IngestionBoundaryError("staging_batch_required")
+        if len(results) != len(candidates):
+            raise IngestionBoundaryError("staging_batch_atomicity_required")
+        if any(not isinstance(record, ExtractionResultRecord) for record in results):
+            raise IngestionBoundaryError("extraction_result_required")
+        if any(not isinstance(record, StagingCandidateRecord) for record in candidates):
+            raise IngestionBoundaryError("staging_candidate_required")
+
+        result_ids = tuple(record.id for record in results)
+        candidate_ids = tuple(record.id for record in candidates)
+        candidate_result_ids = tuple(record.extraction_result_id for record in candidates)
+        if (
+            len(set(result_ids)) != len(result_ids)
+            or len(set(candidate_ids)) != len(candidate_ids)
+            or len(set(candidate_result_ids)) != len(candidate_result_ids)
+            or set(result_ids) != set(candidate_result_ids)
+        ):
+            raise IngestionBoundaryError("staging_batch_atomicity_required")
+
         next_results = dict(self.__results)
         next_candidates = dict(self.__candidates)
         stored_results: list[ExtractionResultRecord] = []
         stored_candidates: list[StagingCandidateRecord] = []
         for record in results:
-            if not isinstance(record, ExtractionResultRecord):
-                raise IngestionBoundaryError("extraction_result_required")
             self._assert_result_lineage(record)
             existing = next_results.get(record.id)
             if existing is not None and existing != record:
@@ -159,8 +167,6 @@ class InMemoryIngestionStore:
             next_results[record.id] = selected
             stored_results.append(selected)
         for record in candidates:
-            if not isinstance(record, StagingCandidateRecord):
-                raise IngestionBoundaryError("staging_candidate_required")
             self._assert_candidate_lineage(record, next_results)
             existing = next_candidates.get(record.id)
             if existing is not None and existing != record:
