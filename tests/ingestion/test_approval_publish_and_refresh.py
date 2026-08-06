@@ -9,6 +9,7 @@ from pathlib import Path
 import unittest
 from uuid import UUID
 
+import modules.ingestion.approval as approval_module
 from core.contracts import ContractValidationError, synthetic_scope
 from modules.ingestion.approval import (
     ApprovalBoundaryError,
@@ -17,16 +18,12 @@ from modules.ingestion.approval import (
     CanonicalMappingCandidateGate,
     InMemoryApprovalRequestStore,
     InMemoryInvalidationOutbox,
-    InternalInvalidationEvent,
-    InternalPublicationRecord,
-    InternalPublicationResult,
     InternalPublicationState,
     ReviewerRole,
     SyntheticApprovalPublisher,
     SyntheticInternalPublicationLedger,
     SyntheticPublicationTransactionLog,
     SyntheticReviewerCapabilityRegistry,
-    _digest,
 )
 from modules.ingestion.mapping import MappingRunState, QualityCode, SyntheticMappingEngine
 from modules.ingestion.store import InMemoryIngestionStore
@@ -455,96 +452,78 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
         with self.assertRaisesRegex(ApprovalBoundaryError, "approval_request_not_canonical"):
             self.publisher.publish(fake)
 
-    def test_public_write_surfaces_cannot_inject_publication_event_or_log(self) -> None:
-        fake_record = InternalPublicationRecord(
-            id=UUID("00000000-0000-4000-8000-00000000a001"),
-            scope=SCOPE,
-            request_id=UUID("00000000-0000-4000-8000-00000000a002"),
-            decision_id=UUID("00000000-0000-4000-8000-00000000a003"),
-            candidate_id=UUID("00000000-0000-4000-8000-00000000a004"),
-            subject_ref="subject_public_injection",
-            target_field=self.candidate.target_field,
-            version_no=1,
-            state=InternalPublicationState.APPROVED_INTERNAL,
-            payload_hash=f"{9001:064x}",
-            source_content_hash=self.candidate.source_content_hash,
-            source_file_id=self.candidate.source_file_id,
-            ingestion_job_id=self.candidate.ingestion_job_id,
-            extraction_result_id=self.candidate.extraction_result_id,
-            staging_candidate_id=self.candidate.staging_candidate_id,
-            locator_fingerprint=self.candidate.locator_fingerprint,
-            profile_id=self.candidate.profile_id,
-            profile_version=self.candidate.profile_version,
-            rule_id=self.candidate.rule_id,
-            actor_ref="forged_reviewer",
-            evidence_ref="forged_evidence",
-            policy_version="approval_policy_v1",
-            published_at=NOW,
-        )
-        fake_event = InternalInvalidationEvent(
-            id=UUID("00000000-0000-4000-8000-00000000a005"),
-            scope=SCOPE,
-            publication_id=fake_record.id,
-            event_type="TruthFactsChanged",
-            destination="internal_invalidation_outbox",
-            subject_ref=fake_record.subject_ref,
-            target_field=fake_record.target_field,
-            version_no=fake_record.version_no,
-            correlation_id=SCOPE.correlation_id,
-            occurred_at=NOW,
-        )
-
-        if hasattr(self.ledger, "append_batch"):
-            getattr(self.ledger, "append_batch")((fake_record,))
-        if hasattr(self.outbox, "append"):
-            getattr(self.outbox, "append")(fake_event)
-
-        self.assertFalse(hasattr(self.ledger, "append_batch"))
-        self.assertFalse(hasattr(self.outbox, "append"))
-        self.assertFalse(hasattr(self.transaction_log, "commit"))
-        self.assertEqual(self.ledger.appended_record_count, 0)
-        self.assertEqual(self.outbox.event_count, 0)
-
-    def test_preseeded_transaction_log_result_never_returns_phantom_publication(self) -> None:
-        approved = self._approve(self._request(subject_ref="subject_phantom_log"))
-        expected_record = self.publisher._record_for(
-            request=approved,
-            state=InternalPublicationState.APPROVED_INTERNAL,
-            version_no=1,
-            parent_record_id=None,
-            superseded_record_id=None,
-            revoked_record_id=None,
-            published_at=NOW,
-        )
-        expected_event = self.publisher._event_for(
-            record=expected_record,
-            occurred_at=NOW,
-            superseded_publication_id=None,
-            revoked_publication_id=None,
-        )
-        phantom_result = InternalPublicationResult(
-            approved_record=expected_record,
-            event=expected_event,
-        )
-        publish_key = _digest("publish", approved.id, approved.decision_id, "root")
-        preseed = getattr(
-            self.transaction_log,
-            "_commit",
-            getattr(self.transaction_log, "commit", None),
-        )
-        self.assertIsNotNone(preseed)
-        preseed(
-            publish_key,
-            phantom_result,
-            _digest(
-                expected_record.fingerprint,
-                expected_event.fingerprint,
-                repr(phantom_result.safe_summary()),
-            ),
+    def test_public_handles_do_not_expose_write_capabilities_or_mutable_maps(self) -> None:
+        forbidden_attrs_by_surface = {
+            self.ledger: {
+                "append_batch",
+                "_append_batch",
+                "_records_by_id",
+                "_fingerprints_by_id",
+                "_series_versions",
+                "_child_by_parent",
+                "_snapshot",
+                "_restore_from_snapshot",
+            },
+            self.outbox: {
+                "append",
+                "_append",
+                "_events_by_id",
+                "_fingerprints_by_id",
+                "_snapshot",
+                "_restore_from_snapshot",
+            },
+            self.transaction_log: {
+                "commit",
+                "_commit",
+                "get",
+                "_get_committed",
+                "_results_by_key",
+                "_fingerprints_by_key",
+                "_snapshot",
+                "_restore_from_snapshot",
+            },
+        }
+        forbidden_module_helpers = {
+            "_ledger_append_batch",
+            "_ledger_restore",
+            "_outbox_append",
+            "_outbox_restore",
+            "_transaction_commit",
+            "_transaction_restore",
+        }
+        inspected_methods = (
+            (SyntheticInternalPublicationLedger, "__init__"),
+            (SyntheticInternalPublicationLedger, "appended_record_count"),
+            (SyntheticInternalPublicationLedger, "is_head"),
+            (SyntheticInternalPublicationLedger, "next_version_no"),
+            (InMemoryInvalidationOutbox, "__init__"),
+            (InMemoryInvalidationOutbox, "event_count"),
+            (InMemoryInvalidationOutbox, "safe_summary"),
+            (SyntheticPublicationTransactionLog, "__init__"),
+            (SyntheticApprovalPublisher, "_committed_publication_result"),
+            (SyntheticApprovalPublisher, "_committed_revocation_result"),
+            (SyntheticApprovalPublisher, "_commit_transaction"),
         )
 
-        with self.assertRaisesRegex(ApprovalBoundaryError, "publication_transaction_incomplete"):
-            self.publisher.publish(approved)
+        for surface, forbidden_attrs in forbidden_attrs_by_surface.items():
+            self.assertFalse(hasattr(surface, "__dict__"))
+            for attr in forbidden_attrs:
+                with self.subTest(surface=type(surface).__name__, attr=attr):
+                    self.assertFalse(hasattr(surface, attr))
+                    with self.assertRaises(AttributeError):
+                        object.__getattribute__(surface, attr)
+                    with self.assertRaises(AttributeError):
+                        object.__setattr__(surface, attr, {})
+
+        for attr in forbidden_module_helpers:
+            self.assertFalse(hasattr(approval_module, attr))
+        for owner, name in inspected_methods:
+            method = getattr(owner, name)
+            if isinstance(method, property):
+                method = method.fget
+            self.assertIsNone(getattr(method, "__defaults__", None))
+            self.assertIsNone(getattr(method, "__kwdefaults__", None))
+
         self.assertEqual(self.ledger.appended_record_count, 0)
         self.assertEqual(self.outbox.event_count, 0)
 
@@ -591,57 +570,50 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             late_publisher.publish(approved)
 
     def test_publish_transaction_rolls_back_ledger_when_outbox_fails_then_retries(self) -> None:
-        class FailingOutbox(InMemoryInvalidationOutbox):
-            def _append(self, event):  # type: ignore[override]
-                raise ApprovalBoundaryError("forced_outbox_failure")
-
-            def append(self, event):  # type: ignore[override]
-                raise ApprovalBoundaryError("forced_outbox_failure")
-
         request = self._request(subject_ref="subject_atomic")
         approved = self._approve(request)
-        failing_outbox = FailingOutbox()
         failing_publisher = SyntheticApprovalPublisher(
             request_store=self.store,
             reviewer_registry=self.reviewer_registry,
             ledger=self.ledger,
-            outbox=failing_outbox,
+            outbox=self.outbox,
             transaction_log=self.transaction_log,
             now=lambda: NOW,
+            fault_injector=lambda stage: (
+                (_ for _ in ()).throw(ApprovalBoundaryError("forced_outbox_failure"))
+                if stage == "after_ledger_append"
+                else None
+            ),
         )
 
         with self.assertRaisesRegex(ApprovalBoundaryError, "forced_outbox_failure"):
             failing_publisher.publish(approved)
         self.assertEqual(self.ledger.appended_record_count, 0)
-        self.assertEqual(failing_outbox.event_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
         retry = self.publisher.publish(approved)
         self.assertEqual(retry.approved_record.state, InternalPublicationState.APPROVED_INTERNAL)
         self.assertEqual(self.ledger.appended_record_count, 1)
         self.assertEqual(self.outbox.event_count, 1)
 
     def test_publish_transaction_rolls_back_transaction_log_when_log_commit_fails(self) -> None:
-        class FailingTransactionLog(SyntheticPublicationTransactionLog):
-            def _commit(self, key, result, fingerprint):  # type: ignore[override]
-                base_commit = getattr(super(), "_commit", None) or getattr(super(), "commit")
-                committed = base_commit(key, result, fingerprint)
-                if not getattr(self, "_failed_once", False):
-                    self._failed_once = True
-                    raise ApprovalBoundaryError("forced_log_post_write_failure")
-                return committed
+        failed_once = False
 
-            def commit(self, key, result, fingerprint):  # type: ignore[override]
-                return self._commit(key, result, fingerprint)
+        def fail_after_transaction_log(stage: str) -> None:
+            nonlocal failed_once
+            if stage == "after_transaction_log_commit" and not failed_once:
+                failed_once = True
+                raise ApprovalBoundaryError("forced_log_post_write_failure")
 
         request = self._request(subject_ref="subject_log_atomic")
         approved = self._approve(request)
-        failing_log = FailingTransactionLog()
         failing_publisher = SyntheticApprovalPublisher(
             request_store=self.store,
             reviewer_registry=self.reviewer_registry,
             ledger=self.ledger,
             outbox=self.outbox,
-            transaction_log=failing_log,
+            transaction_log=self.transaction_log,
             now=lambda: NOW,
+            fault_injector=fail_after_transaction_log,
         )
 
         with self.assertRaisesRegex(ApprovalBoundaryError, "forced_log_post_write_failure"):
@@ -654,7 +626,7 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             reviewer_registry=self.reviewer_registry,
             ledger=self.ledger,
             outbox=self.outbox,
-            transaction_log=failing_log,
+            transaction_log=self.transaction_log,
             now=lambda: NOW,
         )
         retry = retry_publisher.publish(approved)
@@ -719,12 +691,15 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             correlation_id=poison_scope.correlation_id,
             occurred_at=NOW + timedelta(minutes=1),
         )
-        poison_append = getattr(self.outbox, "_append", None) or getattr(self.outbox, "append")
-        poison_append(poison)
-
-        with self.assertRaisesRegex(ApprovalBoundaryError, "invalidation_event_idempotency_conflict"):
-            self.publisher.publish(approved)
-        self.assertEqual(self.ledger.appended_record_count, 0)
+        for attr in ("append", "_append", "_events_by_id"):
+            self.assertFalse(hasattr(self.outbox, attr))
+        with self.assertRaises(AttributeError):
+            object.__setattr__(self.outbox, "_events_by_id", {poison.id: poison})
+        publication = self.publisher.publish(approved)
+        self.assertEqual(publication.event, expected_event)
+        self.assertNotEqual(publication.event.scope.correlation_id, "poisoned_correlation")
+        self.assertEqual(publication.event.occurred_at, NOW)
+        self.assertEqual(self.ledger.appended_record_count, 1)
         self.assertEqual(self.outbox.event_count, 1)
 
     def test_restart_idempotency_uses_shared_transaction_state(self) -> None:
@@ -766,6 +741,44 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
         self.assertEqual(first_replacement, replayed_replacement)
         self.assertEqual(self.ledger.appended_record_count, 3)
         self.assertEqual(self.outbox.event_count, 2)
+
+    def test_committed_publish_and_supersede_replay_after_expiry_but_new_publish_fails(self) -> None:
+        root_approved = self._approve(self._request(subject_ref="subject_late_replay"))
+        root_publication = self.publisher.publish(root_approved)
+        replacement_approved = self._approve(
+            self._request(
+                candidate=self._canonical_candidate(50),
+                subject_ref="subject_late_replay",
+                idempotency_key="request_late_supersede_replay",
+            )
+        )
+        replacement_publication = self.publisher.publish(
+            replacement_approved,
+            supersedes=root_publication,
+        )
+        unpublished_late = self._approve(
+            self._request(
+                candidate=self._canonical_candidate(51),
+                subject_ref="subject_unpublished_late",
+                idempotency_key="request_unpublished_late",
+            )
+        )
+        late_publisher = SyntheticApprovalPublisher(
+            request_store=self.store,
+            reviewer_registry=self.reviewer_registry,
+            ledger=self.ledger,
+            outbox=self.outbox,
+            transaction_log=self.transaction_log,
+            now=lambda: NOW + timedelta(hours=2),
+        )
+
+        self.assertEqual(late_publisher.publish(root_approved), root_publication)
+        self.assertEqual(
+            late_publisher.publish(replacement_approved, supersedes=root_publication),
+            replacement_publication,
+        )
+        with self.assertRaisesRegex(ApprovalBoundaryError, "approval_request_expired_at_publish"):
+            late_publisher.publish(unpublished_late)
 
     def test_supersede_appends_new_versions_and_refresh_event_without_external_sync(self) -> None:
         first_publication = self.publisher.publish(self._approve(self._request()))
@@ -830,6 +843,48 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
         self.assertFalse(revoke.revoked_record.external_execution_allowed)
         self.assertEqual(self.ledger.appended_record_count, 2)
         self.assertEqual(self.outbox.event_count, 2)
+
+    def test_committed_revoke_replay_after_grant_expiry_but_new_revoke_fails(self) -> None:
+        publication = self.publisher.publish(
+            self._approve(self._request(subject_ref="subject_late_revoke"))
+        )
+        revoke = self.publisher.revoke(
+            publication,
+            reviewer_grant_id=self.reviewer_grant.id,
+            evidence_ref="revoke_late_evidence",
+            policy_version="approval_policy_v1",
+            idempotency_key="revoke_late",
+        )
+        fresh_publication = self.publisher.publish(
+            self._approve(self._request(subject_ref="subject_late_revoke_new"))
+        )
+        late_publisher = SyntheticApprovalPublisher(
+            request_store=self.store,
+            reviewer_registry=self.reviewer_registry,
+            ledger=self.ledger,
+            outbox=self.outbox,
+            transaction_log=self.transaction_log,
+            now=lambda: NOW + timedelta(hours=2),
+        )
+
+        self.assertEqual(
+            late_publisher.revoke(
+                publication,
+                reviewer_grant_id=self.reviewer_grant.id,
+                evidence_ref="revoke_late_evidence",
+                policy_version="approval_policy_v1",
+                idempotency_key="revoke_late",
+            ),
+            revoke,
+        )
+        with self.assertRaisesRegex(ApprovalBoundaryError, "reviewer_capability_expired"):
+            late_publisher.revoke(
+                fresh_publication,
+                reviewer_grant_id=self.reviewer_grant.id,
+                evidence_ref="revoke_late_new",
+                policy_version="approval_policy_v1",
+                idempotency_key="revoke_late_new",
+            )
 
     def test_revoke_successor_rejects_reusing_original_request_decision(self) -> None:
         approved = self._approve(self._request(subject_ref="subject_revoke_reuse"))

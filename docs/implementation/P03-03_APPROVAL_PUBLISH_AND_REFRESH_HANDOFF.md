@@ -18,6 +18,12 @@
 - 第四轮 repair 只在同一任务分支修复：移除 public ledger/outbox/transaction-log write surfaces、拒绝 transaction-log-only phantom result、禁止 revoke 后复用原 request/decision 发布 successor、修复普通 supersede 与 revoke-successor replay idempotency。
 - 第四轮仍是 local synthetic contract，不是真实 auth/RBAC、process/DB crash proof、真实人工批准、真实 P02 truth 或外部业务 ready；P04 只可读取 internal proof/invalidation 作为 synthetic engineering signal。
 
+## Fifth repair note｜2026-08-06
+
+- 第四轮 repair 提交 `c87ec0a817a158900bd8b245f045822139c3175a` 经 5.6 终审继续标记 `CHANGES_REQUIRED`，不得作为可接受完成态引用。
+- 第五轮 repair 只在同一任务分支修复：authority ledger/outbox/transaction-log state 改为闭包持有且公开实例只保留读面；模块 helper、类方法默认参数、public/private append/commit/get/snapshot/restore 和 mutable map 均不得成为写 capability；committed replay 绑定完整 request/candidate/source/profile/rule/scope/version/timestamp/event semantic equality；exact committed publish/supersede/revoke replay 先于当前 expiry/grant/lifecycle freshness 检查，新操作仍 fail closed。
+- 第五轮仍是 local synthetic contract，不是真实 auth/RBAC、process/DB crash proof、真实人工批准、真实 P02 truth 或外部业务 ready；P04 只可读取 internal proof/invalidation 作为 synthetic engineering signal。
+
 ## Goal｜目标
 
 - 只执行 `P03-03`：建立 synthetic/value-free 的 `mapped candidate -> approval request -> human decision -> immutable internal publication proof -> supersede/refresh` 闭环合同。
@@ -41,7 +47,7 @@
 ## Impact check｜影响面
 
 - 业务状态：不升级；工程能力通过不代表供应链确认、人工批准、上线、销售或履约。
-- 工程状态：只在 test、regression、扫描、commit、push、remote readback 全部通过后可写 `task_branch_fourth_repair_remote_readback_verified_not_main`。
+- 工程状态：只在 test、regression、扫描、commit、push、remote readback 全部通过后可写 `task_branch_fifth_repair_remote_readback_verified_not_main`。
 - 真值边界：P02 `TruthVersion(data_state=approved)` 与 synthetic/fixture 绝对隔离；本卡不得创建 P02 approved truth，不得用 `is_synthetic=false` 伪装 synthetic candidate。P03-03 只创建独立 immutable simulated/internal publication record，并显式标记不可被 P02 current-truth consumer 当成真值。
 - 下游刷新：只生成 internal invalidation/outbox fake event；不得存在外部同步 adapter。
 
