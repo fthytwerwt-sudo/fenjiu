@@ -57,3 +57,17 @@ created_at, updated_at, created_by, correlation_id
 - 跨 tenant/project/business line 查询、缺 source/version、`fixture → external action`、`candidate → approved`、过期/冲突事实读取全部必须失败。
 - AI output 只能创建 candidate/draft；价格、库存、合规、发送、发布、退款、订单和审批的 positive path 必须有具权限的人类 actor 与 evidence。
 - 导入、webhook、video submission、外部 sync 的 idempotency key 在重跑时不产生重复事实、互动、消息或外部副作用。
+
+## 5. Phase 1 port contract 冻结
+
+P00-02 只冻结 port contract 名称和失败语义，不创建 schema、migration 或具体依赖版本。所有 port payload 必须携带 `tenant_id`、`project_id`、`business_line_id`、`correlation_id`、`idempotency_key`、`actor_ref`、`feature_flag_snapshot` 和 `policy_decision_ref`；缺任一字段必须 fail closed。
+
+| Port | 输入必须证明 | 输出只能产生 | 默认失败语义 |
+|---|---|---|---|
+| `WorkflowPort` | scope、checkpoint key、approval subject、retry policy | workflow state、audit event、next command proposal | checkpoint 不可恢复或 action policy 不明时暂停，不执行外部动作。 |
+| `CrawlPort` | approved source policy、robots/terms review ref、rate limit、business line scope | public snapshot candidate、source hash、extraction candidate | policy/terms/频率不明时 `blocked`；不得创建 CRM contact 或发送。 |
+| `CrmPort` | approved lead/contact decision、DNC status、export scope | external id mapping、interaction draft/export record | DNC、scope mismatch 或 adapter disabled 时 manual-only。 |
+| `SupportPort` | conversation consent/retention、approved fact version set、risk classification | draft reply、handoff request、approved-send request | 无 approved fact、高风险、平台/账号未授权时 handoff，不发送。 |
+| `VideoPort` | content task、fact/asset/policy lock、cost approval、synthetic/real data origin | manifest candidate、provider task ref、QC result | legacy/provider 未验证、素材权利不明、fact 过期或 cost 未批时停止。 |
+
+这些 contract 的存在不表示对应模块已实施，也不表示外部 workflow/crawl/CRM/support/video provider 已可用。真实 provider 接入前必须另有 ADR/风险评审、版本/许可证核验、fake contract 和关闭 adapter 后的 export/readback 测试。

@@ -1,6 +1,6 @@
 # 开源组件核验、选择与退出策略
 
-> **核验日期：2026-08-06；结论表示计划建议，非已安装清单。** 目标版本接入前必须重验 LICENSE、官方安全公告、部署文档、SBOM 与目标账号/API 条款。
+> **核验日期：2026-08-06；结论表示计划建议，非已安装清单，P00-02 不冻结任何未在当前任务中重验的依赖版本。** 目标版本接入前必须重验 LICENSE、官方安全公告、部署文档、SBOM 与目标账号/API 条款。
 
 ## 1. 结论矩阵
 
@@ -10,7 +10,7 @@
 | Valkey + Python queue port | `RECOMMENDED` | Redis-compatible、BSD-3-Clause；只放短期队列/缓存，PostgreSQL 仍是事实与 job 意图库。 | 实施时可选择 RQ（JSON serializer）或等价 worker；用 `QueuePort`、fake 和 outbox，broker 可替换。 |
 | Redis 官方发行版 | `DEFER` | 官方当前许可选择需要按部署/分发路径独立审核；不能把“Redis”写成无条件低风险默认。 | 只有法律/商业确认后连接 Redis adapter；在此之前 Valkey 或无 broker fake。 |
 | LangGraph | `RECOMMENDED` | [MIT](https://github.com/langchain-ai/langgraph/blob/main/LICENSE)；官方文档支持 checkpoint、interrupt/resume 与持久化。只在 Phase 3 的审批/真值合同已通过后才做 adapter probe。 | 只在 `workflows/` 调 application ports；用内置简易 runner 跑同一 contract，防止 DSL 锁定。 |
-| Crawl4AI | `NEEDS_VERIFY` | Python/async、Docker/self-host；官方 0.9 安全改动默认认证、loopback bind 和 request trust boundary。其 [LICENSE](https://github.com/unclecode/crawl4ai/blob/main/LICENSE) 以 Apache-2.0 为基础但另列署名要求，目标使用方式须做许可证/展示义务复核。 | 每域先批 source policy、robots/条款/频率；每源 adapter；保留 HTML/snapshot contract 和 CSV 人工导入 fallback。 |
+| Crawl4AI | `NEEDS_VERIFY` | Python/async、Docker/self-host；既有规划材料提到 0.9 安全改动，但 P00-02 未联网重验具体版本，因此不得锁定版本。其 [LICENSE](https://github.com/unclecode/crawl4ai/blob/main/LICENSE) 以 Apache-2.0 为基础但另列署名要求，目标使用方式须做许可证/展示义务复核。 | 每域先批 source policy、robots/条款/频率；每源 adapter；保留 HTML/snapshot contract 和 CSV 人工导入 fallback。 |
 | Twenty | `DEFER` | 具自托管 Docker Compose、REST/GraphQL/webhook 能力和活跃版本；但其 [LICENSE](https://github.com/twentyhq/twenty/blob/main/LICENSE) 以 AGPLv3 为主，包含 Application Exception、MIT 子包及明确商业文件，且 TypeScript/NestJS/React + PostgreSQL/Redis 会引入第二套运行平台与双真值风险。 | 第一版自建 CRM domain/admin；若后期需要 UI，只做 scoped `crm_adapter`、one-way import/export，先由法律/商业审查确认目标版本、例外和 enterprise 文件。 |
 | Chatwoot | `DEFER` | [MIT](https://github.com/chatwoot/chatwoot/blob/develop/LICENSE)，官方提供自托管、多渠道 inbox、API/webhook；适合未来人工工作台。 | 先自建 conversation/policy/audit；日后以 one-way inbox adapter 接入，必须验证 webhook replay、PII/DNC、导出与关闭。 |
 | RQ（可选 QueuePort 实现） | `RECOMMENDED` | [BSD-2-Clause 风格许可](https://github.com/rq/rq/blob/master/LICENSE)，支持 Redis/Valkey；官方安全说明指出默认 `pickle` 不安全，因此必须显式使用 JSON serializer 并只连接受信 broker。 | QueuePort、outbox、fake 与 PostgreSQL job/audit 仍为主；RQ 只调度，不保存真值，换 worker 时复跑同一 contract suite。 |
@@ -18,7 +18,7 @@
 ## 2. 当前官方证据与限制
 
 - LangGraph 官方仓库为 MIT，近期仍有 release；其 durable execution 适合**已存在的**审批状态恢复，但它不得持有事实或代替 action policy。`interrupt` 恢复会重跑节点，所以副作用必须在批准后执行或具备幂等键。[仓库](https://github.com/langchain-ai/langgraph)｜[持久化/队列说明](https://docs.langchain.com/oss/python/langgraph/)｜[interrupt 约束](https://docs.langchain.com/oss/python/langgraph/interrupts)
-- Crawl4AI 官方 0.9 self-host Docker API 改为安全默认：认证、loopback、固定 declarative hooks、限制不可信请求字段；接入时必须锁定安全版本与 token/网络配置，并在安装前确认其附加署名条款。[self-hosting](https://docs.crawl4ai.com/core/self-hosting/)｜[许可证](https://github.com/unclecode/crawl4ai/blob/main/LICENSE)
+- Crawl4AI 的具体版本、self-host 安全默认、token/网络配置和附加署名条款必须在接入任务中重新回读官方文档；P00-02 只保留 `NEEDS_VERIFY` 和 crawl port，不把旧材料中的版本写成已选型。[self-hosting](https://docs.crawl4ai.com/core/self-hosting/)｜[许可证](https://github.com/unclecode/crawl4ai/blob/main/LICENSE)
 - Twenty 官方 repo 说明它可用 Docker Compose 自托管，且其 stack 已含 PostgreSQL/Redis/BullMQ；其主许可证/例外/商业文件组合需要逐版本审查。这正是早期引入会造成双运行时、双权限模型和非轻量许可评估的原因。[repo](https://github.com/twentyhq/twenty)｜[许可证](https://github.com/twentyhq/twenty/blob/main/LICENSE)
 - Chatwoot 是 MIT 的自托管 omni-channel support 平台；功能成熟不自动解决汾酒的消息权限、酒类风险分类或 approved-fact 约束。[repo](https://github.com/chatwoot/chatwoot)｜[API](https://developers.chatwoot.com/api-reference/overview)
 - Valkey 为 BSD-3-Clause，适合作为可替换 broker/cache；Redis 8 起为 RSALv2 / SSPLv1 / AGPLv3 三选一，故本计划不把 Redis 官方发行版写为无条件默认。RQ 支持 Redis/Valkey，但默认 `pickle` 必须在实施时关闭。[Valkey LICENSE](https://github.com/valkey-io/valkey/blob/unstable/COPYING)｜[Redis 许可证](https://redis.io/legal/licenses/)｜[RQ 安全说明](https://github.com/rq/rq)
