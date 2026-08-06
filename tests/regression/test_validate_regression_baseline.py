@@ -32,6 +32,20 @@ class RegressionBaselineScannerTests(unittest.TestCase):
                 capture_output=True,
             )
 
+    def run_repo_scan(self, *extra_args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(ROOT),
+                "--skip-legacy",
+                *extra_args,
+            ],
+            text=True,
+            capture_output=True,
+        )
+
     def test_clean_synthetic_fixture_passes(self) -> None:
         marker = "is_" + "synthetic"
         result = self.run_scan({"fixtures/demo.json": f'{{"{marker}": true, "business_line_id": "fenjiu_nepal"}}'})
@@ -44,6 +58,19 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("forbidden_path", result.stdout)
         self.assertNotIn(secret_value, result.stdout + result.stderr)
+
+    def test_env_local_fails_without_scanning_content(self) -> None:
+        key_name = "api_" + "key"
+        secret_value = "sk_live_" + "envlocal1234567890abcdef"
+        local_path = "/" + "Users/example/private/env.local"
+        content = f"{key_name} = {secret_value}\nlocal_path = {local_path}\n"
+        result = self.run_scan({".env.local": content})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("forbidden_path", result.stdout)
+        self.assertNotIn("high_confidence_secret", result.stdout)
+        self.assertNotIn("local_absolute_path", result.stdout)
+        self.assertNotIn(secret_value, result.stdout + result.stderr)
+        self.assertNotIn(local_path, result.stdout + result.stderr)
 
     def test_appledouble_fails(self) -> None:
         result = self.run_scan({"docs/._hidden.md": "metadata"})
@@ -70,6 +97,11 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         result = self.run_scan({"tests/fixtures/customer.json": f'{{"{marker}": false}}'})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("fixture_leak", result.stdout)
+
+    def test_invalid_base_sha_fails_closed(self) -> None:
+        result = self.run_repo_scan("--base-sha", "invalid_base_for_test")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("git_command_failed", result.stdout)
 
 
 if __name__ == "__main__":
