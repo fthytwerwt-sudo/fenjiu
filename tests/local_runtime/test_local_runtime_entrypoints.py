@@ -62,14 +62,30 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
 
         for target in ("bootstrap", "dev-up", "dev-down", "migrate", "load-fixtures", "regression"):
             self.assertIn(f"{target}:", text)
+        self.assertIn("WORKTREE_PATH := $(shell pwd -P)", text)
+        self.assertIn("cksum", text)
+        self.assertIn("COMPOSE_PROJECT_NAME ?= fenjiu-local-runtime-$(COMPOSE_PROJECT_SUFFIX)", text)
+        self.assertIn("COMPOSE_CMD = COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME) $(COMPOSE) -f $(COMPOSE_FILE)", text)
         self.assertIn("does not install packages or copy .env", text)
         self.assertIn("Safe no-op migration probe", text)
         self.assertIn("no host ports", text)
         self.assertIn("$(MAKE) compose-config", text)
 
+        for command in (
+            "config --quiet",
+            "up -d --wait",
+            "exec -T api",
+            "exec -T worker",
+            "exec -T admin",
+            "down",
+        ):
+            self.assertIn(f"$(COMPOSE_CMD) {command}", text)
+
     def test_compose_uses_pinned_images_and_no_host_ports(self) -> None:
         text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
 
+        self.assertNotIn("name: fenjiu-local-runtime", text)
+        self.assertNotIn("\nname:", text)
         self.assertIn("postgres:16.14-alpine3.24", text)
         self.assertIn("valkey/valkey:8.1.9-alpine3.24", text)
         self.assertIn("python:3.13.9-slim-bookworm", text)

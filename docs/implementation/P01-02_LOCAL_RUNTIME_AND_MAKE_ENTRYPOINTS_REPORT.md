@@ -10,8 +10,8 @@
 
 | 项目 | 状态 | 证据与边界 |
 |---|---|---|
-| Docker Compose | 已实现 | 使用固定镜像 `postgres:16.14-alpine3.24`、`valkey/valkey:8.1.9-alpine3.24`、`python:3.13.9-slim-bookworm`；无 host `ports`，仅 `expose` 与 named volumes。 |
-| Make 入口 | 已实现 | `bootstrap`、`compose-config`、`dev-up`、`health`、`migrate`、`load-fixtures`、`dev-down`、`regression` 均为显式 target；`regression` 内含静态 compose render，不执行 pull/up。 |
+| Docker Compose | 已实现 | 使用固定镜像 `postgres:16.14-alpine3.24`、`valkey/valkey:8.1.9-alpine3.24`、`python:3.13.9-slim-bookworm`；无 host `ports`，仅 `expose` 与 named volumes；compose 文件不再包含固定顶层 `name`。 |
+| Make 入口 | 已实现 | `bootstrap`、`compose-config`、`dev-up`、`health`、`migrate`、`load-fixtures`、`dev-down`、`regression` 均为显式 target；`regression` 内含静态 compose render，不执行 pull/up；所有 Compose 入口统一使用由当前 worktree 绝对路径经 `cksum` 派生的 `COMPOSE_PROJECT_NAME`。 |
 | Runtime entrypoints | 已实现 | `apps/api` 与 `apps/admin` 提供 stdlib health endpoint，healthcheck 固定为对应 `127.0.0.1` loopback URL；`apps/worker` 提供 idle、health、migration no-op 与 fixture no-op。 |
 | 数据与外部动作 | 已确认关闭 | entrypoints 不读取 `.env`，不连接数据库，不连接 broker，不外发、不采集、不发布、不调用模型，不写入数据。 |
 | `.env.example` | 已实现 | 只包含 local-only placeholder 与 fail-closed flags；不被命令复制为 `.env`。 |
@@ -20,7 +20,7 @@
 
 ## 2. 安全限制
 
-`make help` 显式说明本地入口不会安装依赖、复制 `.env`、暴露 host ports、ingest、send、crawl、model call、quote、payment、order、refund 或 publish。`migrate` 和 `load-fixtures` 只在 worker 容器内打印 JSON no-op 结果，字段 `writes_data=false`、`loads_fixtures=false`。`--healthcheck --url ...` 这类任意 URL 能力已移除；回归测试证明外部 URL 参数会在 `urlopen` 前被 argparse 拒绝，且不会实际访问外部 URL。
+`make help` 显式说明本地入口不会安装依赖、复制 `.env`、暴露 host ports、ingest、send、crawl、model call、quote、payment、order、refund 或 publish。`migrate` 和 `load-fixtures` 只在 worker 容器内打印 JSON no-op 结果，字段 `writes_data=false`、`loads_fixtures=false`。`--healthcheck --url ...` 这类任意 URL 能力已移除；回归测试证明外部 URL 参数会在 `urlopen` 前被 argparse 拒绝，且不会实际访问外部 URL。不同 worktree 的 compose project、containers、networks 和 named volumes 由 worktree 绝对路径派生隔离，避免并发 `dev-up/down` 互删。
 
 ## 3. 验收命令
 
