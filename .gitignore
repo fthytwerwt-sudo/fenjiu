@@ -30,6 +30,9 @@
 /fixtures/*
 !/fixtures/README.md
 !/fixtures/synthetic_metadata.json
+!/fixtures/ingestion/
+/fixtures/ingestion/*
+!/fixtures/ingestion/synthetic_source_profiles.json
 !/migrations/
 !/migrations/**
 !/tests/
