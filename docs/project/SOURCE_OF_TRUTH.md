@@ -15,6 +15,7 @@
 | 汾酒供应链启动模板 | 任务相关的汾酒供应链原始文件 | 模板和字段存在为 **CONFIRMED**；未签署、未回执或未回传的字段不得写为已确认 |
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
 | 生成逻辑 | 根目录生成脚本与 scripts | 脚本存在/运行结果不等于业务事实 |
+| P01-02 local-only runtime 与工程验证 | `docker-compose.yml`、`Makefile`、`apps/*/local_runtime.py`、`tests/local_runtime/`、`docs/implementation/P01-02_LOCAL_RUNTIME_AND_MAKE_ENTRYPOINTS_REPORT.md` | **CONFIRMED（工程）**：`main` 代码已远端回读；仅证明 local-only runtime 与验证边界，不代表数据库接入、远端 CI、供应链、合规或业务执行成立 |
 | 派生产物 | outputs、交付物、qa、渲染和媒体 | 仅作结果或质量线索；必须回读源数据与脚本 |
 | 本地私有配置和线索 | 本地受控资料 | 不进入 Git 或同步包；不能当作对外联系授权或共享事实源 |
 

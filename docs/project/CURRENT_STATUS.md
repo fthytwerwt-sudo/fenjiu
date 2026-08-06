@@ -1,6 +1,6 @@
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-05
+- **最近更新**：2026-08-06
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -22,9 +22,9 @@
 ## 工程规划状态摘要
 
 - **CONFIRMED（规划层）**：`docs/implementation/` 已形成 AI Native Sales OS 的 Phase 0–8 分阶段蓝图、机器可读依赖图和每阶段 3 张 Codex 任务卡；该规划承接 GPT Project / GitHub / Codex 治理机制，不替代它。
-- **未实施**：本摘要不表示已创建运行时工程、数据库、队列、CRM、客服、视频服务或真实资料导入；技术实施须按 `docs/implementation/CODEX_EXECUTION_INDEX.md` 一次一张任务卡推进。
+- **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；技术实施仍须按 `docs/implementation/CODEX_EXECUTION_INDEX.md` 一次一张任务卡推进。
 - **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行回归；Phase 1 只可在新建、干净的独立 task worktree 中启动。
-- **部分成立（工程 Phase 1）**：P01-01 已在 `main` 远端回读：Python 模块化单体 skeleton、synthetic-only fixture metadata、fail-closed 外部动作默认值及 8 项导入边界测试均已建立。测试会安全跳过 AppleDouble 等文件系统元数据而不放松对普通源码的检查。P01-02（本地 runtime/入口）与 P01-03（配置、健康检查、观测）仍为 `PLANNED`；未接入数据库、网络、模型、SDK 或真实业务资料。
+- **部分成立（工程 Phase 1）**：P01-01 与 P01-02 已在 `main` 远端回读：Python 模块化单体 skeleton、synthetic-only fixture metadata、fail-closed 外部动作默认值，以及 local-only Docker Compose / Make 入口已建立。P01-02 使用固定镜像、无 host `ports`、按 worktree 隔离 Compose project；API/admin healthcheck 固定为容器内 loopback，migration/fixture 均为不写数据的 no-op。当前通过 8 项 architecture、14 项 regression 与 8 项 local-runtime 测试；未接入应用数据库连接、外部网络、模型、SDK 或真实业务资料。GitHub Actions workflow 因当前凭据缺少 `workflow` scope 未写入远端，P01-03（配置、健康检查、观测）仍为 `PLANNED`。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
 详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)

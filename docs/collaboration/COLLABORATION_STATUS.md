@@ -44,9 +44,9 @@
 |---|---|
 | Repository | fthytwerwt-sudo/fenjiu |
 | Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
-| Default branch | **CONFIRMED（远端读取）**：仍为旧临时分支；目标为干净 main |
+| Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端 commit | **CONFIRMED（远端读取）**：010b24ab76cd7ee1425e2c2ee56e14caae6d06e9 |
+| 最近验证远端 commit | **CONFIRMED（远端读取）**：`main` 的 P01-02 工程代码为 c2e9b1ce2f8109ec255e184d70331840a4da1651 |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -56,6 +56,7 @@
 - **CONFIRMED（隔离执行）**：P00-03 dry-safe 扫描器与 12 项回归测试已在控制器审查后集成并推送 `main`；干净 P00-03 task worktree 的两种扫描均通过，Phase 0 可写为工程完成。
 - **PARTIAL（本地环境）**：外置盘根目录仍发现既有 ignored 禁入路径（AppleDouble、`.env*` 等）；该目录不得执行回归。Phase 1 及以后必须每张任务卡新建干净 task worktree，扫描失败即停止该任务分支。
 - **CONFIRMED（P01-01）**：`main` 已远端回读模块化单体空 skeleton 与 metadata-safe architecture guard；外部 adapter、网络、数据库、模型、环境变量与真实业务资料均未接入。导入护栏覆盖 core/domain 与 modules 到 application/security 的直接及相对反向导入，跳过 AppleDouble 等文件系统元数据但不跳过普通源码，fixtures 默认仅放行 synthetic metadata。
+- **CONFIRMED（P01-02）**：`main` 已远端回读 local-only Docker Compose / Make runtime 入口。固定镜像、named volumes、无 host `ports`、只读代码挂载、固定 loopback healthcheck 和 safe no-op migration/fixture 均已验证；Make 会从 worktree 绝对路径派生 Compose project name，避免多聊天框/临时 worktree 共享容器、网络和 volumes。控制器最终在干净 task worktree 通过 8 项 architecture、14 项 regression、8 项 local-runtime 测试、P00 两种扫描及完整 `dev-up → health → migrate → load-fixtures → dev-down` 生命周期，未留下该 project 的容器。GitHub Actions workflow 仍因当前凭据缺少 `workflow` scope 而未写入远端，不能表述为远端 CI 已启用。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口

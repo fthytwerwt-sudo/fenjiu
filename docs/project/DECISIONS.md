@@ -101,3 +101,13 @@
 - **影响**：后续 Codex 一次只执行 `docs/implementation/codex_tasks/` 中前置已完成的单卡；真实资料到达后按导入、mapping、批准、回归和 run-ready runbook 操作，而非重设架构。
 - **替代方案**：直接一次开发全部 CRM/客服/视频/采集系统；未采用，因为当前真实资料、账号、授权、合规和履约前置缺失，会扩大耦合和事实污染风险。
 - **状态边界**：本决定不确认任何商品、价格、库存、资质、账号、收款、履约、平台允许、外部上线、订单或销售。
+
+### ADR-0007：P01-02 local runtime 默认 fail-closed 且按 worktree 隔离
+
+- **日期**：2026-08-06
+- **状态**：Accepted / CONFIRMED（工程机制）
+- **来源**：P01-02 任务卡、控制器审查与独立 code review。
+- **背景**：多 Codex 聊天框/临时 worktree 可能并行验证本地 Compose；固定 project name 会让容器、网络和 volumes 相互冲突。healthcheck 若接受任意 URL，也会超出 local-only 网络边界。
+- **决定**：P01-02 的运行入口只允许固定 loopback healthcheck、no-op migration/fixture 和 fail-closed external flags；Make 从当前 worktree 绝对路径派生 `COMPOSE_PROJECT_NAME`，所有 Compose lifecycle 入口统一使用该隔离名称。
+- **影响**：本地生命周期可以在独立 worktree 内验证；不代表应用数据库已连接、远端 CI 已启用或任何外部业务条件满足。
+- **替代方案**：固定全局 Compose project name 或运行时允许任意 health URL；未采用，因为会产生跨 worktree 干扰或外部网络能力。

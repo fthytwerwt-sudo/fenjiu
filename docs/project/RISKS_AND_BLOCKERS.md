@@ -10,5 +10,6 @@
 | R-06 | **BLOCKED** | V2 的干净 main、远端默认分支、visibility 与同步包最终验证尚待最终远端回读 | 不能把仓库安全收口或远端状态写为已完成 | 以 COLLABORATION_STATUS 的最终远端回读更新为准 |
 | R-07 | **CONFIRMED** | 本地存在私有配置、联系资料和大体积派生产物 | 可能泄露秘密/隐私或污染 Git/同步包 | 保持忽略、allowlist、敏感扫描和最小披露；发现真实凭据须评估轮换 |
 | R-08 | **PARTIAL / local-workspace risk** | 外置盘根目录含既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项；干净 P00-03 task worktree 的 12 项测试和两种扫描均通过 | 禁止把外置盘根目录用作回归入口；不阻断在新建、干净 task worktree 中继续工程任务 | 不读取 `.env*` 内容、不删除 `._*`；后续一任务一 worktree，扫描失败立即停止该任务分支 |
+| R-09 | **PARTIAL / engineering governance** | 当前推送凭据缺少 GitHub `workflow` scope，P01-02 的静态 GitHub Actions workflow 被远端拒绝 | 远端 CI 尚未启用；本地 `make regression` 与 Compose render 不能写成远端 CI 通过 | 由具备 `workflow` scope 的授权凭据单独提交 workflow；提交后单独回读 workflow、Actions run 与分支保护状态 |
 
 R-01 至 R-04 不阻断内部资料、清单、核验和草稿准备；它们阻断的是公开传播、广告、真实销售、收款和履约。机制完成不得被描述为业务上线。

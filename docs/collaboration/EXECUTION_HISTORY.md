@@ -2,12 +2,20 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P01-02 local-only runtime、Make 入口与多 worktree Compose 隔离
+
+- **目标**：只建立可复现的本地工程运行底座，不连接应用数据库、不读取 `.env`、不导入真实资料、不调用外部 HTTP 或任何业务外部动作。
+- **实际改动**：新增固定镜像的 Docker Compose、stdlib-only API/admin loopback health endpoint、worker idle/health/no-op entrypoint、`.env.example` placeholder、Make 入口与 local-runtime 测试。Compose 无 host `ports`，代码挂载只读；`COMPOSE_PROJECT_NAME` 从 worktree 绝对路径派生，避免不同 Codex worktree 共享容器、网络或 volumes。
+- **审查与验证**：控制器与独立审查先后收紧任意 healthcheck URL、嵌套 `.env.example` allowlist、Compose 静态 render 覆盖及固定 Compose project name。最终在干净 task worktree 通过 `make regression`（8 architecture、14 regression、8 local-runtime）、P00 默认/全量扫描、`git diff --check` 和完整 `make dev-up → health → migrate → load-fixtures → dev-down`；本地生命周期结束后无该 project 的残留容器。P01-02 三个任务提交已合入 `main`，代码远端回读为 `c2e9b1ce2f8109ec255e184d70331840a4da1651`。
+- **已知阻断**：尝试提交仅做静态验证的 GitHub Actions workflow 时，被远端以当前凭据缺少 `workflow` scope 拒绝；因此远端 CI 未启用，本地静态验证不等于 GitHub CI。
+- **状态边界**：所有业务外部 flags 继续为 false；Docker 拉取仅用于固定 local-runtime 镜像验证，不表示对外业务执行。P01-03 仍待新建干净 worktree 执行；SKU、价格、库存、资质、账号、收款、履约、平台合规和真实销售仍无新增确认。
+
 ## 2026-08-06｜P01-01 模块化单体 skeleton 与导入边界
 
 - **目标**：只建立可 import、可测试的 Python skeleton，不实现产品、CRM、客服、数据库、网络或任何外部 adapter。
 - **实际改动**：新增 apps/core/modules/adapters/workflows 的空包、模块 ownership README、typed scope/error/port 占位、synthetic-only fixture metadata、迁移占位与 architecture tests；`.gitignore` 仅放行 P01 必需源码及两份 fixture 文件。
 - **审查与验证**：控制器发现并修复了 committed diff 尾部空白、相对导入可绕过 application/security 边界、fixtures allowlist 过宽及 AppleDouble 元数据导致边界测试解码失败四项问题。最终在干净 task worktree 通过 `compileall`、8 项 architecture tests、12 项 P00 回归以及两种 P00 扫描；控制器在外置盘根目录复验 8 项 architecture tests 与 12 项 P00 回归均通过，`main` 远端已回读。
-- **状态边界**：外部动作默认全为 false；无新增依赖、ORM、数据库、网络、模型、SDK、真实资料或业务状态。P01-02/P01-03 仍待执行，不能把 skeleton 写成可运行销售系统。
+- **状态边界**：外部动作默认全为 false；无新增依赖、ORM、数据库连接、模型、SDK、真实资料或业务状态。P01-02 后续已另行验证 local-only runtime；P01-03 仍待执行，不能把 skeleton 写成可运行销售系统。
 
 ## 2026-08-06｜P00-03 dry-safe 回归扫描与主工作区基线阻断
 
