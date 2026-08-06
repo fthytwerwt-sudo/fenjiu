@@ -6,6 +6,9 @@
 !/AGENTS.md
 !/README.md
 !/PROJECT_ENTRY.md
+!/.env.example
+!/Makefile
+!/docker-compose.yml
 !/docs/
 !/docs/**
 !/scripts/
@@ -40,6 +43,7 @@
 # 无论目录规则如何，凭据与系统元数据始终不得提交。
 .env
 .env.*
+!.env.example
 .DS_Store
 ._*
 __pycache__/

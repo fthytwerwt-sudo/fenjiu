@@ -37,6 +37,7 @@ FORBIDDEN_SUFFIXES = {
     ".wav",
     ".zip",
 }
+ALLOWED_DOTENV_EXAMPLES = {".env.example"}
 CONTENT_SKIP_PREFIXES = {
     ".git/",
     ".omx/",
@@ -162,6 +163,8 @@ def walk_files(root: Path) -> list[str]:
 def path_is_forbidden(path: str) -> bool:
     parts = set(Path(path).parts)
     name = Path(path).name
+    if path in ALLOWED_DOTENV_EXAMPLES:
+        return False
     if name.startswith(".env"):
         return True
     if name.startswith("._"):
@@ -176,7 +179,7 @@ def path_is_forbidden(path: str) -> bool:
 
 
 def content_scan_allowed(path: str) -> bool:
-    if Path(path).name.startswith(".env"):
+    if Path(path).name.startswith(".env") and path not in ALLOWED_DOTENV_EXAMPLES:
         return False
     if path == ".git":
         return False
