@@ -80,6 +80,14 @@ def rel_path(root: Path, path: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
+def safe_path_label(path: str) -> str:
+    if len(path) > 240:
+        return "<path-too-long>"
+    if "\0" in path:
+        return "<malformed-path>"
+    return path
+
+
 def run_git(root: Path, args: list[str], *, required: bool) -> list[str]:
     result = subprocess.run(["git", *args], cwd=root, text=True, capture_output=True)
     if result.returncode != 0:
@@ -89,39 +97,46 @@ def run_git(root: Path, args: list[str], *, required: bool) -> list[str]:
     return [line for line in result.stdout.splitlines() if line]
 
 
+def run_git_z(root: Path, args: list[str], *, required: bool) -> list[str]:
+    result = subprocess.run(["git", *args], cwd=root, capture_output=True)
+    if result.returncode != 0:
+        if required:
+            raise GitCommandError(args)
+        return []
+    records = result.stdout.split(b"\0")
+    return [os.fsdecode(record) for record in records if record]
+
+
 def tracked_files(root: Path) -> list[str]:
-    return run_git(root, ["ls-files"], required=True)
+    return run_git_z(root, ["ls-files", "-z"], required=True)
 
 
-def parse_porcelain_path(line: str) -> str | None:
-    if not line.startswith("!! "):
+def parse_porcelain_path(record: str) -> str | None:
+    if not record.startswith("!! "):
         return None
-    path = line[3:]
-    if path.startswith('"') and path.endswith('"'):
-        return path.strip('"')
-    return path
+    return record[3:]
 
 
 def ignored_files(root: Path, findings: list[Finding]) -> list[str]:
     try:
-        lines = run_git(
+        records = run_git_z(
             root,
-            ["status", "--porcelain=v1", "--ignored=matching", "--untracked-files=all"],
+            ["status", "--porcelain=v1", "-z", "--ignored=matching", "--untracked-files=all"],
             required=True,
         )
     except GitCommandError as error:
         findings.append(Finding("git_scan_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
         return []
-    return sorted(path for line in lines if (path := parse_porcelain_path(line)))
+    return sorted(path for record in records if (path := parse_porcelain_path(record)))
 
 
 def changed_files(root: Path, base_sha: str | None, findings: list[Finding]) -> list[str]:
     if not base_sha:
         return []
     try:
-        paths = set(run_git(root, ["diff", "--name-only", base_sha, "--"], required=True))
-        paths.update(run_git(root, ["diff", "--cached", "--name-only", base_sha, "--"], required=True))
-        paths.update(run_git(root, ["ls-files", "--others", "--exclude-standard"], required=True))
+        paths = set(run_git_z(root, ["diff", "--name-only", "-z", base_sha, "--"], required=True))
+        paths.update(run_git_z(root, ["diff", "--cached", "--name-only", "-z", base_sha, "--"], required=True))
+        paths.update(run_git_z(root, ["ls-files", "--others", "--exclude-standard", "-z"], required=True))
     except GitCommandError as error:
         findings.append(Finding("git_scan_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
         return []
@@ -168,20 +183,38 @@ def content_scan_allowed(path: str) -> bool:
     return not any(path.startswith(prefix) for prefix in CONTENT_SKIP_PREFIXES)
 
 
+def path_scan_failure(path: str) -> Finding:
+    return Finding("path_scan_failed", safe_path_label(path), "path metadata could not be inspected safely")
+
+
 def scan_paths(paths: Iterable[str], root: Path, *, changed_only: bool, ignored_only: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     for path in sorted(set(paths)):
-        candidate = root / path
-        if Path(path).name.startswith("._"):
-            findings.append(Finding("appledouble", path, "AppleDouble metadata file is forbidden"))
-        if path_is_forbidden(path):
+        label = safe_path_label(path)
+        try:
+            parsed_path = Path(path)
+            candidate = root / path
+        except (OSError, ValueError):
+            findings.append(path_scan_failure(path))
+            continue
+        if parsed_path.name.startswith("._"):
+            findings.append(Finding("appledouble", label, "AppleDouble metadata file is forbidden"))
+        try:
+            forbidden = path_is_forbidden(path)
+        except (OSError, ValueError):
+            findings.append(path_scan_failure(path))
+            continue
+        if forbidden:
             if ignored_only:
                 category = "forbidden_ignored_path"
             else:
                 category = "forbidden_changed_path" if changed_only else "forbidden_path"
-            findings.append(Finding(category, path, "path matches forbidden baseline policy"))
-        if not candidate.is_symlink() and candidate.is_file() and candidate.stat().st_size > 10 * 1024 * 1024:
-            findings.append(Finding("large_file", path, "file is larger than 10 MiB"))
+            findings.append(Finding(category, label, "path matches forbidden baseline policy"))
+        try:
+            if not candidate.is_symlink() and candidate.is_file() and candidate.stat().st_size > 10 * 1024 * 1024:
+                findings.append(Finding("large_file", label, "file is larger than 10 MiB"))
+        except (OSError, ValueError):
+            findings.append(path_scan_failure(path))
     return findings
 
 
@@ -210,20 +243,26 @@ def is_safe_regular_file(root: Path, candidate: Path) -> bool:
 def scan_content(root: Path, paths: Iterable[str]) -> list[Finding]:
     findings: list[Finding] = []
     for path in sorted(set(paths)):
-        if not content_scan_allowed(path):
+        label = safe_path_label(path)
+        try:
+            allowed = content_scan_allowed(path)
+            candidate = root / path
+        except (OSError, ValueError):
+            findings.append(path_scan_failure(path))
             continue
-        candidate = root / path
+        if not allowed:
+            continue
         if not is_safe_regular_file(root, candidate):
             continue
         text = read_text_safely(candidate)
         if text is None:
             continue
         if ABSOLUTE_PATH_RE.search(text):
-            findings.append(Finding("local_absolute_path", path, "local absolute path pattern found"))
+            findings.append(Finding("local_absolute_path", label, "local absolute path pattern found"))
         if SECRET_RE.search(text):
-            findings.append(Finding("high_confidence_secret", path, "high-confidence secret-like assignment found"))
+            findings.append(Finding("high_confidence_secret", label, "high-confidence secret-like assignment found"))
         if ("fixtures/" in path or "tests/" in path) and FIXTURE_LEAK_RE.search(text):
-            findings.append(Finding("fixture_leak", path, "fixture is marked or sourced as real data"))
+            findings.append(Finding("fixture_leak", label, "fixture is marked or sourced as real data"))
     return findings
 
 

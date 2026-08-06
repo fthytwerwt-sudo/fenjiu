@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import subprocess
 import sys
 import tempfile
@@ -9,6 +10,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "validate_regression_baseline.py"
+
+
+def load_scanner_module():
+    spec = importlib.util.spec_from_file_location("validate_regression_baseline", SCRIPT)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("scanner module could not be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 class RegressionBaselineScannerTests(unittest.TestCase):
@@ -124,6 +135,32 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         self.assertNotIn("high_confidence_secret", result.stdout)
         self.assertNotIn(secret_value, result.stdout + result.stderr)
 
+    def test_non_ascii_ignored_env_path_uses_raw_git_records(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            base_sha = self.commit_temp_repo(root)
+            non_ascii_dir = root / "资料"
+            non_ascii_dir.mkdir()
+            secret_value = "sk_live_" + "nonasciiignored1234567890abcdef"
+            (non_ascii_dir / ".env秘密").write_text("api_" + f"key = {secret_value}\n", encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                    "--base-sha",
+                    base_sha,
+                    "--skip-legacy",
+                ],
+                text=True,
+                capture_output=True,
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("forbidden_ignored_path", result.stdout)
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertNotIn(secret_value, result.stdout + result.stderr)
+
     def test_symlink_outside_root_is_not_read(self) -> None:
         with tempfile.TemporaryDirectory() as root_dir, tempfile.TemporaryDirectory() as outside_dir:
             root = Path(root_dir)
@@ -149,6 +186,16 @@ class RegressionBaselineScannerTests(unittest.TestCase):
             )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertNotIn(secret_value, result.stdout + result.stderr)
+
+    def test_overlong_path_metadata_error_is_rendered(self) -> None:
+        scanner = load_scanner_module()
+        with tempfile.TemporaryDirectory() as tempdir:
+            findings = scanner.scan_paths(["x" * 5000], Path(tempdir), changed_only=False)
+        rendered = scanner.render_findings(findings)
+        self.assertTrue(any(finding.category == "path_scan_failed" for finding in findings))
+        self.assertIn("path_scan_failed", rendered)
+        self.assertIn("<path-too-long>", rendered)
+        self.assertNotIn("Traceback", rendered)
 
     def test_appledouble_fails(self) -> None:
         result = self.run_scan({"docs/._hidden.md": "metadata"})
