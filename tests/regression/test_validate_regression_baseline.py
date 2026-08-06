@@ -46,6 +46,33 @@ class RegressionBaselineScannerTests(unittest.TestCase):
             capture_output=True,
         )
 
+    def git(self, root: Path, *args: str) -> str:
+        result = subprocess.run(["git", *args], cwd=root, text=True, capture_output=True, check=True)
+        return result.stdout.strip()
+
+    def commit_temp_repo(self, root: Path) -> str:
+        self.git(root, "init")
+        (root / ".gitignore").write_text(".env*\n", encoding="utf-8")
+        (root / "README.md").write_text("synthetic fixture repo\n", encoding="utf-8")
+        self.git(root, "add", ".gitignore", "README.md")
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                "user.name=P00-03 Test",
+                "-c",
+                "user.email=p00-03@example.invalid",
+                "commit",
+                "-m",
+                "baseline",
+            ],
+            cwd=root,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        return self.git(root, "rev-parse", "HEAD")
+
     def test_clean_synthetic_fixture_passes(self) -> None:
         marker = "is_" + "synthetic"
         result = self.run_scan({"fixtures/demo.json": f'{{"{marker}": true, "business_line_id": "fenjiu_nepal"}}'})
@@ -71,6 +98,57 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         self.assertNotIn("local_absolute_path", result.stdout)
         self.assertNotIn(secret_value, result.stdout + result.stderr)
         self.assertNotIn(local_path, result.stdout + result.stderr)
+
+    def test_ignored_env_in_git_repo_fails_by_path_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            base_sha = self.commit_temp_repo(root)
+            key_name = "api_" + "key"
+            secret_value = "sk_live_" + "ignoredenv1234567890abcdef"
+            (root / ".env").write_text(f"{key_name} = {secret_value}\n", encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                    "--base-sha",
+                    base_sha,
+                    "--skip-legacy",
+                ],
+                text=True,
+                capture_output=True,
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("forbidden_ignored_path", result.stdout)
+        self.assertNotIn("high_confidence_secret", result.stdout)
+        self.assertNotIn(secret_value, result.stdout + result.stderr)
+
+    def test_symlink_outside_root_is_not_read(self) -> None:
+        with tempfile.TemporaryDirectory() as root_dir, tempfile.TemporaryDirectory() as outside_dir:
+            root = Path(root_dir)
+            secret_value = "sk_live_" + "symlinkoutside1234567890abcdef"
+            external = Path(outside_dir) / "external.txt"
+            external.write_text("api_" + f"key = {secret_value}\n", encoding="utf-8")
+            link = root / "linked.txt"
+            try:
+                link.symlink_to(external)
+            except OSError as error:
+                self.skipTest(f"symlink unavailable: {error}")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                    "--all-files",
+                    "--skip-legacy",
+                ],
+                text=True,
+                capture_output=True,
+            )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertNotIn(secret_value, result.stdout + result.stderr)
 
     def test_appledouble_fails(self) -> None:
         result = self.run_scan({"docs/._hidden.md": "metadata"})
@@ -101,7 +179,7 @@ class RegressionBaselineScannerTests(unittest.TestCase):
     def test_invalid_base_sha_fails_closed(self) -> None:
         result = self.run_repo_scan("--base-sha", "invalid_base_for_test")
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("git_command_failed", result.stdout)
+        self.assertIn("git_scan_failed", result.stdout)
 
 
 if __name__ == "__main__":
