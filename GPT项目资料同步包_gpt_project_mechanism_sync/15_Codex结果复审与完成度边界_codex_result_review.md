@@ -13,7 +13,7 @@ Codex 说完成后，GPT Project 仍要复审。复审不是不信任，而是�
 | 业务线 | 没有混入海鲜、旧 B2B、多平台或参考项目业务 |
 | 动态事实 | 没有编造 SKU、价格、库存、资质、账号、收款、履约 |
 | 验证 | 验证命令运行且结果可复述 |
-| 安全 | 无 secret、私人联系方式、本地绝对路径、媒体、缓存 |
+| 仓库卫生（repository hygiene） | 无 `secret（密钥）`、私人联系方式、本地绝对路径、媒体、缓存；并记录 `repository hygiene check（仓库卫生检查）` 结果 |
 | Git | 明确路径 stage、commit、push、remote readback |
 | 状态 | 没把机制完成写成业务上线或 GPT Project UI 已上传 |
 

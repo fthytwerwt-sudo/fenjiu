@@ -23,7 +23,7 @@
 - remote HEAD 无法验证。
 - 远端核心文件无法回读。
 - 混入 unrelated dirty files。
-- staged diff 发现 secret、本地路径或媒体。
+- `repository hygiene check（仓库卫生检查）` 发现 `secret（密钥）`、本地路径或媒体。
 
 ## 正式状态键
 
@@ -36,16 +36,19 @@
 ## 回报字段
 
 ```text
-git_sync_status:
-  branch:
-  files_staged:
-  commit_sha:
-  pushed:
-  remote_head:
-  remote_core_files_readback:
-  unrelated_dirty_files:
-  secret_scan:
-  completed_allowed:
+git_sync_status: # Git 同步状态
+  branch: # 分支
+  files_staged: # 已暂存文件
+  commit_sha: # 提交 SHA
+  pushed: # 是否已推送
+  remote_head: # 远端提交指针
+  remote_core_files_readback: # 远端核心文件回读
+  unrelated_dirty_files: # 无关脏文件
+  repository_hygiene_check: # 仓库卫生检查：密钥、身份凭证、本地路径和禁止提交内容
+  configuration_boundary_status: # 配置边界状态：配置未带入生产信息、真实账号或敏感连接
+  data_safety_check: # 数据安全检查：真实业务资料和业务线边界未被误提交
+  dependency_compatibility_check: # 依赖兼容检查：仅在依赖变化时记录兼容性、许可证和维护风险
+  completed_allowed: # 是否允许写 completed
 ```
 
 ## 汾酒特别边界

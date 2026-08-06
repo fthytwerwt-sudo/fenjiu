@@ -13,6 +13,7 @@
 - 可修改文件：
 - 禁止修改/禁止外发：
 - 隐私、合规与 Git 约束：
+- Prompt 表达约束：使用 `repository hygiene check（仓库卫生检查）`、`configuration validation（配置验证）`、`data safety check（数据安全检查）`；新增依赖时使用 `dependency compatibility check（依赖兼容检查）`。不把网络探测、端口探测、渗透或漏洞利用写为执行步骤。
 
 ## Impact check｜影响面检查
 - 是否影响当前状态、决定、风险、下一步、同步包或生成物：
@@ -23,6 +24,12 @@
 
 ## Validation commands｜验证命令
 -
+
+## Engineering governance checks｜工程治理检查
+- `repository_hygiene_check`（仓库卫生检查）：
+- `configuration_boundary_status`（配置边界状态）：
+- `data_safety_check`（数据安全检查）：
+- `dependency_compatibility_check`（依赖兼容检查；无依赖变更时写 not_applicable（不适用））：
 
 ## Done when｜完成标准
 - [ ]
