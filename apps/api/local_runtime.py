@@ -5,47 +5,38 @@ from __future__ import annotations
 import argparse
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
-from core.contracts import default_execution_policy, synthetic_scope
+from observability.health import liveness_payload, readiness_payload as build_readiness_payload
 
 API_HEALTH_URL = "http://127.0.0.1:8000/health"
+API_READINESS_URL = "http://127.0.0.1:8000/ready"
 
 
 def health_payload(component: str) -> dict[str, object]:
-    policy = default_execution_policy()
-    scope = synthetic_scope()
-    return {
-        "component": component,
-        "status": "ok",
-        "capability_status": "local_only",
-        "scope": {
-            "tenant_id": scope.tenant_id,
-            "project_id": scope.project_id,
-            "business_line_id": scope.business_line_id,
-            "correlation_id": scope.correlation_id,
-        },
-        "external_send": policy.external_send,
-        "public_publish": policy.public_publish,
-        "real_quote": policy.real_quote,
-        "payment": policy.payment,
-        "order_create": policy.order_create,
-        "refund": policy.refund,
-        "external_execution_allowed": policy.external_execution_allowed,
-        "business_external_ready": policy.business_external_ready,
-    }
+    return liveness_payload(component)
+
+
+def readiness_payload(component: str) -> dict[str, object]:
+    return build_readiness_payload(component)
 
 
 class HealthHandler(BaseHTTPRequestHandler):
     server_version = "FenjiuLocalHealth/1"
 
     def do_GET(self) -> None:
-        if self.path != "/health":
+        if self.path in {"/health", "/live"}:
+            body_payload = health_payload("api")
+            status = 200
+        elif self.path == "/ready":
+            body_payload = readiness_payload("api")
+            status = 200 if body_payload["ready"] else 503
+        else:
             self.send_error(404)
             return
-        body = json.dumps(health_payload("api"), sort_keys=True).encode("utf-8")
-        self.send_response(200)
+        body = json.dumps(body_payload, sort_keys=True).encode("utf-8")
+        self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -68,16 +59,35 @@ def healthcheck() -> int:
     return 0 if payload == health_payload("api") else 1
 
 
+def readinesscheck() -> int:
+    try:
+        with urlopen(API_READINESS_URL, timeout=2) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except HTTPError as error:
+        if error.code != 503:
+            return 1
+        try:
+            payload = json.loads(error.read().decode("utf-8"))
+        except json.JSONDecodeError:
+            return 1
+    except (OSError, URLError, json.JSONDecodeError):
+        return 1
+    return 0 if payload.get("ready") is True else 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="P01-02 local-only API health endpoint.")
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--healthcheck", action="store_true")
+    parser.add_argument("--readinesscheck", action="store_true")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
 
     if args.healthcheck:
         return healthcheck()
+    if args.readinesscheck:
+        return readinesscheck()
     if args.serve:
         serve(args.host, args.port)
         return 0
