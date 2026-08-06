@@ -1,6 +1,6 @@
 # P03-02｜字段 mapping、清洗与数据质量报告
 
-> **状态：task_branch_repair_local_verified_pending_push_readback**
+> **状态：task_branch_repair_remote_readback_verified_not_main**
 >
 > **执行日期：** 2026-08-06
 >
@@ -8,7 +8,7 @@
 >
 > **任务分支代码提交：** `codex/p03-02-mapping-quality` `a219463108ca3cf098920d57d17a6b7d8657b01f`（已 push/readback）
 >
-> **控制器复核：** 初始 task branch 被标为 `HIGH / not accepted`：同 ID/version 的 forged profile 可借用 canonical replay proof，因为 report 未绑定完整 profile identity。独立 reviewer 另复现 `MEDIUM`：quarantined source 或非 `STAGED` P03-01 lifecycle 可进入 mapping。两项 repair 已本地验证，repair commit 尚待 push/readback。
+> **控制器复核：** 初始 task branch 被标为 `HIGH / not accepted`：同 ID/version 的 forged profile 可借用 canonical replay proof，因为 report 未绑定完整 profile identity。独立 reviewer 另复现 `MEDIUM`：quarantined source 或非 `STAGED` P03-01 lifecycle 可进入 mapping。两项 repair 已在任务代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 推送并远端回读；controller integration review 仍待进行。
 >
 > **范围边界：** 仅完成 stdlib、local-only、synthetic/value-free 的 P03-02 mapping/quality contract。任务分支尚未集成 `main`；本报告不证明真实供应链资料、approved truth、业务资料就绪或任何外部执行。
 
@@ -56,7 +56,7 @@
 
 ## 5. 事实分级、剩余阻断与控制器交接
 
-- **PARTIAL（task-branch repair）**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已回读但因 HIGH/MEDIUM 未被接受；profile-report provenance 与 P03-01 lifecycle repair 已本地验证，尚待 repair commit/push/readback 与控制器复核。
+- **PARTIAL（task-branch repair）**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已回读但因 HIGH/MEDIUM 未被接受；profile-report provenance 与 P03-01 lifecycle repair 提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback。远端 code hashes：`mapping.py` `5e581650a1312228b253eb0cc06dd923b408334cc9e61b54db015bf198cabff0`、mapping test `c55c4d722b76ade087eb034a3ebf4ca7610bb989c0d22550571b73c1751b0f8e`；尚待控制器复核，未集成 `main`。
 - **PARTIAL（Phase 3）**：P03-02 只处理 synthetic value-free capability；它没有接入 P03-01 runtime storage，也没有创建新的 ingestion job 或任何真实 candidate。
 - **UNKNOWN / BLOCKED**：真实 profile/source signature、真实值解析/normalization、真实单位/币种/日期/语言、人工 mapping review、approval、truth publish、数据库、auth/RBAC/RLS、供应链业务闸门与所有外部动作。
 - **控制器 handoff**：审查 task-branch diff；只在确认 task commit/push/remote readback 后决定是否集成。后续 P03-03 必须把真实/approved publish 继续隔离在人工审批与 P02 truth guards 之后，不能把本模块的 synthetic fingerprint 当作真实数据清洗或业务就绪。
