@@ -17,7 +17,10 @@ from core.security.isolation import (
     PolicyDeniedError,
 )
 from modules.truth_center.models import TruthEntityKind, TruthVersion
-from modules.truth_center.repository import InMemoryTruthRepository
+from modules.truth_center.repository import (
+    InMemoryTruthRepository,
+    TruthPolicyTarget,
+)
 
 
 @dataclass(frozen=True)
@@ -48,7 +51,7 @@ class ScopedTruthConsumer:
         self._repository = repository
         self._policy = policy
         self._audit_log = audit_log
-        self._repository._bind_grant_verifier(policy)
+        self._repository._bind_read_context(policy, audit_log)
 
     def execute(self, command: TruthConsumerCommand) -> TruthVersion:
         if not isinstance(command, TruthConsumerCommand):
@@ -64,7 +67,7 @@ class ScopedTruthConsumer:
         assert isinstance(command.policy_decision_ref, str)
 
         try:
-            target = self._repository._get_by_id_for_policy(
+            target = self._repository.policy_target(
                 command.scope,
                 command.data_version_id,
             )
@@ -72,10 +75,10 @@ class ScopedTruthConsumer:
             self._deny(command, str(exc))
         if target is None:
             self._deny(command, "truth_target_not_found")
-        assert isinstance(target, TruthVersion)
+        assert isinstance(target, TruthPolicyTarget)
         if (
             target.entity_kind is not command.entity_kind
-            or target.payload.subject_ref != command.subject_ref
+            or target.subject_ref != command.subject_ref
         ):
             self._deny(command, "truth_target_mismatch", target)
 
@@ -83,10 +86,10 @@ class ScopedTruthConsumer:
             scope=command.scope,
             target=IsolationTarget(
                 scope=target.scope,
-                data_version_id=target.version.id,
+                data_version_id=target.data_version_id,
                 data_state=target.data_state,
-                sensitivity=target.metadata.sensitivity,
-                is_synthetic=target.metadata.is_synthetic,
+                sensitivity=target.sensitivity,
+                is_synthetic=target.is_synthetic,
             ),
             action=command.action,
             feature_flag_snapshot=command.feature_flag_snapshot,
@@ -104,25 +107,12 @@ class ScopedTruthConsumer:
                 evaluation.grant,
                 command.entity_kind,
                 command.subject_ref,
+                actor_ref=command.actor_ref,
             )
         except ContractValidationError as exc:
             self._deny(command, str(exc), target)
         if current is None or current.version.id != command.data_version_id:
             self._deny(command, "truth_not_current", target)
-        self._audit_log.record(
-            scope=command.scope,
-            correlation_id=command.scope.correlation_id,
-            action=command.action.value,
-            actor_ref=command.actor_ref,
-            target_ref=command.subject_ref,
-            data_version_id=current.version.id,
-            data_state=current.data_state,
-            sensitivity=current.metadata.sensitivity,
-            policy_decision_ref=command.policy_decision_ref,
-            policy_result=AuditPolicyResult.ALLOWED,
-            error_code=None,
-            external_execution_attempted=False,
-        )
         return current
 
     def _validate_command(self, command: TruthConsumerCommand) -> str | None:
@@ -153,7 +143,7 @@ class ScopedTruthConsumer:
         self,
         command: TruthConsumerCommand,
         code: str,
-        target: TruthVersion | None = None,
+        target: TruthPolicyTarget | None = None,
     ) -> None:
         scope = command.scope if isinstance(command.scope, ScopeRef) else None
         correlation_id = scope.correlation_id if scope is not None else "unscoped_request"
@@ -181,7 +171,7 @@ class ScopedTruthConsumer:
             target_ref=target_ref,
             data_version_id=version_id,
             data_state=target.data_state if target is not None else None,
-            sensitivity=(target.metadata.sensitivity if target is not None else None),
+            sensitivity=target.sensitivity if target is not None else None,
             policy_decision_ref=policy_ref,
             policy_result=AuditPolicyResult.DENIED,
             error_code=code,

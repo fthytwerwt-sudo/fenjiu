@@ -10,6 +10,7 @@ from uuid import UUID
 
 from core.contracts import DataState, ScopeRef, Sensitivity
 from core.contracts.access import (
+    RepositoryAuditRecorder,
     RepositoryGrantVerifier,
     RepositoryReadGrant,
     _issue_repository_read_grant,
@@ -85,7 +86,7 @@ class PolicyDeniedError(Exception):
         self.audit_event = audit_event
 
 
-class InMemoryIsolationAuditLog:
+class InMemoryIsolationAuditLog(RepositoryAuditRecorder):
     """Local append-only audit probe; no update or delete surface exists."""
 
     __slots__ = ("__clock", "__events")
@@ -133,6 +134,34 @@ class InMemoryIsolationAuditLog:
         )
         self.__events = (*self.__events, event)
         return event
+
+    def record_repository_read_allowed(
+        self,
+        *,
+        scope: ScopeRef,
+        actor_ref: str,
+        target_ref: str,
+        data_version_id: UUID,
+        data_state: DataState,
+        sensitivity: Sensitivity,
+        policy_decision_ref: str,
+    ) -> IsolationAuditEvent:
+        """Append the mandatory audit event before returning current truth."""
+
+        return self.record(
+            scope=scope,
+            correlation_id=scope.correlation_id,
+            action=IsolationAction.INTERNAL_TRUTH_READ.value,
+            actor_ref=actor_ref,
+            target_ref=target_ref,
+            data_version_id=data_version_id,
+            data_state=data_state,
+            sensitivity=sensitivity,
+            policy_decision_ref=policy_decision_ref,
+            policy_result=AuditPolicyResult.ALLOWED,
+            error_code=None,
+            external_execution_attempted=False,
+        )
 
 
 def disabled_feature_flag_snapshot() -> tuple[tuple[str, bool], ...]:

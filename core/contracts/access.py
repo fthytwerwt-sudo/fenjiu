@@ -151,3 +151,30 @@ class RepositoryGrantVerifier:
 
     def assert_repository_grant(self, grant: object) -> RepositoryReadGrant:
         raise NotImplementedError("sealed verifier must implement grant validation")
+
+
+class RepositoryAuditRecorder:
+    """Sealed nominal sink required before a repository read can return truth."""
+
+    __slots__ = ()
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        if (
+            cls.__module__ != "core.security.isolation"
+            or cls.__name__ != "InMemoryIsolationAuditLog"
+        ):
+            raise ContractValidationError("repository_audit_recorder_forbidden")
+
+    def record_repository_read_allowed(
+        self,
+        *,
+        scope: ScopeRef,
+        actor_ref: str,
+        target_ref: str,
+        data_version_id: UUID,
+        data_state: DataState,
+        sensitivity: Sensitivity,
+        policy_decision_ref: str,
+    ) -> object:
+        raise NotImplementedError("sealed recorder must implement repository audit")
