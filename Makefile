@@ -6,8 +6,9 @@ WORKTREE_PATH := $(shell pwd -P)
 COMPOSE_PROJECT_SUFFIX := $(shell printf '%s\n' "$(WORKTREE_PATH)" | cksum | awk '{print $$1}')
 COMPOSE_PROJECT_NAME ?= fenjiu-local-runtime-$(COMPOSE_PROJECT_SUFFIX)
 COMPOSE_CMD = COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME) $(COMPOSE) -f $(COMPOSE_FILE)
+MIGRATION_FILES := $(sort $(wildcard migrations/[0-9][0-9][0-9][0-9]_*.sql))
 
-.PHONY: help bootstrap compose-config dev-up health migrate load-fixtures dev-down regression
+.PHONY: help bootstrap compose-config dev-up health migrate migration-test load-fixtures dev-down regression
 
 help:
 	@printf '%s\n' 'Fenjiu local-only runtime targets:'
@@ -15,7 +16,8 @@ help:
 	@printf '%s\n' '  make compose-config Render docker compose config with a worktree-derived project name; no pull/up.'
 	@printf '%s\n' '  make dev-up         Start isolated local-only containers; no host ports, ingest, send, crawl, model call, quote, payment, order, refund, or publish.'
 	@printf '%s\n' '  make health         Run container-local health probes through compose exec.'
-	@printf '%s\n' '  make migrate        Safe no-op migration probe; writes no data.'
+	@printf '%s\n' '  make migrate        Apply allowlisted pure SQL migrations to the isolated local PostgreSQL container.'
+	@printf '%s\n' '  make migration-test Replay migrations and run negative constraints in a disposable local database.'
 	@printf '%s\n' '  make load-fixtures  Safe no-op fixture probe; loads no real or synthetic rows.'
 	@printf '%s\n' '  make dev-down       Stop local containers and remove named local runtime containers.'
 	@printf '%s\n' '  make regression     Render compose config, then run compileall and all local test suites.'
@@ -35,7 +37,17 @@ health:
 	$(COMPOSE_CMD) exec -T admin python -m apps.admin.local_runtime --healthcheck
 
 migrate:
-	$(COMPOSE_CMD) exec -T worker python -m apps.worker.local_runtime --migrate-noop
+	@test -n "$(MIGRATION_FILES)" || { printf '%s\n' 'No numbered SQL migrations found.' >&2; exit 1; }
+	@set -eu; for migration in $(MIGRATION_FILES); do \
+		printf 'applying %s\n' "$$migration"; \
+		$(COMPOSE_CMD) exec -T postgres \
+			psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 \
+			-U fenjiu_local -d fenjiu_local_only \
+			< "$$migration"; \
+	done
+
+migration-test:
+	sh tests/migrations/test_scope_migrations.sh
 
 load-fixtures:
 	$(COMPOSE_CMD) exec -T worker python -m apps.worker.local_runtime --load-fixtures-noop
@@ -50,3 +62,4 @@ regression:
 	$(PYTHON) -m unittest discover -s tests/regression
 	$(PYTHON) -m unittest discover -s tests/local_runtime
 	$(PYTHON) -m unittest discover -s tests/control_plane
+	$(PYTHON) -m unittest discover -s tests/contracts

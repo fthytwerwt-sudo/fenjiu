@@ -3,10 +3,21 @@
   "external_execution_allowed": false,
   "business_external_ready": false,
   "scope": {
-    "tenant_id": "synthetic_tenant",
-    "project_id": "synthetic_project",
-    "business_line_id": "synthetic_business_line",
+    "tenant_id": "00000000-0000-4000-8000-000000000001",
+    "project_id": "00000000-0000-4000-8000-000000000101",
+    "business_line_id": "00000000-0000-4000-8000-000000000201",
     "correlation_id": "synthetic_correlation"
   },
-  "description": "P01-01 synthetic-only metadata; not a business fact source."
+  "entity_id": "00000000-0000-4000-8000-000000000501",
+  "data_state": "fixture",
+  "source_ref_id": "00000000-0000-4000-8000-000000000301",
+  "source_kind": "synthetic_fixture",
+  "source_version": "v1",
+  "data_version_id": "00000000-0000-4000-8000-000000000401",
+  "version_no": 1,
+  "sensitivity": "internal",
+  "created_at": "2026-01-01T00:00:00+00:00",
+  "updated_at": "2026-01-01T00:00:00+00:00",
+  "created_by": "synthetic_fixture",
+  "description": "P02-01 synthetic-only metadata; not a business fact source."
 }

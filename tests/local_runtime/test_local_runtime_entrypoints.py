@@ -62,7 +62,9 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
         self.assertIn("COMPOSE_PROJECT_NAME ?= fenjiu-local-runtime-$(COMPOSE_PROJECT_SUFFIX)", text)
         self.assertIn("COMPOSE_CMD = COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME) $(COMPOSE) -f $(COMPOSE_FILE)", text)
         self.assertIn("does not install packages or copy .env", text)
-        self.assertIn("Safe no-op migration probe", text)
+        self.assertIn("Apply allowlisted pure SQL migrations", text)
+        self.assertIn("psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1", text)
+        self.assertIn("migration-test:", text)
         self.assertIn("no host ports", text)
         self.assertIn("$(MAKE) compose-config", text)
 
