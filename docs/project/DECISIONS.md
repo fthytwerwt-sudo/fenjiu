@@ -121,3 +121,14 @@
 - **决定**：settings 只提供静态 disabled 状态；FeatureFlagPort 对 unknown/invalid/fixture/prompt 输入均返回 false；liveness 与 readiness 分离，未具备依赖时固定 not-ready；日志仅放行安全结构化 metadata，其他文本/URL/DSN/path/secret 默认脱敏。
 - **影响**：后续 Phase 2 可复用控制面合同，但必须显式新增经审计的真实配置和 provider readiness，不能仅改默认值。
 - **替代方案**：允许环境变量/fixture 覆盖或以 liveness 表示服务可业务运行；未采用，因为当前没有对应授权、依赖与业务闸门证据。
+
+### ADR-0009：P02-01 以 compound scope/lineage 约束和强制 migration regression 锁定 synthetic 边界
+
+- **日期**：2026-08-06
+- **状态**：Accepted / CONFIRMED（工程机制）
+- **来源**：P02-01 任务卡、控制器验收与独立 code review。
+- **背景**：Phase 2 将引入可持久化的 scope、source 与 version metadata；若仅依赖应用层验证或可选 migration test，跨业务线引用、fixture 升级或遗漏数据库回归都可能绕过预期边界。
+- **决定**：以 stdlib typed contracts 和 PostgreSQL compound foreign keys/check constraints 共同要求 tenant/project/business-line/source/version/synthetic lineage；任何 `external_execution_allowed=true` 在 schema 层拒绝。`make regression` 必须先在 worktree 派生的隔离 PostgreSQL project 中执行 migration replay 与负向约束，Docker/Compose/daemon 不可用则明确失败并清理该项目资源。
+- **影响**：P02-02 可在受限 schema 上增加 synthetic truth model，但不得引入真实 scope/业务资料、生产连接或把 migration test 降为可选步骤。
+- **替代方案**：只用 Python contract tests 或把数据库回归留作手动 target；未采用，因为不能证明 DDL/FK/constraint 在 PostgreSQL 中实际生效。
+- **状态边界**：本决定不确认任何真实 tenant、SKU、价格、库存、主体、资质、账号、收款、履约、平台许可、外部上线、订单或销售。

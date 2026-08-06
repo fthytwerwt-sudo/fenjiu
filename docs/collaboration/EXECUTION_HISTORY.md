@@ -2,6 +2,13 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P02-01 scope contracts、migration 与 synthetic isolation 基线
+
+- **目标**：只建立 local PostgreSQL schema、stdlib metadata contracts 与 synthetic fixture 防护，为后续 truth model 提供 scope/source/version/lineage 基础；不导入真实资料或开放外部能力。
+- **实际改动**：新增 scope/source/version/state/sensitivity typed contracts、`0001_scope_contracts.sql`、synthetic-only metadata fixture、PostgreSQL compound FK/check constraints、migration replay/negative test 与 P02-01 报告。所有 scoped metadata 显式记录 tenant/project/business-line/source/version/state/sensitivity；schema 层拒绝跨业务线 lineage、synthetic→approved、fixture external execution 和任意 `external_execution_allowed=true`。
+- **审查与验证**：P02-01 初审发现 database replay/negative constraints 未进入默认回归；已将 `make migration-test` 变为 Docker/Compose/daemon 缺失即非零失败的自包含隔离 PostgreSQL runner，并由 `make regression` 强制调用。控制器和独立复核均确认两次 migration replay、五类 SQL 负例、8 architecture、14 regression、8 local-runtime、16 control-plane、8 contracts（共 54 项 Python 测试）、P00 default/all-files scan 与 `git diff --check` 通过；临时 Compose containers/volumes 为零残留。P02-01 代码已推送并从远端 `main` 回读为 `b08722a703f37a0cfcce0c928fec8c01c4596357`。
+- **状态边界**：仅完成 synthetic local schema/contract 防护；RLS、加密、retention、法域、真实 scope、ORM/driver、production connection、真实业务资料、审批和远端 CI 均未完成。SKU、价格、库存、资质、账号、收款、履约、合规、公开发布和销售没有新增确认，所有外部 flags 继续为 false。
+
 ## 2026-08-06｜P01-03 fail-closed config、readiness 与脱敏日志控制面
 
 - **目标**：建立不读取环境/文件/secret reference 的 typed settings、不可提权 flags、liveness/readiness 以及不泄露文本/路径/secret 的基础 JSON log 合同。

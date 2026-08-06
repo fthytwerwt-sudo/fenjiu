@@ -9,6 +9,12 @@
 5. **决定最小上线试点（P1）**：仅在 P0 证据齐备且用户明确授权后，定义首批 SKU、年龄/地域限制、内容和订单路径；默认保持人工审核，不自动外发。
 6. **上线前再验收（P1）**：公开执行前重新核验合规、权限、库存、价格、收款和履约证据，记录日期、责任人和停止条件。
 
+## 工程下一步（与业务 P0 独立）
+
+1. **P02-02 真值实体、版本与状态机**：在新建干净 task worktree 中，仅以 synthetic contracts 实现 candidate/approved/expired/conflict/superseded 的版本与读取防护；不得猜测 SKU、币种、价格、资质日期或任何真实业务事实。
+2. **P02-03 隔离与 fixture 防护**：以 adversarial tests 验证 cross-tenant/project/business-line、unscoped、fixture external-action 与非 approved/过期 truth 的拒绝路径；任一越界路径可通即冻结后续 Phase 3。
+3. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
+
 ## 每项完成证据
 
 - 有可回读的来源、日期、责任人和书面确认；

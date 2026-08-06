@@ -46,7 +46,7 @@
 | Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
 | Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端 commit | **CONFIRMED（远端读取）**：`main` 的 P01-03 工程代码为 915d6116f114e3cea0d6bc8032fac2bdee4f3e15 |
+| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P02-01 工程代码为 `b08722a703f37a0cfcce0c928fec8c01c4596357` |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -58,6 +58,7 @@
 - **CONFIRMED（P01-01）**：`main` 已远端回读模块化单体空 skeleton 与 metadata-safe architecture guard；外部 adapter、网络、数据库、模型、环境变量与真实业务资料均未接入。导入护栏覆盖 core/domain 与 modules 到 application/security 的直接及相对反向导入，跳过 AppleDouble 等文件系统元数据但不跳过普通源码，fixtures 默认仅放行 synthetic metadata。
 - **CONFIRMED（P01-02）**：`main` 已远端回读 local-only Docker Compose / Make runtime 入口。固定镜像、named volumes、无 host `ports`、只读代码挂载、固定 loopback healthcheck 和 safe no-op migration/fixture 均已验证；Make 会从 worktree 绝对路径派生 Compose project name，避免多聊天框/临时 worktree 共享容器、网络和 volumes。控制器最终在干净 task worktree 通过 8 项 architecture、14 项 regression、8 项 local-runtime 测试、P00 两种扫描及完整 `dev-up → health → migrate → load-fixtures → dev-down` 生命周期，未留下该 project 的容器。GitHub Actions workflow 仍因当前凭据缺少 `workflow` scope 而未写入远端，不能表述为远端 CI 已启用。
 - **CONFIRMED（P01-03）**：`main` 已远端回读静态 settings、只读 FeatureFlagPort、liveness/readiness 和 correlation-aware JSON log 合同。11 个敏感 action flag 永久默认关闭且 unknown/invalid 输入 fail-closed；`/live` 健康不泄露配置，`/ready` 因 broker/provider/real configuration 缺失而返回 HTTP 503。日志仅保留安全 identifier/code、数字和布尔值，自由文本、URL/DSN、message/file/Cookie/secret/绝对路径一律脱敏。控制器在干净 worktree 复验 `make regression`（8 architecture、14 regression、8 local-runtime、16 control-plane）与 P00 两种扫描通过；P01-03 不解除业务或远端 CI 阻断。
+- **CONFIRMED（P02-01）**：`main` 已远端回读 scope/source/version contracts、synthetic fixture metadata、PostgreSQL schema migration 和 compound scope/lineage constraints。独立 code review 发现 migration replay/negative constraints 未纳入默认回归，已修复并二次复核：`make regression` 现在要求 Docker/Compose/daemon，启动 worktree 派生的隔离 PostgreSQL、完成两次 migration replay、五类 SQL 负例和 54 项 Python 测试后清理容器、network 与 volumes；不可用时非零失败而不跳过。该成果只证明 local synthetic schema 防护，不启用 production database、真实资料、审批、外部网络或业务外部动作。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口

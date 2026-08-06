@@ -16,6 +16,7 @@
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
 | 生成逻辑 | 根目录生成脚本与 scripts | 脚本存在/运行结果不等于业务事实 |
 | P01 local-only runtime 与 control plane 验证 | `docker-compose.yml`、`Makefile`、`apps/*/local_runtime.py`、`core/security/`、`observability/`、`tests/local_runtime/`、`tests/control_plane/`、`docs/implementation/P01-02_LOCAL_RUNTIME_AND_MAKE_ENTRYPOINTS_REPORT.md`、`docs/implementation/P01-03_CONFIG_FLAGS_HEALTH_AND_OBSERVABILITY_REPORT.md` | **CONFIRMED（工程）**：`main` 代码已远端回读；仅证明 local-only runtime、disabled flags、not-ready control plane 和日志脱敏边界，不代表数据库接入、远端 CI、供应链、合规或业务执行成立 |
+| P02-01 scope contracts 与 migration 防护 | `core/contracts/`、`migrations/0001_scope_contracts.sql`、`fixtures/synthetic_metadata.json`、`tests/contracts/`、`tests/migrations/`、`docs/implementation/P02-01_SCOPE_CONTRACTS_AND_MIGRATIONS_REPORT.md` | **CONFIRMED（工程）**：`main` P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`；仅证明 synthetic local metadata、scope/lineage database constraints 和隔离 migration regression，不代表 production database、真实 scope、真实业务数据、审批、供应链、合规或外部业务执行成立 |
 | 派生产物 | outputs、交付物、qa、渲染和媒体 | 仅作结果或质量线索；必须回读源数据与脚本 |
 | 本地私有配置和线索 | 本地受控资料 | 不进入 Git 或同步包；不能当作对外联系授权或共享事实源 |
 

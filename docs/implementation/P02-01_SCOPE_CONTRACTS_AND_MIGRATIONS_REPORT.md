@@ -1,10 +1,12 @@
 # P02-01｜Scope 合同与 migration 基线报告
 
-> **状态：completed_on_task_branch**
+> **状态：remote_readback_verified_clean_worktree_required**
 >
 > **执行日期：2026-08-06**
 >
 > **基线提交：** `8dc4807b4a342941e746e4215141ab420c21cae4`
+>
+> **远端代码提交：** `b08722a703f37a0cfcce0c928fec8c01c4596357`
 >
 > **范围边界：** 仅实现本地 schema contract、synthetic fixture metadata 与数据库约束；不创建真实 tenant、SKU、价格、库存，不连接外部数据库，不改变业务状态。
 
