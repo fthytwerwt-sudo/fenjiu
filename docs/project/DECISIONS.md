@@ -154,3 +154,14 @@
 - **影响**：P03-01 及以后只能在完整 scope 与 approved/fresh/no-conflict truth 合同内工作；synthetic staging 可写入候选，但不能成为 current truth 或任何 external fallback。
 - **替代方案**：caller-supplied sensitivity allowlist；未采用，因为调用者可自我提权。自洽 dataclass grant 或 structural verifier protocol；未采用，因为 direct issuer/fake verifier 可绕过。用 Python underscore 隐藏 runtime probe；未采用，因为命名约定不是安全边界。只在 consumer 成功后写 audit；未采用，因为 direct grant read 可绕过。仅在 `current` 校验 actor 字符串；未采用，因为合法 grant holder 仍可替换归因。mutable list audit；未采用，因为 denial evidence 可被普通 clear。
 - **状态边界**：本决定只证明 local in-process contract integrity；不表示 production auth/RBAC/RLS、真实 data classification、业务资料、合规或外部执行成立。
+
+### ADR-0012：P03-01 将 synthetic staging 与 approved truth 分离，并以 locator lineage fail closed
+
+- **日期**：2026-08-06
+- **状态**：Accepted / PARTIAL（任务分支工程；尚未合入 `main`）
+- **来源**：P03-01 task card、P02-03 contract、test-first、自审与独立 code review。
+- **背景**：Phase 3 需要验证来源登记、hash、定位和失败留存，但真实供应链文件尚未授权入场，P02 fixture 也禁止被提升为 approved/real。若 fake extraction 直接保存值、允许无 locator 字段或逐字段部分写入，会破坏 evidence lineage 和人工审批边界。
+- **决定**：P03-01 只接受 ephemeral synthetic bytes 和 value-free field descriptors；记录只保存 private relative/reference locator、hash、IDs、versions、field name 与 location。`workflow_state=staged` 不改变 `data_state=fixture`；全批次定位通过后才原子写 result/candidate，任何 unsafe/unknown/failed input 只进入 quarantine 或 blocked/manual，并保留安全错误码。
+- **影响**：P03-02 可消费 source/job/result/candidate/locator/hash/version contract 做 synthetic mapping/quality，但不能回读 raw value、自动补值、批准或进入 P02 current truth。真实 parser/OCR、storage/database、auth/RBAC/RLS 必须另开任务和证据闸门。
+- **替代方案**：在 P03-01 引入真实 OpenXML/PDF/OCR 解析器；未采用，因为需要真实文件/新依赖且超出授权。把 staged candidate 写成 non-synthetic `DataState.STAGING`；未采用，因为会伪装 fixture 来源并打开未来 promotion 风险。逐字段写入后再报告失败；未采用，因为会留下部分候选。
+- **状态边界**：本决定不确认任何真实商品、价格、库存、资质、账号、收款、履约、platform rule、approved truth 或外部执行。

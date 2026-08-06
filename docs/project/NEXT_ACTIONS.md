@@ -11,7 +11,7 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P03-01（工程）**：Phase 2 已在 `main` 远端回读；只在新的干净 task worktree 单卡启动 synthetic source registration/extraction、quarantine、locator 与 staging contract。不得读取真实供应链包、连接生产服务或绕过 P02-03 current-truth consumer policy。
+1. **P03-02 前置（工程）**：P03-01 任务分支代码 `e59e2c827f6d7902a157f66fd463663fb309e1a7` 已 push/core-file readback，但尚未合入 `main`。先由控制器审查并集成；随后从新的精确 `main` 创建干净 worktree，只执行 synthetic versioned mapping/normalization/quality，保留 source+locator+rule lineage，未知字段/单位/币种/日期保持 manual/blocked，不读真实资料、不写 approved truth。
 2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据

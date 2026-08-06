@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P03-01 原始登记、隔离存储与 extraction ports
+
+- **目标**：只建立 stdlib/local-only/synthetic 的 source registration、private relative/reference locator、hash/idempotency、quarantine、type-specific fake extraction 和 fixture staging；不读取真实供应链资料、不接 production、不写真值或外部动作。
+- **实际改动**：新增 source/job/result/candidate/failure 合同、七类 fake ports、全批次原子 staging store、synthetic source profile 和 13 项 ingestion tests；workflow staging 仍保持 `data_state=fixture`。unknown MIME、oversize/empty、storage/folder traversal、unlocated field、parse/OCR、cross-scope、replay mismatch、secret-like metadata、real/external flags 全部 stable-code fail closed。
+- **审查与验证**：test-first 从缺失 adapter ImportError 开始；自审修复 partial write、failure rerun、lineage 与 fixture allowlist。独立 reviewer 第一轮发现 secret metadata retention HIGH 和 locator alias idempotency MEDIUM，修复后同一 reviewer 只读复现并 `APPROVE`。最终 `make regression` 通过 105 项 Python tests、两次 migration replay与 16 类 SQL 负例；P00 default/all-files、mechanism、compile/shell/diff、Docker cleanup 均通过。
+- **Git 证据**：精确基线为远端 `main` `bce35a01fa7c13cce797069198ce71dcf29ea2dc`；任务分支 `codex/p03-01-ingestion-ports` 代码提交 `e59e2c827f6d7902a157f66fd463663fb309e1a7` 已 push，remote HEAD 与 4 个 core files SHA-256 已回读一致。本任务未 merge/push `main`，未生成 sync archive。
+- **状态边界**：P03-01 仅为远端任务分支工程完成；P03-02 等待控制器集成后另建干净 worktree。业务状态、business gates、approved truth、production auth/RBAC/RLS、真实资料和所有 external flags 不变化。
+
 ## 2026-08-06｜P02-03 业务线隔离、fixture 防护与合同测试
 
 - **目标**：只把 tenant/project/business-line、fixture production separation、sensitivity/flags、approved/fresh/no-conflict truth consumer 与 denial audit 锁进 local repository/command contracts；不实现真实资料、production connection 或外部 adapter。
