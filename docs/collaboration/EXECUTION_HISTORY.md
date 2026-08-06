@@ -9,8 +9,8 @@
 - **实际修复**：`MappingReport` 新增 engine-constructed `profile_fingerprint`；registry 写入前验证 registered prior profile/previous report 与传入 current profile/current report 各自的完整 fingerprint 和 scope，再验证 replay diff。差异 profile 的 transforms、target contract、rules、source signature 或 scope 均返回 `profile_report_provenance_mismatch`，写入前停止；canonical replay/diff 仍可登记。
 - **实际修复**：`MappingEvidence.validate()` 在 mapping 前使用实际 `SourceDisposition.REGISTERED` 与 `IngestionWorkflowState.STAGED` enum；source quarantine、non-staged job 或 adversarial non-staged candidate 都统一抛出 `lineage_invalid`，engine 因而只返回 `blocked_manual` / 零 candidate。
 - **验证**：先新增 forged-profile 与三条 lifecycle regression，修复前均复现失败；修复后 focused mapping 12 项、ingestion 26 项、`make regression`（两次 migration replay、16 类 SQL negative、118 项 Python suites）、P00 default/all-files、mechanism validation、compile/shell/diff 均通过，isolated Docker resources 无残留。
-- **Git 证据**：repair 代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback；远端 `mapping.py` SHA-256 为 `5e581650a1312228b253eb0cc06dd923b408334cc9e61b54db015bf198cabff0`，mapping test SHA-256 为 `c55c4d722b76ade087eb034a3ebf4ca7610bb989c0d22550571b73c1751b0f8e`。
-- **状态边界**：repair 为 `task_branch_repair_remote_readback_verified_not_main`，仍待控制器复核；未改变 `main`、业务状态、approved truth、真实资料或任何 external flag。
+- **Git 证据**：repair 代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback；控制器在最终独立复审 `APPROVE` 后按提交顺序集成，并将 `main` push/readback 至 `355483121580c0205a43e59078eba8c29d719d93`。远端 `mapping.py` SHA-256 为 `5e581650a1312228b253eb0cc06dd923b408334cc9e61b54db015bf198cabff0`，mapping test SHA-256 为 `c55c4d722b76ade087eb034a3ebf4ca7610bb989c0d22550571b73c1751b0f8e`。
+- **状态边界**：P03-02 已为远端 `main` 工程完成；未改变业务状态、approved truth、真实资料或任何 external flag。P03-03 仅可在含本次状态回填的最新远端 `main` 新建干净 worktree。
 
 ## 2026-08-06｜P03-02 字段 mapping、清洗与数据质量（task branch）
 

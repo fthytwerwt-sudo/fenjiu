@@ -165,3 +165,14 @@
 - **影响**：P03-02 可消费 source/job/result/candidate/locator/hash/version contract 做 synthetic mapping/quality，但不能回读 raw value、自动补值、批准或进入 P02 current truth。真实 parser/OCR、storage/database、auth/RBAC/RLS 必须另开任务和证据闸门。
 - **替代方案**：在 P03-01 引入真实 OpenXML/PDF/OCR 解析器；未采用，因为需要真实文件/新依赖且超出授权。把 staged candidate 写成 non-synthetic `DataState.STAGING`；未采用，因为会伪装 fixture 来源并打开未来 promotion 风险。仅移除公共单条 mutator；未采用，因为 batch 入口本身仍可写入半批次。逐字段写入后再报告失败；未采用，因为会留下部分候选。
 - **状态边界**：本决定不确认任何真实商品、价格、库存、资质、账号、收款、履约、platform rule、approved truth 或外部执行。
+
+### ADR-0013：P03-02 只生成 value-free fingerprint，并将 replay 绑定完整 profile provenance
+
+- **日期**：2026-08-06
+- **状态**：Accepted / CONFIRMED（工程代码已由 `main` 远端回读）
+- **来源**：P03-02 task card、控制器 forged-profile 复现、独立 reviewer lifecycle review、最终专项复审。
+- **背景**：在没有真实资料、可解析原值、人工 mapping review 或 production storage 的阶段，normalization 不能冒充真实文本/单位/币种/日期处理。初始 profile registry 只比较 ID/version 与 replay run fingerprint，允许同 ID/version 的不同 profile 借用 canonical replay proof；mapping entrypoint 也未拒绝 P03-01 quarantine/non-staged lifecycle。
+- **决定**：P03-02 normalizer 只从既有 content hash、transform IDs 和 known/unknown control status 产生 value-free fingerprint。Mapping report 必须带 engine-constructed full profile fingerprint；profile change 注册必须同时匹配已登记旧 profile、previous/current report、传入新 profile、scope 与 replay diff。mapping 前只接受 `SourceDisposition.REGISTERED`、job/candidate `IngestionWorkflowState.STAGED` 的完整 P03-01 lineage；其余只产生 blocked/manual 与稳定错误码。
+- **影响**：P03-03 只能消费 synthetic candidate/report/replay evidence 建立人工 approval/publish/refresh contract，不能把 fingerprint 当作真实标准化结果、自动批准或 P02 current truth。
+- **替代方案**：接入真实文本解析或以 profile ID/version 代表完整配置；未采用，前者需要未授权真实资料和新能力，后者已被 forged provenance 复现可绕过。
+- **状态边界**：本决定不确认真实 mapping、SKU、价格、库存、资质、人工批准、production storage/auth/RBAC/RLS、合规或任何外部执行。

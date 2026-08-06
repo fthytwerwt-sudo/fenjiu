@@ -11,7 +11,7 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P03-02 前置（工程）**：P03-01 已由控制器集成并从 `origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb` 回读；runtime staging atomicity HIGH 已修复且独立专项复审 `APPROVE`。下一张卡须从包含本次状态回填的最新远端 `main` 创建干净 worktree，只执行 synthetic versioned mapping/normalization/quality，保留 source+locator+rule lineage，未知字段/单位/币种/日期保持 manual/blocked，不读真实资料、不写 approved truth。
+1. **P03-03 前置（工程）**：P03-02 已由控制器集成并从 `origin/main` `355483121580c0205a43e59078eba8c29d719d93` 回读；profile/replay provenance HIGH 与 quarantine/non-`STAGED` lifecycle MEDIUM 已修复并获最终独立复审 `APPROVE`。下一张卡须从包含本次状态回填的最新远端 `main` 创建干净 worktree，只建立 synthetic 的人工 approval/publish/refresh contract，继续保留 source+locator+rule/profile lineage；不得读取真实资料、创建 approved truth 或打开 external action。
 2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据

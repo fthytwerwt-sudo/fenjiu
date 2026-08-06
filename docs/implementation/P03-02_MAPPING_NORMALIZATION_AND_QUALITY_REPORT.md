@@ -1,16 +1,18 @@
 # P03-02｜字段 mapping、清洗与数据质量报告
 
-> **状态：task_branch_repair_remote_readback_verified_not_main**
+> **状态：remote_main_code_readback_verified**
 >
 > **执行日期：** 2026-08-06
 >
 > **精确工程基线：** `origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb`，状态回填基线 `535857f376765b16c056049e3c9ae86a348fee64`
 >
-> **任务分支代码提交：** `codex/p03-02-mapping-quality` `a219463108ca3cf098920d57d17a6b7d8657b01f`（已 push/readback）
+> **任务分支初始代码提交：** `codex/p03-02-mapping-quality` `a219463108ca3cf098920d57d17a6b7d8657b01f`（已 push/readback）
 >
-> **控制器复核：** 初始 task branch 被标为 `HIGH / not accepted`：同 ID/version 的 forged profile 可借用 canonical replay proof，因为 report 未绑定完整 profile identity。独立 reviewer 另复现 `MEDIUM`：quarantined source 或非 `STAGED` P03-01 lifecycle 可进入 mapping。两项 repair 已在任务代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 推送并远端回读；controller integration review 仍待进行。
+> **控制器远端 main 工程代码提交：** `355483121580c0205a43e59078eba8c29d719d93`
 >
-> **范围边界：** 仅完成 stdlib、local-only、synthetic/value-free 的 P03-02 mapping/quality contract。任务分支尚未集成 `main`；本报告不证明真实供应链资料、approved truth、业务资料就绪或任何外部执行。
+> **控制器复核：** 初始 task branch 被标为 `HIGH / not accepted`：同 ID/version 的 forged profile 可借用 canonical replay proof，因为 report 未绑定完整 profile identity。独立 reviewer 另复现 `MEDIUM`：quarantined source 或非 `STAGED` P03-01 lifecycle 可进入 mapping。两项 repair 已在任务代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 推送并远端回读；最终独立复审 `APPROVE` 后，控制器已集成并远端回读 `main`。
+>
+> **范围边界：** 仅完成 stdlib、local-only、synthetic/value-free 的 P03-02 mapping/quality contract。本报告不证明真实供应链资料、approved truth、业务资料就绪或任何外部执行。
 
 ## 1. 结论
 
@@ -56,7 +58,7 @@
 
 ## 5. 事实分级、剩余阻断与控制器交接
 
-- **PARTIAL（task-branch repair）**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已回读但因 HIGH/MEDIUM 未被接受；profile-report provenance 与 P03-01 lifecycle repair 提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback。远端 code hashes：`mapping.py` `5e581650a1312228b253eb0cc06dd923b408334cc9e61b54db015bf198cabff0`、mapping test `c55c4d722b76ade087eb034a3ebf4ca7610bb989c0d22550571b73c1751b0f8e`；尚待控制器复核，未集成 `main`。
-- **PARTIAL（Phase 3）**：P03-02 只处理 synthetic value-free capability；它没有接入 P03-01 runtime storage，也没有创建新的 ingestion job 或任何真实 candidate。
+- **CONFIRMED（工程）**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 的 HIGH/MEDIUM 已修复；profile-report provenance 与 P03-01 lifecycle repair 提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback，并由控制器最终独立复审 `APPROVE`。控制器已集成并从远端 `main` `355483121580c0205a43e59078eba8c29d719d93` 回读。远端 code hashes：`mapping.py` `5e581650a1312228b253eb0cc06dd923b408334cc9e61b54db015bf198cabff0`、mapping test `c55c4d722b76ade087eb034a3ebf4ca7610bb989c0d22550571b73c1751b0f8e`。
+- **PARTIAL（Phase 3）**：P03-02 只处理 synthetic value-free capability；它没有接入 P03-01 runtime storage，也没有创建新的 ingestion job 或任何真实 candidate。P03-03 可在本次状态回填被远端回读后建立 synthetic human approval/publish/refresh contract。
 - **UNKNOWN / BLOCKED**：真实 profile/source signature、真实值解析/normalization、真实单位/币种/日期/语言、人工 mapping review、approval、truth publish、数据库、auth/RBAC/RLS、供应链业务闸门与所有外部动作。
-- **控制器 handoff**：审查 task-branch diff；只在确认 task commit/push/remote readback 后决定是否集成。后续 P03-03 必须把真实/approved publish 继续隔离在人工审批与 P02 truth guards 之后，不能把本模块的 synthetic fingerprint 当作真实数据清洗或业务就绪。
+- **控制器 handoff**：P03-02 已集成；后续 P03-03 必须把真实/approved publish 继续隔离在人工审批与 P02 truth guards 之后，不能把本模块的 synthetic fingerprint 当作真实数据清洗或业务就绪。
