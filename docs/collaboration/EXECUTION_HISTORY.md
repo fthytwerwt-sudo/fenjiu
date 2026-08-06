@@ -2,6 +2,13 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P01-03 fail-closed config、readiness 与脱敏日志控制面
+
+- **目标**：建立不读取环境/文件/secret reference 的 typed settings、不可提权 flags、liveness/readiness 以及不泄露文本/路径/secret 的基础 JSON log 合同。
+- **实际改动**：新增 static `ControlPlaneSettings`、`FeatureFlagPort`、11 个敏感 action flag、`/live` / `/ready`、correlation-aware JSON logger 与 control-plane 测试。liveness 只报告 local control plane；因没有 broker/provider/real configuration，readiness 固定 `not_ready` / HTTP 503。日志只允许严格 identifier/code、数字和布尔值；其他自由文本及 URL/DSN/Cookie/secret/path 均 `[REDACTED]`。
+- **审查与验证**：控制器和独立 code review 发现中性 metadata key 可泄露短文本，已以 allowlist 式字符串策略修复并补 2 项负向测试。最终在干净 task worktree 通过 8 项 architecture、14 项 regression、8 项 local-runtime、16 项 control-plane、P00 默认/全量扫描和 `git diff --check`；完整 local Docker lifecycle 保持 no-op / readiness reject，且容器清理完成。P01-03 四个任务提交已合入 `main`，代码远端回读为 `915d6116f114e3cea0d6bc8032fac2bdee4f3e15`。
+- **状态边界**：本条只完成 local control plane，既不启用 broker/provider/远端 CI，也不确认 SKU、价格、库存、账号、资质、收款、履约、合规、公开发布或销售。所有业务外部 flags 继续为 false。
+
 ## 2026-08-06｜P01-02 local-only runtime、Make 入口与多 worktree Compose 隔离
 
 - **目标**：只建立可复现的本地工程运行底座，不连接应用数据库、不读取 `.env`、不导入真实资料、不调用外部 HTTP 或任何业务外部动作。

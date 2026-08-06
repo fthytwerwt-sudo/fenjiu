@@ -111,3 +111,13 @@
 - **决定**：P01-02 的运行入口只允许固定 loopback healthcheck、no-op migration/fixture 和 fail-closed external flags；Make 从当前 worktree 绝对路径派生 `COMPOSE_PROJECT_NAME`，所有 Compose lifecycle 入口统一使用该隔离名称。
 - **影响**：本地生命周期可以在独立 worktree 内验证；不代表应用数据库已连接、远端 CI 已启用或任何外部业务条件满足。
 - **替代方案**：固定全局 Compose project name 或运行时允许任意 health URL；未采用，因为会产生跨 worktree 干扰或外部网络能力。
+
+### ADR-0008：P01-03 settings、flags、readiness 与日志默认拒绝
+
+- **日期**：2026-08-06
+- **状态**：Accepted / CONFIRMED（工程机制）
+- **来源**：P01-03 任务卡、控制器审查与独立 code review。
+- **背景**：Phase 1 尚无 broker/provider/真实配置；若以环境、fixture、prompt 或日志自由文本作为隐式输入，会产生未授权能力或泄露风险。
+- **决定**：settings 只提供静态 disabled 状态；FeatureFlagPort 对 unknown/invalid/fixture/prompt 输入均返回 false；liveness 与 readiness 分离，未具备依赖时固定 not-ready；日志仅放行安全结构化 metadata，其他文本/URL/DSN/path/secret 默认脱敏。
+- **影响**：后续 Phase 2 可复用控制面合同，但必须显式新增经审计的真实配置和 provider readiness，不能仅改默认值。
+- **替代方案**：允许环境变量/fixture 覆盖或以 liveness 表示服务可业务运行；未采用，因为当前没有对应授权、依赖与业务闸门证据。
