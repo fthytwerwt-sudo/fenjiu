@@ -14,7 +14,7 @@ help:
 	@printf '%s\n' '  make migrate        Safe no-op migration probe; writes no data.'
 	@printf '%s\n' '  make load-fixtures  Safe no-op fixture probe; loads no real or synthetic rows.'
 	@printf '%s\n' '  make dev-down       Stop local containers and remove named local runtime containers.'
-	@printf '%s\n' '  make regression     Run compileall, architecture tests, regression tests, and local runtime tests.'
+	@printf '%s\n' '  make regression     Render compose config, then run compileall, architecture tests, regression tests, and local runtime tests.'
 
 bootstrap:
 	$(PYTHON) -m compileall -q apps core modules adapters workflows tests
@@ -26,9 +26,9 @@ dev-up:
 	$(COMPOSE) -f $(COMPOSE_FILE) up -d --wait
 
 health:
-	$(COMPOSE) -f $(COMPOSE_FILE) exec -T api python -m apps.api.local_runtime --healthcheck --url http://127.0.0.1:8000/health
+	$(COMPOSE) -f $(COMPOSE_FILE) exec -T api python -m apps.api.local_runtime --healthcheck
 	$(COMPOSE) -f $(COMPOSE_FILE) exec -T worker python -m apps.worker.local_runtime --healthcheck
-	$(COMPOSE) -f $(COMPOSE_FILE) exec -T admin python -m apps.admin.local_runtime --healthcheck --url http://127.0.0.1:8001/health
+	$(COMPOSE) -f $(COMPOSE_FILE) exec -T admin python -m apps.admin.local_runtime --healthcheck
 
 migrate:
 	$(COMPOSE) -f $(COMPOSE_FILE) exec -T worker python -m apps.worker.local_runtime --migrate-noop
@@ -40,6 +40,7 @@ dev-down:
 	$(COMPOSE) -f $(COMPOSE_FILE) down
 
 regression:
+	$(MAKE) compose-config
 	$(PYTHON) -m compileall -q apps core modules adapters workflows tests
 	$(PYTHON) -m unittest discover -s tests/architecture
 	$(PYTHON) -m unittest discover -s tests/regression

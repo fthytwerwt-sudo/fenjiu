@@ -44,7 +44,7 @@ services:
       valkey:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-m", "apps.api.local_runtime", "--healthcheck", "--url", "http://127.0.0.1:8000/health"]
+      test: ["CMD", "python", "-m", "apps.api.local_runtime", "--healthcheck"]
       interval: 5s
       timeout: 3s
       retries: 12
@@ -78,7 +78,7 @@ services:
       api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-m", "apps.admin.local_runtime", "--healthcheck", "--url", "http://127.0.0.1:8001/health"]
+      test: ["CMD", "python", "-m", "apps.admin.local_runtime", "--healthcheck"]
       interval: 5s
       timeout: 3s
       retries: 12

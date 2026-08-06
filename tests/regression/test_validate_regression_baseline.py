@@ -116,6 +116,13 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         })
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_nested_env_example_is_forbidden(self) -> None:
+        result = self.run_scan({
+            "apps/.env.example": "FENJIU_LOCAL_MODE=LOCAL_ONLY_PLACEHOLDER\n"
+        })
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("forbidden_path", result.stdout)
+
     def test_ignored_env_in_git_repo_fails_by_path_only(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             root = Path(tempdir)
