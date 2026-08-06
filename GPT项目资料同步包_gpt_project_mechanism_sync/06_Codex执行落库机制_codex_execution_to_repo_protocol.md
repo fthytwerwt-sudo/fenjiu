@@ -30,7 +30,7 @@ Codex 是本地执行落库层，负责读取事实源、生成文件、运行�
 
 ## 验证规则
 
-Codex 完成前必须按任务运行相关验证。机制包类任务至少检查非空文件、manifest、哈希、敏感信息、本地绝对路径、参考项目污染和用户上传状态。
+Codex 完成前必须按任务运行相关验证。机制包类任务至少运行 `repository hygiene check（仓库卫生检查）`、`configuration validation（配置验证）`、`data safety check（数据安全检查）`，并检查非空文件、manifest（清单）、hash（哈希）、本地绝对路径、参考项目污染和用户上传状态。新增或变更依赖时，再运行 `dependency compatibility check（依赖兼容检查）`。
 
 ## Git 规则
 

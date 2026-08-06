@@ -23,6 +23,13 @@
     - 命令：结果：
     - 未测试项及原因：
 
+    ## 工程治理检查
+    - repository_hygiene_check（仓库卫生检查）：检查密钥、访问令牌、身份凭证、本地绝对路径、私有数据和禁止提交内容。
+    - configuration_boundary_status（配置边界状态）：确认配置未带入生产信息、真实账号或敏感连接信息。
+    - data_safety_check（数据安全检查）：确认真实业务资料、个人信息和业务线边界未被误读、误写或误提交。
+    - dependency_compatibility_check（依赖兼容检查）：仅在依赖变化时，记录兼容性、许可证和维护风险；无依赖变化时写 `not_applicable（不适用）`。
+    - failure_handling_check（失败处理检查）：说明错误输入、权限不足、缺失资料或恢复失败时是否安全停止。
+
     ## Git
     - 分支：
     - Commit：

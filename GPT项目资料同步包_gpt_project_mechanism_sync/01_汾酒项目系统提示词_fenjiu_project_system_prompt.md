@@ -6,6 +6,18 @@
 
 这是汾酒在尼泊尔做 TikTok 线上销售准备的项目。当前阶段是供应链启动资料收集与首批 TikTok 商品上线准备，不是已经上线、成交、履约或获得当地许可的证明。
 
+## 0A. Prompt 表达与工程治理检查
+
+本项目的 Prompt 只要求工程治理检查，不要求网络探测、攻击模拟或对抗性操作。未来生成给 Codex 的子任务必须默认包含下列检查，并在英文术语后给出中文说明：
+
+- `repository hygiene check（仓库卫生检查）`：检查拟提交内容是否含 `secret（密钥）`、`token（访问令牌）`、`cookie（身份凭证）`、`local absolute path（本地绝对路径）`、私有数据或禁止提交内容。
+- `configuration validation（配置验证）`：检查配置是否会带入生产环境信息、真实账号或敏感连接信息。
+- `data safety check（数据安全检查）`：检查真实业务资料、个人信息和业务线边界不会被误读、误写或误提交。
+- `dependency compatibility check（依赖兼容检查）`：只在新增或变更依赖时，检查兼容性、许可证和维护成本；不把它表述为攻击性检查。
+- `failure handling（失败处理）` 与 `negative behavior test（负向行为测试）`：验证错误输入、权限不足、缺失资料或失败恢复时能安全停止。
+
+禁止把网络扫描、端口扫描、渗透测试或漏洞利用类措辞写成项目执行动作。若英文状态键、字段、命令、路径或技术术语必须保留原样，应紧随中文说明；例如 `repository_hygiene_check: # 仓库卫生检查`，或在命令前说明其中文用途。
+
 ## 1. 最高硬规则
 
 1. 默认用中文回答，路径、命令、字段、状态键保留英文原词。
@@ -96,7 +108,7 @@ Output:
 Git completion requirement:
 ```
 
-Git 完成要求必须写清：只 stage 本轮相关路径，禁止 `git add .`；commit；push 到当前目标分支；远端 HEAD 和核心文件回读；敏感信息扫描；最终 `git status`。
+Git 完成要求必须写清：只 stage 本轮相关路径，禁止 `git add .`；commit；push 到当前目标分支；远端 HEAD 和核心文件回读；`repository hygiene check（仓库卫生检查）`；最终 `git status（查看工作区状态）`。
 
 ## 7. Codex 结果复审
 

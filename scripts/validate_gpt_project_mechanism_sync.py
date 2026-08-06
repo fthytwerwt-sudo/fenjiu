@@ -111,6 +111,23 @@ SYSTEM_REQUIRED_KEYWORDS = [
     "Codex",
     "GitHub",
 ]
+PROMPT_GOVERNANCE_REQUIRED_TERMS = [
+    "repository hygiene check（仓库卫生检查）",
+    "configuration validation（配置验证）",
+    "data safety check（数据安全检查）",
+    "dependency compatibility check（依赖兼容检查）",
+]
+PROMPT_GOVERNANCE_FORBIDDEN_PHRASES = [
+    "security scan",
+    "scan network",
+    "penetration test",
+    "port scan",
+    "exploit",
+]
+PROMPT_GOVERNANCE_TEMPLATE_FILES = [
+    INSTRUCTIONS_FILE,
+    "14_Codex长期执行单模板_codex_task_template.md",
+]
 FORBIDDEN_REFERENCE_TERMS = [
     "视频工厂",
     "OPC",
@@ -398,6 +415,33 @@ def validate_status_terms(
         errors.append(f"required status terms missing: {missing_required}")
 
 
+def validate_prompt_governance_language(
+    texts: dict[str, str],
+    errors: list[str],
+    metrics: dict[str, object],
+) -> None:
+    missing_by_file: dict[str, list[str]] = {}
+    forbidden_by_file: dict[str, list[str]] = {}
+    for name in PROMPT_GOVERNANCE_TEMPLATE_FILES:
+        text = texts.get(name, "")
+        missing = [term for term in PROMPT_GOVERNANCE_REQUIRED_TERMS if term not in text]
+        if missing:
+            missing_by_file[name] = missing
+        forbidden = [
+            phrase
+            for phrase in PROMPT_GOVERNANCE_FORBIDDEN_PHRASES
+            if phrase.casefold() in text.casefold()
+        ]
+        if forbidden:
+            forbidden_by_file[name] = forbidden
+    passed = not missing_by_file and not forbidden_by_file
+    metrics["prompt_governance_language"] = "passed" if passed else "failed"
+    if missing_by_file:
+        errors.append(f"prompt governance terms missing: {missing_by_file}")
+    if forbidden_by_file:
+        errors.append(f"prompt governance execution phrases found: {forbidden_by_file}")
+
+
 def validate_agents_provenance(
     errors: list[str],
     metrics: dict[str, object],
@@ -501,6 +545,7 @@ def validate(write_manifest: bool) -> tuple[list[str], dict[str, object]]:
     validate_source_priority_semantics(errors, metrics)
     validate_business_gate_semantics(texts, errors, metrics)
     validate_status_terms(texts, errors, metrics)
+    validate_prompt_governance_language(texts, errors, metrics)
 
     forbidden_hits = [term for term in FORBIDDEN_REFERENCE_TERMS if term in package_text]
     if forbidden_hits:
@@ -630,6 +675,7 @@ def write_report(errors: list[str], metrics: dict[str, object]) -> None:
         f"- `business_gate_semantics = {metrics.get('business_gate_semantics', 'unknown')}`",
         f"- `blocked_status_consistency = {metrics.get('blocked_status_consistency', 'unknown')}`",
         f"- `git_status_consistency = {metrics.get('git_status_consistency', 'unknown')}`",
+        f"- **Prompt 表达治理**：`prompt_governance_language = {metrics.get('prompt_governance_language', 'unknown')}`",
         f"- `agents_source_commit_verified = {str(metrics.get('agents_source_commit_verified', False)).lower()}`",
         f"- `agents_source_commit = {metrics.get('agents_source_commit', 'unknown')}`",
         f"- `agents_provenance_verified = {str(metrics.get('agents_provenance_verified', False)).lower()}`",

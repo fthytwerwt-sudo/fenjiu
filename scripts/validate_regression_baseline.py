@@ -58,7 +58,7 @@ LEGACY_BASELINES = {
         "help_contains": ["--verify"],
     },
     "scripts/validate_gpt_project_mechanism_sync.py": {
-        "sha256": "504c7ed887623f2dc8d9629910a244e68f09ba48252e6537a8572e474c7f313e",
+        "sha256": "c09412d6bd54c1877a600bff4353e807a99ecd81220e08a0a5bb227e03f29f5b",
         "help_contains": ["--write-manifest", "--no-report"],
     },
 }

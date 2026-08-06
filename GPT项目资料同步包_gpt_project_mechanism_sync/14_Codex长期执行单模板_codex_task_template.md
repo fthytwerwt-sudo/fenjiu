@@ -36,6 +36,7 @@ blocked_conditions（阻断条件）：
 禁止上传：
 隐私与合规：
 Git 约束：
+Prompt 表达：不得把网络探测、端口探测、渗透或漏洞利用写为执行步骤；英文术语、状态键、字段、命令和路径必须附中文说明。
 
 # Impact check｜影响面
 是否影响业务状态：
@@ -64,11 +65,12 @@ Git 约束：
 3. 读取必读文件。
 4. 执行本轮产物生成或修改。
 5. 运行验证命令。
-6. 扫描 secret、本地绝对路径、媒体、参考项目污染。
-7. path-limited stage，禁止 `git add .`。
-8. commit。
-9. push。
-10. remote HEAD 和核心文件回读。
+6. 运行 `repository hygiene check（仓库卫生检查）`：检查 `secret（密钥）`、`token（访问令牌）`、`cookie（身份凭证）`、本地绝对路径、媒体和参考项目污染。
+7. 运行 `configuration validation（配置验证）` 与 `data safety check（数据安全检查）`；新增或修改依赖时再运行 `dependency compatibility check（依赖兼容检查）`。
+8. path-limited stage（仅暂存指定路径），禁止 `git add .`。
+9. commit（提交）。
+10. push（推送）。
+11. remote HEAD（远端提交指针）和核心文件回读。
 
 # Validation｜验证
 命令：
@@ -91,10 +93,14 @@ Git 约束：
 
 # Output｜回报
 主结论：
-修改文件：
-验证结果：
-事实分级：
-Git 结果：
-未验证项：
-用户下一步：
+修改文件（changed_files）：
+验证结果（validation_results）：
+仓库卫生检查（repository_hygiene_check）：
+配置边界状态（configuration_boundary_status）：
+数据安全检查（data_safety_check）：
+依赖兼容检查（dependency_compatibility_check）：
+事实分级（fact_classification）：
+Git 结果（git_result）：
+未验证项（not_tested）：
+用户下一步（user_next_step）：
 ```
