@@ -1,12 +1,14 @@
 # P03-02｜字段 mapping、清洗与数据质量报告
 
-> **状态：task_branch_partial_pending_commit_push_readback**
+> **状态：task_branch_remote_readback_verified_not_main**
 >
 > **执行日期：** 2026-08-06
 >
 > **精确工程基线：** `origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb`，状态回填基线 `535857f376765b16c056049e3c9ae86a348fee64`
 >
-> **范围边界：** 仅完成 stdlib、local-only、synthetic/value-free 的 P03-02 mapping/quality contract。任务分支尚未集成 `main`；本报告不证明真实供应链资料、approved truth、业务资料就绪或任何外部执行。
+> **任务分支代码提交：** `codex/p03-02-mapping-quality` `a219463108ca3cf098920d57d17a6b7d8657b01f`（已 push/readback）
+>
+> **范围边界：** 仅完成 stdlib、local-only、synthetic/value-free 的 P03-02 mapping/quality contract。任务分支已远端回读但尚未集成 `main`；本报告不证明真实供应链资料、approved truth、业务资料就绪或任何外部执行。
 
 ## 1. 结论
 
@@ -48,7 +50,7 @@
 
 ## 5. 事实分级、剩余阻断与控制器交接
 
-- **CONFIRMED（任务分支本地工程）**：上述 mapping/quality/replay contracts 与验证已在 `codex/p03-02-mapping-quality` 工作树完成，尚待该分支 commit/push/readback 与控制器审查。
+- **CONFIRMED（任务分支工程）**：上述 mapping/quality/replay contracts 与验证已在 `codex/p03-02-mapping-quality` 提交 `a219463108ca3cf098920d57d17a6b7d8657b01f`，并从远端同名分支 readback。
 - **PARTIAL（Phase 3）**：P03-02 只处理 synthetic value-free capability；它没有接入 P03-01 runtime storage，也没有创建新的 ingestion job 或任何真实 candidate。
 - **UNKNOWN / BLOCKED**：真实 profile/source signature、真实值解析/normalization、真实单位/币种/日期/语言、人工 mapping review、approval、truth publish、数据库、auth/RBAC/RLS、供应链业务闸门与所有外部动作。
 - **控制器 handoff**：审查 task-branch diff；只在确认 task commit/push/remote readback 后决定是否集成。后续 P03-03 必须把真实/approved publish 继续隔离在人工审批与 P02 truth guards 之后，不能把本模块的 synthetic fingerprint 当作真实数据清洗或业务就绪。
