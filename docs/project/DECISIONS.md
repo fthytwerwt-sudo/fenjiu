@@ -159,9 +159,9 @@
 
 - **日期**：2026-08-06
 - **状态**：Accepted / PARTIAL（任务分支工程；尚未合入 `main`）
-- **来源**：P03-01 task card、P02-03 contract、test-first、自审与独立 code review。
+- **来源**：P03-01 task card、P02-03 contract、test-first、自审、控制器 atomicity REQUEST CHANGES 与独立专项 code review。
 - **背景**：Phase 3 需要验证来源登记、hash、定位和失败留存，但真实供应链文件尚未授权入场，P02 fixture 也禁止被提升为 approved/real。若 fake extraction 直接保存值、允许无 locator 字段或逐字段部分写入，会破坏 evidence lineage 和人工审批边界。
-- **决定**：P03-01 只接受 ephemeral synthetic bytes 和 value-free field descriptors；记录只保存 private relative/reference locator、hash、IDs、versions、field name 与 location。`workflow_state=staged` 不改变 `data_state=fixture`；全批次定位通过后才原子写 result/candidate，任何 unsafe/unknown/failed input 只进入 quarantine 或 blocked/manual，并保留安全错误码。
+- **决定**：P03-01 只接受 ephemeral synthetic bytes 和 value-free field descriptors；记录只保存 private relative/reference locator、hash、IDs、versions、field name 与 location。`workflow_state=staged` 不改变 `data_state=fixture`；runtime 不暴露单条 result/candidate mutator，只允许经一对一、无重复、lineage 一致的全批次原子写入。任何 unsafe/unknown/failed input 或不完整 batch 只进入 quarantine、blocked/manual 或稳定错误码 fail closed。
 - **影响**：P03-02 可消费 source/job/result/candidate/locator/hash/version contract 做 synthetic mapping/quality，但不能回读 raw value、自动补值、批准或进入 P02 current truth。真实 parser/OCR、storage/database、auth/RBAC/RLS 必须另开任务和证据闸门。
-- **替代方案**：在 P03-01 引入真实 OpenXML/PDF/OCR 解析器；未采用，因为需要真实文件/新依赖且超出授权。把 staged candidate 写成 non-synthetic `DataState.STAGING`；未采用，因为会伪装 fixture 来源并打开未来 promotion 风险。逐字段写入后再报告失败；未采用，因为会留下部分候选。
+- **替代方案**：在 P03-01 引入真实 OpenXML/PDF/OCR 解析器；未采用，因为需要真实文件/新依赖且超出授权。把 staged candidate 写成 non-synthetic `DataState.STAGING`；未采用，因为会伪装 fixture 来源并打开未来 promotion 风险。仅移除公共单条 mutator；未采用，因为 batch 入口本身仍可写入半批次。逐字段写入后再报告失败；未采用，因为会留下部分候选。
 - **状态边界**：本决定不确认任何真实商品、价格、库存、资质、账号、收款、履约、platform rule、approved truth 或外部执行。

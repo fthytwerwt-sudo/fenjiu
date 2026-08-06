@@ -6,7 +6,7 @@
 >
 > **精确基线：** 远端 `main` `bce35a01fa7c13cce797069198ce71dcf29ea2dc`
 >
-> **远端任务分支代码提交：** `e59e2c827f6d7902a157f66fd463663fb309e1a7`
+> **远端任务分支代码提交：** `e17196e06380827224a1463f01b53a9975382f22`
 >
 > **范围边界：** 只完成 stdlib/local-only/synthetic-only 的登记、hash、quarantine、fake extraction、locator 与 fixture staging contract；没有读取真实供应链文件，没有接 production storage/database/auth/RBAC/RLS，没有写 approved truth，也没有打开任何 external flag。
 
@@ -16,7 +16,7 @@
 - `IngestionJobRecord` 以 `source_file + parser_version + mapping_profile_version` 幂等；input signature 同时绑定 extractor version、字段 hash 和 locator。parser 版本改变会产生新 job；同版本不同输出会以 `extraction_replay_mismatch` fail closed。
 - `ExtractionResultRecord` 与 `StagingCandidateRecord` 只保存 field name、content hash、source/job/result lineage 和 traceable locator，不保存 extracted value。candidate 的 `workflow_state=staged`，但 `data_state` 永远保持 `fixture`，因此不能进入 P02 approved/current truth。
 - 七类 fake ports 已建立：`XLSX`、`CSV`、`DOCX`、`PDF`、image、folder manifest 与 JSON export。fake 只回放 value-free synthetic descriptors，不读取真实文件、不实现 ZIP/XML/PDF/OCR parser、不调用外部程序或网络。
-- 全批次先验证 locator 与 lineage，再原子写 result/candidate；任一字段失败时该批次为 0 staging write。store 自身再次检查 source→job→result→candidate 的 scope、version 与 locator lineage。
+- 全批次先验证 locator 与 lineage，再原子写 result/candidate；任一字段失败时该批次为 0 staging write。runtime store 不再暴露单条 `append_result` / `append_candidate`，唯一 staging 写入入口强制 result/candidate 一对一、无重复且 lineage 一致；半批次以 `staging_batch_atomicity_required` fail closed。
 
 ## 2. Locator 与 source type
 
@@ -53,11 +53,12 @@ fixture allowlist 只新增 `fixtures/ingestion/synthetic_source_profiles.json`�
 - 首个 ingestion 测试运行按预期因 `fake_extractor_registry` 尚不存在而 ImportError；之后才实现 contracts/ports/store/pipeline/fakes。
 - 自审发现并修复：多字段 partial staging、失败重跑 timestamp conflict、folder member traversal、extractor-version replay、store direct cross-scope append、fixture allowlist 过宽和 batch append failure retention。
 - 独立 reviewer 第一轮为 `REQUEST CHANGES`：1 个 HIGH（secret-like `received_by/idempotency_key` 可原样留存）与 1 个 MEDIUM（同 hash 的 locator alias 被误判冲突）。修复并补回归后，原 reviewer 只读复现两条路径，最终 0 findings / `APPROVE`。
+- 控制器随后发现 1 个 HIGH：已导出的 runtime store 仍公开单条 result/candidate mutator，且 batch 入口本身可接受半批次。本次 test-first 复现公共绕过，移除单条 mutator，并在批量入口写入前强制一对一完整性。原独立 reviewer 专项复核、独立复现 partial/duplicate 路径后为 0 findings / `APPROVE`。
 
 ## 5. 验证证据
 
 - `make regression`：通过；P02 `0001` + `0002` migrations 连续 replay 两次，16 类 SQL negative constraints 通过，isolated PostgreSQL database/containers/network/volumes 已清理。
-- Python suites：8 architecture + 14 regression + 8 local-runtime + 16 control-plane + 46 contracts + 13 ingestion，共 105 项通过。
+- Python suites：8 architecture + 14 regression + 8 local-runtime + 16 control-plane + 46 contracts + 14 ingestion，共 106 项通过。
 - P00 default scan：通过；P00 `--all-files` scan：通过。
 - GPT Project mechanism validation：通过，23 files、system prompt 3613 chars。
 - `compileall`、全部 shell syntax、`git diff --check`：通过。
@@ -67,11 +68,12 @@ fixture allowlist 只新增 `fixtures/ingestion/synthetic_source_profiles.json`�
 ## 6. Git 与远端回读
 
 - task branch：`codex/p03-01-ingestion-ports`。
-- remote code commit：`e59e2c827f6d7902a157f66fd463663fb309e1a7`。
+- remote code commit：`e17196e06380827224a1463f01b53a9975382f22`。
+- `modules/ingestion/store.py` remote SHA-256：`2d9dd42fabdcd9952c8187f7ca8b3fcf4c8f975c8b5fe5c5b6aaf9c750b8dea8`。
 - `modules/ingestion/pipeline.py` remote SHA-256：`e97e0d06236c84d7dcc7568c2726e6c8b87eba52fe187ae41b4ccdd8b09b56dd`。
 - `modules/ingestion/contracts.py` remote SHA-256：`57ac6039f37388dc8d244e3833f4b09a2d9c82d6cd522158bc1af5915a880ed4`。
 - `adapters/storage/fake_extractors.py` remote SHA-256：`6b0f89c8f0b348cefb93efe5bd436027ee219ff78cc41b4b99b2db8006233014`。
-- `tests/ingestion/test_source_registration_and_extraction.py` remote SHA-256：`fe04519ba6f65301f078d5cc4fdf8fdb5e805c173cc039870bfa69e2aaec768c`。
+- `tests/ingestion/test_source_registration_and_extraction.py` remote SHA-256：`9a949f43ad8d8c2d66429ab75c4c582dc5bc1a59dc1079708269956077c8d08a`。
 - 本任务未 merge、未 push `main`；是否集成由控制器/用户后续决定。本报告也不生成或修改 sync archive。
 
 ## 7. 事实分级、剩余阻断与 P03-02 输入
