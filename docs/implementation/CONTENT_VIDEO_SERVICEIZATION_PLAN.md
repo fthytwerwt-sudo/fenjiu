@@ -1,6 +1,6 @@
 # 内容与视频生产链服务化计划
 
-> **状态：PLANNED。** Phase 7 复用现有 HappyHorse / DashScope / FFmpeg 工具链的行为，不重写、不移动、不在本轮调用真实模型；任何内容在平台和酒类边界未确认时仅为内部草稿/样片。
+> **状态：PLANNED / LEGACY_DEFERRED。** P00-01 未在当前受控 Git 清单中定位 HappyHorse / DashScope / FFmpeg legacy 实体；Phase 7 默认使用 fake provider 和 manifest contract，只有在授权位置完成 hash/CLI/dry-safe 回读后才可包装。任何内容在平台和酒类边界未确认时仅为内部草稿/样片。
 
 ## 1. 标准流程
 
@@ -14,12 +14,12 @@ content task → lock approved product facts + asset rights → topic/script →
 
 ## 2. legacy 复用清单与边界
 
-| 现有文件 | 可复用能力 | 新包装边界 |
-|---|---|---|
-| `generate_happyhorse_shots.py` | 提交、轮询、断点续跑、下载、质量重试、manifest | `HappyHorseLegacyPort` 使用 manifest reference 和 idempotency key；不复制实现、密钥或请求体。 |
-| `generate_happyhorse_video_edit_once.py` | 单批 non-retry 编辑任务 | adapter 明确 `no_auto_retry`，失败进入人工 queue。 |
-| `prepare_video_assets.py`、`assemble_final_video.py` | 素材准备、FFmpeg 合成 | `PostProcessPort` 只读输入，输出新 artifact reference，不覆盖历史。 |
-| `build_video_execution_report.py` | 执行结果汇总 | 作为 QC/报告参考，业务真值不从 report 倒灌。 |
+| 规划引用 | P00-01 状态 | 可复用能力（待验证） | 新包装边界 |
+|---|---|---|---|
+| `generate_happyhorse_shots.py` | `DEFER/BLOCKED`，未定位 | 提交、轮询、断点续跑、下载、质量重试、manifest | `HappyHorseLegacyPort` 先以 fake provider 实现；未定位实体前不得调用真实 DashScope/HappyHorse。 |
+| `generate_happyhorse_video_edit_once.py` | `DEFER/BLOCKED`，未定位 | 单批 non-retry 编辑任务 | adapter 明确 `no_auto_retry`，失败进入人工 queue；未定位前仅保留 contract。 |
+| `prepare_video_assets.py`、`assemble_final_video.py` | `DEFER/BLOCKED`，未定位 | 素材准备、FFmpeg 合成 | `PostProcessPort` 只读输入，输出新 artifact reference，不覆盖历史；未定位前不调用 FFmpeg。 |
+| `build_video_execution_report.py` | `DEFER/BLOCKED`，未定位 | 执行结果汇总 | 作为 QC/报告参考，业务真值不从 report 倒灌；未定位前 report schema 只作候选。 |
 
 ## 3. manifest、状态与模型替换
 

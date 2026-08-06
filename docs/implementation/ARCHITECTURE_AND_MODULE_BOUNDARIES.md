@@ -17,7 +17,7 @@ apps/
   admin/               # 极简审批、审计、导入复核界面；可先 server-rendered
 core/
   domain/              # 聚合、policy、状态机、领域事件；零第三方 adapter 导入
-  application/         # use cases / command handlers / ports
+  application/         # use cases / command handlers / ports；唯一可调用 adapter port 的内层入口
   contracts/           # Pydantic/JSON Schema、事件版本、错误码
   security/            # tenant scope、RBAC、审计上下文、secret references
 modules/
@@ -40,6 +40,26 @@ docker-compose.yml     # local-only dependencies，禁止承载生产密钥
 Makefile               # 唯一、易理解的本地操作入口
 ```
 
+### Phase 1 文件级入口冻结
+
+P01-01 创建 skeleton 时只能建立空实现、README/module docstring、最小 import/test 护栏和 feature flag/config 占位，不接数据库、模型、网络、真实资料或 provider SDK。首批文件级入口如下：
+
+| 路径 | owner | Phase 1 最小内容 | 禁止内容 |
+|---|---|---|---|
+| `apps/api/` | delivery/API | FastAPI app factory、health route、correlation/scope middleware 占位 | 真实 auth provider、webhook URL、外部发送或业务写入。 |
+| `apps/worker/` | delivery/worker | worker bootstrap、queue fake consumer、idempotency shell | 真实 broker 账号、模型调用、外部采集、发布或支付。 |
+| `apps/admin/` | delivery/admin | approval/audit 占位路由或静态 shell | 把 fixture 升级为 approved、真实用户/账号管理。 |
+| `core/domain/` | domain | policy、状态枚举、领域事件占位 | provider SDK、数据库 session、HTTP client。 |
+| `core/application/` | application | command/query handler、port interfaces、feature-flag checks | 直接读取 adapter 私有状态或绕过 approval。 |
+| `core/contracts/` | contracts | scope、error、event、schema version 的最小 contract | 真实 SKU、价格、库存、客户或账号数据。 |
+| `core/security/` | security | scope context、RBAC/action-policy 占位 | 真实密钥、cookie、生产身份。 |
+| `modules/*/` | module owner | 每模块 README/docstring、空 service/repository contract | 跨模块直接读私表、真实资料导入。 |
+| `adapters/*/` | adapter owner | fake/in-memory adapter skeleton 和 provider capability registry | 未核验 SDK、真实 token、真实 API 调用。 |
+| `workflows/` | orchestration | thin runner interface，调用 application ports | 把 workflow DSL 当事实源或审批源。 |
+| `fixtures/` | test data | `is_synthetic=true` 的最小 fixture metadata | 从真实资料复制或缺 synthetic 标记。 |
+| `migrations/` | data platform | 空 migration 入口和命名规则 | 真实数据、生产连接串、不可回放 DDL。 |
+| `tests/` | verification | architecture/import/flag negative tests | 需要外部网络、真实密钥或真实业务数据。 |
+
 ## 3. 依赖方向与禁止项
 
 ```mermaid
@@ -60,6 +80,17 @@ flowchart LR
 - 外部 webhook 直接写 `approved`、`price`、`inventory`、`crm_stage` 或 `sent` 状态。
 - AI 输出直接成为 `approved_fact`、外发消息、公开内容、正式报价、退款/订单决定。
 - fixture 从真实资料复制，或在缺 `fixture` 标记时被 worker 加载。
+
+### 单向依赖判定表
+
+| From | May import/call | Must not import/call |
+|---|---|---|
+| `apps/*` | `core/application`、`core/contracts`、delivery middleware | provider SDK、模块私有 repository、真实 secret。 |
+| `workflows` | `core/application` ports、workflow state contracts | `adapters/*` provider implementation、domain private mutation。 |
+| `core/application` | `core/domain`、`core/contracts`、port protocols | provider SDK、HTTP crawler/client、video SDK、CRM/support SDK。 |
+| `core/domain` / `modules` | `core/contracts`、领域 policy、同模块私有类型 | `adapters`、`apps`、`workflows`、外部 SDK、环境变量读取。 |
+| `adapters` | port protocols、contracts、provider-specific client | 写入 approved truth、保存唯一业务真值、绕过 application policy。 |
+| `fixtures` | exported contracts/schema | production settings、真实资料、未脱敏联系人。 |
 
 ## 4. 模块边界与 ownership
 
@@ -85,13 +116,28 @@ flowchart LR
 
 ## 6. Legacy 资产的接入边界
 
-| 现有资产 | 新系统中的位置 | 不能做什么 |
-|---|---|---|
-| `generate_happyhorse_shots.py`、`generate_happyhorse_video_edit_once.py` | `adapters/video/happyhorse_legacy_port` 的受控 subprocess/manifest adapter | 不复制 API 实现；不把 `.env` 或请求响应写入数据库日志 |
-| `assemble_final_video.py`、`prepare_video_assets.py` | 由 content/video worker 调用的 post-process port | 不重写 FFmpeg/字幕流程；不直接发布/覆盖原输出 |
-| `build_research_channels.py` | `fixtures/research_channel_fixture` 的来源/字段参考 | 不作为 crawler，不导入真实联系人到 CRM |
-| `seafood_project_data.py` | 研究规则、FAQ、字段候选的审计输入 | 不能批量迁移商品、价格、联系人或“首批测试”结论 |
-| DOCX/XLSX 生成脚本 | 资料样本与格式回归样本 | 不成为 API/worker 的运行时依赖 |
+P00-01 的受控 Git 审计未定位 HappyHorse / DashScope / FFmpeg legacy 实体；下表中的路径只是规划引用和未来 port 名称，不是当前可运行事实。除 `scripts/build_project_sync_pack.py` 与 `scripts/validate_gpt_project_mechanism_sync.py` 外，legacy 视频/研究脚本继续为 `DEFER/BLOCKED`，直到授权位置、SHA-256、CLI、输入输出和 dry-safe 行为被回读。
+
+| 规划引用 | 状态 | 新系统中的位置 | 不能做什么 |
+|---|---|---|---|
+| `generate_happyhorse_shots.py`、`generate_happyhorse_video_edit_once.py` | `DEFER/BLOCKED` | `adapters/video/happyhorse_legacy_port` 的受控 subprocess/manifest adapter | 未定位前不得实现真实 wrapper；不得复制 API 实现；不把 `.env` 或请求响应写入数据库日志。 |
+| `assemble_final_video.py`、`prepare_video_assets.py` | `DEFER/BLOCKED` | 由 content/video worker 调用的 post-process port | 未定位前只保留 `PostProcessPort` fake；不重写 FFmpeg/字幕流程；不直接发布/覆盖原输出。 |
+| `build_video_execution_report.py` | `DEFER/BLOCKED` | QC/report reference port | 未定位前不得把 report 字段写成 contract truth；业务真值不从 report 倒灌。 |
+| `build_research_channels.py` | `DEFER/BLOCKED` | `fixtures/research_channel_fixture` 的来源/字段参考 | 不作为 crawler，不导入真实联系人到 CRM；`research_channels.json` 保持 forbidden。 |
+| `seafood_project_data.py` | `DEFER/BLOCKED` | 研究规则、FAQ、字段候选的审计输入 | 不能批量迁移商品、价格、联系人或“首批测试”结论到汾酒。 |
+| DOCX/XLSX 生成脚本 | `DEFER/NEEDS_VERIFY` | 资料样本与格式回归样本 | 不成为 API/worker 的运行时依赖；原始 DOCX/XLSX/PDF 不入 Git/runtime。 |
+
+## 6A. Optional adapter ports 与退出规则
+
+这些 port 允许 Phase 1 先建 interface/fake，不允许选择未核验依赖版本或真实 provider：
+
+| Capability | Port | Default status | Exit / fallback rule |
+|---|---|---|---|
+| workflow | `WorkflowPort.run/pause/resume/recover` | `planned_fake_only` | 简易 in-process runner 必须跑同一 contract；LangGraph 等组件未重验版本/许可/恢复语义前保持 `NEEDS_VERIFY`。 |
+| crawl | `CrawlPort.fetch_snapshot/extract_public_fields` | `planned_fake_only` | CSV/manual import fallback 必须保留；任何 robots/条款/频率/地区合规不明时禁用真实 crawl。 |
+| CRM | `CrmPort.export_interaction/import_stage/map_external_id` | `planned_fake_only` | PostgreSQL 内部 CRM domain 是真值；第三方 CRM 关闭后 scoped export 仍可读。 |
+| support | `SupportPort.receive/draft/send_approved/handoff` | `planned_fake_only` | 默认 manual-only；无 approved fact、无授权账号或高风险意图时不发送并转人工。 |
+| video | `VideoPort.submit/poll/fetch/run_qc` | `planned_fake_only` | fake provider 是 Phase 1/7 默认；legacy 实体未定位或 hash/CLI 不可验证时不得调用真实 HappyHorse/DashScope/FFmpeg。 |
 
 ## 7. 配置、队列、观察性与密钥
 
@@ -125,11 +171,11 @@ make run-ready-report BUSINESS_LINE=<slug>
 
 | 资产 | Phase 0 基线 | 未来位置 | 本轮和实施阶段禁止事项 |
 |---|---|---|---|
-| `generate_happyhorse_shots.py`、`generate_happyhorse_video_edit_once.py` | 记录 CLI usage、代码 hash、最小 manifest validator 行为 | `adapters/video/happyhorse_legacy_port` 通过受控 subprocess 包装 | 本轮不改；后续不复制 API 逻辑、不读取/记录密钥、不调用真实模型作测试。 |
-| `prepare_video_assets.py`、`assemble_final_video.py`、`build_video_execution_report.py` | 记录输入/输出契约和 dry-safe 命令 | `content_video` 后处理 port | 不迁移历史输出、不覆盖原文件、不将输出当 approved 商品事实。 |
-| `build_research_channels.py` 与 `research_channels.json` | 只读审计字段和来源结构 | synthetic public-source fixture / CSV fallback 参考 | JSON 与联系人不进 runtime/CRM，除非未来逐条来源审查与人工导入。 |
-| DOCX/XLSX 与供应链生成脚本 | 记录可读/可生成的 fixture 文档结构 | ingestion parser fixture 和 regression source | 原始 DOCX/XLSX/PDF 不被移动、改名、写回或打包。 |
-| `seafood_project_data.py`、海鲜 FAQ/CRM 文档 | 仅研究/字段候选 | 独立 `seafood` fixture 合同输入 | 不把商品、价格、客户、合规或业务结论带入 `fenjiu`。 |
+| `generate_happyhorse_shots.py`、`generate_happyhorse_video_edit_once.py` | `DEFER/BLOCKED`：P00-01 未定位 | `adapters/video/happyhorse_legacy_port`，仅在定位和 hash/CLI 通过后受控 subprocess 包装 | 本轮不改；后续不复制 API 逻辑、不读取/记录密钥、不调用真实模型作测试。 |
+| `prepare_video_assets.py`、`assemble_final_video.py`、`build_video_execution_report.py` | `DEFER/BLOCKED`：P00-01 未定位 | `content_video` 后处理 port，未定位前仅 fake/manifest contract | 不迁移历史输出、不覆盖原文件、不将输出当 approved 商品事实。 |
+| `build_research_channels.py` 与 `research_channels.json` | `DEFER/BLOCKED` / forbidden | synthetic public-source fixture / CSV fallback 参考 | JSON 与联系人不进 runtime/CRM，除非未来逐条来源审查与人工导入。 |
+| DOCX/XLSX 与供应链生成脚本 | `DEFER/NEEDS_VERIFY` | ingestion parser fixture 和 regression source | 原始 DOCX/XLSX/PDF 不被移动、改名、写回或打包。 |
+| `seafood_project_data.py`、海鲜 FAQ/CRM 文档 | `DEFER/BLOCKED` | 独立 `seafood` fixture 合同输入 | 不把商品、价格、客户、合规或业务结论带入 `fenjiu`。 |
 
 实施任务如需把旧工具放入 `legacy_tools/`，必须先在独立任务中证明原路径兼容、调用方引用已迁移且 hash/CLI 回归通过；本规划不授权移动。同步包默认仍不打包整个 `docs/implementation/` 或任何 task card，因为它的严格 allowlist 面向最小项目事实交接。若未来需要纳入，只增加入口型、无敏感、低体积的索引文件，并单独运行同步包验证。
 

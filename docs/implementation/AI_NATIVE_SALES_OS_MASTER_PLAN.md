@@ -23,7 +23,7 @@
 | 项目 | 当前结论 | 本计划处理方式 |
 |---|---|---|
 | 治理机制 | `CONFIRMED`：项目入口、事实分级、P0/P1/P2、Git 闭环和 GPT Project 机制包已存在 | 承接；运行时系统不得改写业务事实或绕过机制。 |
-| 工程资产 | `CONFIRMED`：HappyHorse / DashScope、FFmpeg、DOCX/XLSX、公开研究生成脚本存在 | 仅包装、回归和适配；本轮不移动、不重写。 |
+| 工程资产 | `部分成立`：规划文档中引用 HappyHorse / DashScope、FFmpeg、DOCX/XLSX 和公开研究生成脚本；但 P00-01 未在当前受控 Git 清单中定位 HappyHorse / DashScope / FFmpeg legacy 实体 | 保持 `DEFER/BLOCKED`；Phase 7 或 P00-03 必须先在授权位置定位实体、记录 hash/CLI 和 dry-safe 行为，才能包装。 |
 | 运行时工程 | `CONFIRMED`：尚未发现 `apps/`、`core/`、`modules/`、数据库 migration 或可运行服务 | Phase 1 起由后续 Codex 逐任务建设。 |
 | 真实供应链资料 | `UNKNOWN / BLOCKED`：无可批准 SKU、价格、库存、资质、账号、收款或履约事实 | 只使用显式 synthetic fixture；Phase 8 才定义真实资料入场。 |
 | 业务线 | `CONFIRMED`：汾酒与海鲜可共享代码/合同，不可共享真值、客户或业务结论 | 每个实体强制 `tenant_id/project_id/business_line_id` scope。 |
@@ -48,7 +48,7 @@
 | 4 | 工作流、人工闸门、权限、审计与可观察性 | 2；审批对象实现依赖 3 | 5/6/7 只能在 4 的 policy/approval contract 冻结后并行 | 自动动作被统一 policy、审批、重试、审计和 feature flag 控制。 |
 | 5 | 公开资料、线索、CRM 与外联草稿 | 2、4 | 可与 6、7 并行 | 仅公开候选与草稿；真实采集/发送仍关闭。 |
 | 6 | 客服 AI、会话状态与人工接管 | 2、4 | 可与 5、7 并行 | 只读 approved 真值、draft-only、强制高风险转人工。 |
-| 7 | 内容和视频生产链服务化 | 2、4；legacy 回归基线来自 0 | 可与 5、6 并行 | 复用 legacy 视频脚本，所有成片先内部审批。 |
+| 7 | 内容和视频生产链服务化 | 2、4；legacy 实体定位与回归基线来自 0/7 | 可与 5、6 并行 | 默认 fake provider；仅在 legacy 实体已定位、hash/CLI 可回读且 dry-safe 后包装，所有成片先内部审批。 |
 | 8 | 真实资料入场、fixture 替换、全链回归与受控运行 | 3、4、5、6、7；真实资料到达 | 不可与尚未验收的上游并行 | 技术 `run-ready`，不代表外部业务已获准。 |
 | 9 | 正式外部上线闸门 | 8 + 外部书面证据 | 不属于本轮实施目标 | 只定义阻断；不写成当前可执行。 |
 
@@ -103,6 +103,20 @@ make run-ready-report BUSINESS_LINE=fenjiu
 ```
 
 `FILE` 必须指向私有受控目录，不会被复制进 Git；`BUSINESS_LINE=fenjiu` 只是运行范围，不说明该业务线已可外部销售。Phase 1 的任务会评估 Makefile 与 `uv run` / `docker compose` 是否能保持等价入口；若替代，必须保留以上易理解命令语义。
+
+## 6A. P00-02 冻结边界（Phase 1 前生效）
+
+本节承接 P00-01 审计结果，冻结 Phase 1 的工程入口；它不创建代码、数据库、依赖锁或运行时目录。
+
+| 冻结项 | Phase 1 可执行边界 | 禁止重新决定 |
+|---|---|---|
+| 目录 ownership | `apps/` 只放 API/worker/admin 入口；`core/domain` 与 `modules` 放业务规则；`core/application` 放 use case/ports；`core/contracts` 放可版本化 contract；`adapters` 只放 provider 实现；`workflows` 只编排 application ports；`fixtures` 只允许 synthetic | 不在 Phase 1 重新讨论微服务、双真值、直接 SaaS 核心或跨模块读私表。 |
+| 依赖方向 | `apps/workflows -> core/application -> core/domain/modules/contracts`；`adapters -> ports/contracts`；domain/modules 不导入 provider SDK | 不允许 domain/modules 直接导入 LangGraph、Crawl、CRM、support、video、模型或支付 SDK。 |
+| 外部动作 | `external_execution_allowed=false`、`public_publish=false`、`real_quote=false`、`payment=false`、`order_create=false` 作为默认拒绝 | 不用技术测试、fixture 或 admin 页面打开公开发布、真实报价、收款、订单或履约。 |
+| legacy | HappyHorse / DashScope / FFmpeg 在受控 Git 中未定位，状态为 `DEFER/BLOCKED` | 不把规划引用写成现成可用；不选定真实 provider 或未核验版本。 |
+| 依赖版本 | Phase 1 可建立 port/fake 和最小本地入口；外部组件只保留 `RECOMMENDED/DEFER/NEEDS_VERIFY` 状态 | P00-02 不冻结 LangGraph/Crawl/CRM/support/video 的具体版本、账号、部署拓扑或 provider。 |
+
+Phase 1 的文件级入口固定见 [架构与模块边界](ARCHITECTURE_AND_MODULE_BOUNDARIES.md) 的 “Phase 1 文件级入口冻结”。若 P01-01 发现目录名、配置入口或测试入口与当前仓库冲突，必须回到 Phase 0 记录差异，而不是在实现中静默换架构。
 
 ## 7. Phase 8 的三层状态，绝不合并表述
 
