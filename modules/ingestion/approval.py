@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from hashlib import sha256
+import sys
 from typing import Callable, Dict, Optional, Tuple
 from uuid import UUID, NAMESPACE_URL, uuid5
 from weakref import WeakKeyDictionary
@@ -96,8 +97,6 @@ _PUBLICATION_TRANSITIONS = {
         {InternalPublicationState.APPROVED_INTERNAL}
     ),
 }
-
-
 def _digest(*parts: object) -> str:
     material = "\x1f".join(str(part) for part in parts)
     return sha256(material.encode("utf-8")).hexdigest()
@@ -1264,7 +1263,6 @@ def _publication_state_accessors():
     ledger_states: WeakKeyDictionary[object, LedgerState] = WeakKeyDictionary()
     outbox_states: WeakKeyDictionary[object, OutboxState] = WeakKeyDictionary()
     transaction_states: WeakKeyDictionary[object, TransactionState] = WeakKeyDictionary()
-
     def init_ledger(owner: object) -> None:
         ledger_states[owner] = LedgerState({}, {}, set(), {})
 
@@ -1300,6 +1298,71 @@ def _publication_state_accessors():
             dict[UUID, UUID],
         ],
     ) -> None:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         state = ledger_state(owner)
         state.records_by_id = _snapshot(snapshot[0])
         state.fingerprints_by_id = dict(snapshot[1])
@@ -1367,6 +1430,71 @@ def _publication_state_accessors():
         owner: object,
         records: Tuple[InternalPublicationRecord, ...],
     ) -> Tuple[InternalPublicationRecord, ...]:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         if not isinstance(records, tuple) or not records:
             raise ApprovalBoundaryError("internal_publication_batch_required")
         if any(not isinstance(record, InternalPublicationRecord) for record in records):
@@ -1436,6 +1564,71 @@ def _publication_state_accessors():
         owner: object,
         snapshot: tuple[dict[UUID, InternalInvalidationEvent], dict[UUID, str]],
     ) -> None:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         state = outbox_state(owner)
         state.events_by_id = _snapshot(snapshot[0])
         state.fingerprints_by_id = dict(snapshot[1])
@@ -1457,6 +1650,71 @@ def _publication_state_accessors():
             raise ApprovalBoundaryError("publication_transaction_incomplete")
 
     def outbox_append(owner: object, event: InternalInvalidationEvent) -> InternalInvalidationEvent:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         if not isinstance(event, InternalInvalidationEvent):
             raise ApprovalBoundaryError("invalidation_event_required")
         event = _snapshot(event)
@@ -1493,6 +1751,71 @@ def _publication_state_accessors():
         return _snapshot(state.results_by_key), dict(state.fingerprints_by_key)
 
     def transaction_restore(owner: object, snapshot: tuple[dict[str, object], dict[str, str]]) -> None:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         state = transaction_state(owner)
         state.results_by_key = _snapshot(snapshot[0])
         state.fingerprints_by_key = dict(snapshot[1])
@@ -1506,6 +1829,71 @@ def _publication_state_accessors():
         return _snapshot(existing), state.fingerprints_by_key[key]
 
     def transaction_commit(owner: object, key: str, result: object, fingerprint: str) -> object:
+        caller_code = sys._getframe(1).f_code
+        if (
+            caller_code.co_name != "_publisher_commit_transaction"
+            or caller_code.co_argcount != 5
+            or caller_code.co_kwonlyargcount != 0
+            or caller_code.co_nlocals != 14
+            or caller_code.co_stacksize != 8
+            or caller_code.co_consts
+            != (
+                None,
+                1,
+                "publication_storage_uninstalled",
+                "internal_publication_commit_mismatch",
+                "after_ledger_append",
+                "invalidation_event_idempotency_conflict",
+                "after_outbox_append",
+                "publication_transaction_conflict",
+                "after_transaction_log_commit",
+            )
+            or caller_code.co_names
+            != (
+                "sys",
+                "_getframe",
+                "f_code",
+                "type",
+                "publish",
+                "__code__",
+                "revoke",
+                "ApprovalBoundaryError",
+                "ledger_snapshot",
+                "_ledger",
+                "outbox_snapshot",
+                "_outbox",
+                "transaction_snapshot",
+                "_transaction_log",
+                "_publication_transaction_fingerprint",
+                "ledger_append_batch",
+                "_fault_injector",
+                "outbox_append",
+                "transaction_commit",
+                "Exception",
+                "ledger_restore",
+                "outbox_restore",
+                "transaction_restore",
+                "_snapshot",
+            )
+            or caller_code.co_varnames
+            != (
+                "self",
+                "key",
+                "records",
+                "event",
+                "result",
+                "caller_code",
+                "allowed_callers",
+                "ledger_before",
+                "outbox_before",
+                "transaction_before",
+                "fingerprint",
+                "appended_records",
+                "appended_event",
+                "committed",
+            )
+        ):
+            raise ApprovalBoundaryError("publication_storage_uninstalled")
         _require_safe_hash(key, "publication_transaction_key_required")
         _require_safe_hash(fingerprint, "publication_transaction_fingerprint_required")
         state = transaction_state(owner)
@@ -2615,243 +3003,6 @@ def _install_publication_state_accessors() -> None:
             raise ApprovalBoundaryError("publication_transaction_incomplete") from exc
         return _snapshot(existing)
 
-    def commit_transaction(
-        self,
-        key: str,
-        records: Tuple[InternalPublicationRecord, ...],
-        event: InternalInvalidationEvent,
-        result,
-    ):
-        ledger_before = ledger_snapshot(self._ledger)
-        outbox_before = outbox_snapshot(self._outbox)
-        transaction_before = transaction_snapshot(self._transaction_log)
-        fingerprint = _publication_transaction_fingerprint(records, event, result)
-        try:
-            appended_records = ledger_append_batch(self._ledger, records)
-            if appended_records != records:
-                raise ApprovalBoundaryError("internal_publication_commit_mismatch")
-            if self._fault_injector is not None:
-                self._fault_injector("after_ledger_append")
-            appended_event = outbox_append(self._outbox, event)
-            if appended_event != event:
-                raise ApprovalBoundaryError("invalidation_event_idempotency_conflict")
-            if self._fault_injector is not None:
-                self._fault_injector("after_outbox_append")
-            committed = transaction_commit(self._transaction_log, key, result, fingerprint)
-            if committed != result:
-                raise ApprovalBoundaryError("publication_transaction_conflict")
-            if self._fault_injector is not None:
-                self._fault_injector("after_transaction_log_commit")
-        except Exception:
-            ledger_restore(self._ledger, ledger_before)
-            outbox_restore(self._outbox, outbox_before)
-            transaction_restore(self._transaction_log, transaction_before)
-            raise
-        return _snapshot(result)
-
-    def publisher_publish(
-        self,
-        request: ApprovalRequest,
-        *,
-        supersedes: Optional[object] = None,
-    ) -> InternalPublicationResult:
-        published_at = _require_safe_time(self._now(), "publication_time_required")
-        request = self._request_store.assert_committed_replay_request(request)
-        candidate = request.candidate
-        superseded_source: Optional[InternalPublicationRecord] = None
-        if supersedes is not None:
-            if isinstance(supersedes, InternalPublicationResult):
-                superseded_source = supersedes.approved_record
-            elif isinstance(supersedes, InternalRevocationResult):
-                superseded_source = supersedes.revoked_record
-            elif isinstance(supersedes, InternalPublicationRecord):
-                superseded_source = supersedes
-            else:
-                raise ApprovalBoundaryError("superseded_publication_required")
-            superseded_source = _snapshot(superseded_source)
-            superseded_source.__post_init__()
-            if (
-                superseded_source.scope != request.scope
-                or superseded_source.subject_ref != request.subject_ref
-                or superseded_source.target_field != candidate.target_field
-            ):
-                raise ApprovalBoundaryError("publication_subject_mismatch")
-        publish_key = _digest(
-            "publish",
-            request.id,
-            request.decision_id,
-            superseded_source.id if superseded_source is not None else "root",
-        )
-        existing = committed_publication_result(
-            self,
-            publish_key,
-            request,
-            superseded_source,
-        )
-        if existing is not None:
-            return existing
-        request = self._request_store.assert_publishable_request(request, at=published_at)
-        candidate = request.candidate
-        if superseded_source is not None:
-            if (
-                superseded_source.state is InternalPublicationState.REVOKED_INTERNAL
-                and (
-                    superseded_source.request_id == request.id
-                    or superseded_source.decision_id == request.decision_id
-                )
-            ):
-                raise ApprovalBoundaryError("revoked_successor_requires_new_approval")
-            if not self._ledger.is_head(superseded_source):
-                raise ApprovalBoundaryError("superseded_publication_not_current")
-
-        records: tuple[InternalPublicationRecord, ...]
-        superseded_record = None
-        if superseded_source is None:
-            if ledger_next_version_no(
-                self._ledger,
-                request.scope,
-                request.subject_ref,
-                candidate.target_field,
-            ) != 1:
-                raise ApprovalBoundaryError("publication_supersede_required")
-            approved_record = self._record_for(
-                request=request,
-                state=InternalPublicationState.APPROVED_INTERNAL,
-                version_no=1,
-                parent_record_id=None,
-                superseded_record_id=None,
-                revoked_record_id=None,
-                published_at=published_at,
-            )
-            records = (approved_record,)
-        elif superseded_source.state is InternalPublicationState.APPROVED_INTERNAL:
-            superseded_record = self._record_for(
-                request=request,
-                state=InternalPublicationState.SUPERSEDED_INTERNAL,
-                version_no=superseded_source.version_no + 1,
-                parent_record_id=superseded_source.id,
-                superseded_record_id=superseded_source.id,
-                revoked_record_id=None,
-                published_at=published_at,
-                source_record=superseded_source,
-            )
-            approved_record = self._record_for(
-                request=request,
-                state=InternalPublicationState.APPROVED_INTERNAL,
-                version_no=superseded_record.version_no + 1,
-                parent_record_id=superseded_record.id,
-                superseded_record_id=superseded_source.id,
-                revoked_record_id=None,
-                published_at=published_at,
-            )
-            records = (superseded_record, approved_record)
-        else:
-            approved_record = self._record_for(
-                request=request,
-                state=InternalPublicationState.APPROVED_INTERNAL,
-                version_no=superseded_source.version_no + 1,
-                parent_record_id=superseded_source.id,
-                superseded_record_id=superseded_source.id,
-                revoked_record_id=None,
-                published_at=published_at,
-            )
-            records = (approved_record,)
-        event = self._event_for(
-            record=approved_record,
-            occurred_at=published_at,
-            superseded_publication_id=(
-                superseded_source.id if superseded_source is not None else None
-            ),
-            revoked_publication_id=None,
-        )
-        result = InternalPublicationResult(
-            approved_record=approved_record,
-            superseded_record=superseded_record,
-            event=event,
-        )
-        return commit_transaction(self, publish_key, records, event, result)
-
-    def publisher_revoke(
-        self,
-        publication: InternalPublicationResult,
-        *,
-        reviewer_grant_id: UUID,
-        evidence_ref: str,
-        policy_version: str,
-        idempotency_key: str,
-    ) -> InternalRevocationResult:
-        revoked_at = _require_safe_time(self._now(), "publication_time_required")
-        if not isinstance(publication, InternalPublicationResult):
-            raise ApprovalBoundaryError("internal_publication_required")
-        current = publication.approved_record
-        current.__post_init__()
-        _require_uuid(reviewer_grant_id, "reviewer_capability_id_required")
-        _require_safe_identifier(evidence_ref, "approval_decision_evidence_required")
-        _require_safe_identifier(idempotency_key, "approval_idempotency_key_required")
-        _require_safe_identifier(policy_version, "approval_policy_version_required")
-        revoke_key = _digest(
-            "revoke",
-            current.id,
-            reviewer_grant_id,
-            evidence_ref,
-            policy_version,
-            idempotency_key,
-        )
-        existing = committed_revocation_result(
-            self,
-            revoke_key,
-            current,
-            reviewer_grant_id,
-            evidence_ref,
-            policy_version,
-        )
-        if existing is not None:
-            return existing
-        grant = self._reviewer_registry.assert_grant(
-            reviewer_grant_id,
-            scope=current.scope,
-            policy_version=policy_version,
-            role=ReviewerRole.DATA_REVIEWER,
-            at=revoked_at,
-        )
-        if not ledger_is_head(self._ledger, current):
-            raise ApprovalBoundaryError("revoked_publication_not_current")
-        revoked_record = InternalPublicationRecord(
-            id=_uuid_for("internal-revoke", current.id, grant.id, idempotency_key),
-            scope=current.scope,
-            request_id=current.request_id,
-            decision_id=current.decision_id,
-            candidate_id=current.candidate_id,
-            subject_ref=current.subject_ref,
-            target_field=current.target_field,
-            version_no=current.version_no + 1,
-            state=InternalPublicationState.REVOKED_INTERNAL,
-            payload_hash=current.payload_hash,
-            source_content_hash=current.source_content_hash,
-            source_file_id=current.source_file_id,
-            ingestion_job_id=current.ingestion_job_id,
-            extraction_result_id=current.extraction_result_id,
-            staging_candidate_id=current.staging_candidate_id,
-            locator_fingerprint=current.locator_fingerprint,
-            profile_id=current.profile_id,
-            profile_version=current.profile_version,
-            rule_id=current.rule_id,
-            actor_ref=grant.actor_ref,
-            evidence_ref=evidence_ref,
-            policy_version=policy_version,
-            published_at=revoked_at,
-            parent_record_id=current.id,
-            revoked_record_id=current.id,
-        )
-        event = self._event_for(
-            record=revoked_record,
-            occurred_at=revoked_at,
-            superseded_publication_id=None,
-            revoked_publication_id=current.id,
-        )
-        result = InternalRevocationResult(revoked_record=revoked_record, event=event)
-        return commit_transaction(self, revoke_key, (revoked_record,), event, result)
-
     SyntheticInternalPublicationLedger.__init__ = ledger_construct
     SyntheticInternalPublicationLedger.appended_record_count = property(
         ledger_appended_record_count
@@ -2862,8 +3013,74 @@ def _install_publication_state_accessors() -> None:
     InMemoryInvalidationOutbox.event_count = property(outbox_event_count)
     InMemoryInvalidationOutbox.safe_summary = outbox_safe_summary
     SyntheticPublicationTransactionLog.__init__ = transaction_construct
-    SyntheticApprovalPublisher.publish = publisher_publish
-    SyntheticApprovalPublisher.revoke = publisher_revoke
+    SyntheticApprovalPublisher._committed_publication_result = committed_publication_result
+    SyntheticApprovalPublisher._committed_revocation_result = committed_revocation_result
+    commit_globals = {
+        "ApprovalBoundaryError": ApprovalBoundaryError,
+        "InternalInvalidationEvent": InternalInvalidationEvent,
+        "InternalPublicationRecord": InternalPublicationRecord,
+        "Tuple": Tuple,
+        "_publication_transaction_fingerprint": _publication_transaction_fingerprint,
+        "_snapshot": _snapshot,
+        "ledger_append_batch": ledger_append_batch,
+        "ledger_restore": ledger_restore,
+        "ledger_snapshot": ledger_snapshot,
+        "outbox_append": outbox_append,
+        "outbox_restore": outbox_restore,
+        "outbox_snapshot": outbox_snapshot,
+        "sys": __import__("sys"),
+        "transaction_commit": transaction_commit,
+        "transaction_restore": transaction_restore,
+        "transaction_snapshot": transaction_snapshot,
+    }
+    exec(
+        """
+def _publisher_commit_transaction(
+    self,
+    key: str,
+    records: Tuple[InternalPublicationRecord, ...],
+    event: InternalInvalidationEvent,
+    result,
+):
+    caller_code = sys._getframe(1).f_code
+    allowed_callers = (
+        type(self).publish.__code__,
+        type(self).revoke.__code__,
+    )
+    if caller_code not in allowed_callers:
+        raise ApprovalBoundaryError(\"publication_storage_uninstalled\")
+    ledger_before = ledger_snapshot(self._ledger)
+    outbox_before = outbox_snapshot(self._outbox)
+    transaction_before = transaction_snapshot(self._transaction_log)
+    fingerprint = _publication_transaction_fingerprint(records, event, result)
+    try:
+        appended_records = ledger_append_batch(self._ledger, records)
+        if appended_records != records:
+            raise ApprovalBoundaryError(\"internal_publication_commit_mismatch\")
+        if self._fault_injector is not None:
+            self._fault_injector(\"after_ledger_append\")
+        appended_event = outbox_append(self._outbox, event)
+        if appended_event != event:
+            raise ApprovalBoundaryError(\"invalidation_event_idempotency_conflict\")
+        if self._fault_injector is not None:
+            self._fault_injector(\"after_outbox_append\")
+        committed = transaction_commit(self._transaction_log, key, result, fingerprint)
+        if committed != result:
+            raise ApprovalBoundaryError(\"publication_transaction_conflict\")
+        if self._fault_injector is not None:
+            self._fault_injector(\"after_transaction_log_commit\")
+    except Exception:
+        ledger_restore(self._ledger, ledger_before)
+        outbox_restore(self._outbox, outbox_before)
+        transaction_restore(self._transaction_log, transaction_before)
+        raise
+    return _snapshot(result)
+""",
+        commit_globals,
+    )
+    SyntheticApprovalPublisher._commit_transaction = commit_globals[
+        "_publisher_commit_transaction"
+    ]
 
 
 _install_publication_state_accessors()

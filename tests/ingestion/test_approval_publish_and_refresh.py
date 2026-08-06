@@ -6,6 +6,7 @@ import ast
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import FunctionType
 import unittest
 from uuid import UUID
 
@@ -18,6 +19,9 @@ from modules.ingestion.approval import (
     CanonicalMappingCandidateGate,
     InMemoryApprovalRequestStore,
     InMemoryInvalidationOutbox,
+    InternalInvalidationEvent,
+    InternalPublicationRecord,
+    InternalPublicationResult,
     InternalPublicationState,
     ReviewerRole,
     SyntheticApprovalPublisher,
@@ -524,6 +528,270 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             self.assertIsNone(getattr(method, "__defaults__", None))
             self.assertIsNone(getattr(method, "__kwdefaults__", None))
 
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+    def test_reflection_cannot_extract_raw_publication_write_capability(self) -> None:
+        forbidden_names = {
+            "commit_transaction",
+            "ledger_append_batch",
+            "outbox_append",
+            "transaction_commit",
+            "ledger_restore",
+            "outbox_restore",
+            "transaction_restore",
+        }
+
+        def callable_name(value: object) -> str:
+            return getattr(value, "__name__", type(value).__name__)
+
+        def function_value(value: object) -> object:
+            return getattr(value, "__func__", value)
+
+        candidates: list[tuple[str, object]] = []
+        seen: set[int] = set()
+
+        def visit(value: object, path: str, depth: int = 0) -> None:
+            if depth > 3 or id(value) in seen:
+                return
+            seen.add(id(value))
+            if callable(value) and callable_name(value) in forbidden_names:
+                candidates.append((path, value))
+            func = function_value(value)
+            for index, cell in enumerate(getattr(func, "__closure__", None) or ()):
+                visit(cell.cell_contents, f"{path}.__closure__[{index}]", depth + 1)
+            defaults = getattr(func, "__defaults__", None) or ()
+            for index, item in enumerate(defaults):
+                visit(item, f"{path}.__defaults__[{index}]", depth + 1)
+            kwdefaults = getattr(func, "__kwdefaults__", None) or {}
+            for key, item in kwdefaults.items():
+                visit(item, f"{path}.__kwdefaults__[{key}]", depth + 1)
+
+        def find_code_sets(value: object, depth: int = 0) -> list[set[object]]:
+            if depth > 6:
+                return []
+            code_sets = []
+            if isinstance(value, set) and all(hasattr(item, "co_code") for item in value):
+                code_sets.append(value)
+            func = function_value(value)
+            for cell in getattr(func, "__closure__", None) or ():
+                code_sets.extend(find_code_sets(cell.cell_contents, depth + 1))
+            defaults = getattr(func, "__defaults__", None) or ()
+            for item in defaults:
+                code_sets.extend(find_code_sets(item, depth + 1))
+            kwdefaults = getattr(func, "__kwdefaults__", None) or {}
+            for item in kwdefaults.values():
+                code_sets.extend(find_code_sets(item, depth + 1))
+            if isinstance(value, dict):
+                for item in value.values():
+                    code_sets.extend(find_code_sets(item, depth + 1))
+            return code_sets
+
+        def find_code_cells(value: object, depth: int = 0) -> list[object]:
+            if depth > 6:
+                return []
+            code_cells = []
+            func = function_value(value)
+            for cell in getattr(func, "__closure__", None) or ():
+                cell_value = cell.cell_contents
+                if hasattr(cell_value, "co_code"):
+                    code_cells.append(cell)
+                code_cells.extend(find_code_cells(cell_value, depth + 1))
+            defaults = getattr(func, "__defaults__", None) or ()
+            for item in defaults:
+                code_cells.extend(find_code_cells(item, depth + 1))
+            kwdefaults = getattr(func, "__kwdefaults__", None) or {}
+            for item in kwdefaults.values():
+                code_cells.extend(find_code_cells(item, depth + 1))
+            if isinstance(value, dict):
+                for item in value.values():
+                    code_cells.extend(find_code_cells(item, depth + 1))
+            return code_cells
+
+        def find_guard_or_writer_cells(value: object, depth: int = 0) -> list[object]:
+            if depth > 6:
+                return []
+            matches = []
+            if callable(value) and "guard" in callable_name(value):
+                matches.append(value)
+            func = function_value(value)
+            for cell in getattr(func, "__closure__", None) or ():
+                cell_value = cell.cell_contents
+                if isinstance(cell_value, int):
+                    matches.append(cell)
+                matches.extend(find_guard_or_writer_cells(cell_value, depth + 1))
+            defaults = getattr(func, "__defaults__", None) or ()
+            for item in defaults:
+                matches.extend(find_guard_or_writer_cells(item, depth + 1))
+            kwdefaults = getattr(func, "__kwdefaults__", None) or {}
+            for item in kwdefaults.values():
+                matches.extend(find_guard_or_writer_cells(item, depth + 1))
+            if isinstance(value, dict):
+                for item in value.values():
+                    matches.extend(find_guard_or_writer_cells(item, depth + 1))
+            return matches
+
+        for method_name in ("publish", "revoke"):
+            visit(getattr(SyntheticApprovalPublisher, method_name), method_name)
+        for name, value in vars(SyntheticApprovalPublisher).items():
+            visit(value, f"SyntheticApprovalPublisher.{name}")
+        for name, value in vars(approval_module).items():
+            if callable(value) and callable_name(value) in forbidden_names:
+                candidates.append((f"approval_module.{name}", value))
+        for attr in ("_ledger", "_outbox", "_transaction_log", "_request_store"):
+            with self.subTest(instance_attr=attr):
+                value = object.__getattribute__(self.publisher, attr)
+                if attr != "_request_store":
+                    self.assertFalse(hasattr(value, "__dict__"))
+                visit(value, f"publisher.{attr}")
+
+        approved = self._approve(self._request(subject_ref="subject_reflection_attack"))
+        published_at = approved.expires_at + timedelta(minutes=1)
+        forged_record = InternalPublicationRecord(
+            id=UUID("00000000-0000-4000-8000-00000000f101"),
+            scope=approved.scope,
+            request_id=approved.id,
+            decision_id=approved.decision_id,
+            candidate_id=approved.candidate.id,
+            subject_ref=approved.subject_ref,
+            target_field=approved.candidate.target_field,
+            version_no=1,
+            state=InternalPublicationState.APPROVED_INTERNAL,
+            payload_hash=approved.candidate.normalized_value_hash,
+            source_content_hash=approved.candidate.source_content_hash,
+            source_file_id=approved.candidate.source_file_id,
+            ingestion_job_id=approved.candidate.ingestion_job_id,
+            extraction_result_id=approved.candidate.extraction_result_id,
+            staging_candidate_id=approved.candidate.staging_candidate_id,
+            locator_fingerprint=approved.candidate.locator_fingerprint,
+            profile_id=approved.candidate.profile_id,
+            profile_version=approved.candidate.profile_version,
+            rule_id=approved.candidate.rule_id,
+            actor_ref=approved.decision_actor_ref,
+            evidence_ref=approved.decision_evidence_ref,
+            policy_version=approved.policy_version,
+            published_at=published_at,
+        )
+        forged_event = InternalInvalidationEvent(
+            id=UUID("00000000-0000-4000-8000-00000000f102"),
+            scope=forged_record.scope,
+            publication_id=forged_record.id,
+            event_type="TruthFactsChanged",
+            destination="internal_invalidation_outbox",
+            subject_ref=forged_record.subject_ref,
+            target_field=forged_record.target_field,
+            version_no=forged_record.version_no,
+            correlation_id=forged_record.scope.correlation_id,
+            occurred_at=published_at,
+        )
+        forged_result = InternalPublicationResult(
+            approved_record=forged_record,
+            event=forged_event,
+        )
+        commit_globals = object.__getattribute__(
+            SyntheticApprovalPublisher._commit_transaction,
+            "__globals__",
+        )
+        raw_ledger_append = commit_globals.get("ledger_append_batch")
+        if callable(raw_ledger_append):
+            writer_code_sets = find_code_sets(raw_ledger_append)
+            writer_code_cells = find_code_cells(raw_ledger_append)
+            guard_or_writer_cells = find_guard_or_writer_cells(raw_ledger_append)
+
+            def attacker() -> object:
+                return raw_ledger_append(self.ledger, (forged_record,))
+
+            for writer_codes in writer_code_sets:
+                with self.subTest(writer_codes_bypass=True):
+                    writer_codes.add(attacker.__code__)
+                    try:
+                        attacker()
+                    except Exception:
+                        pass
+                    self.assertEqual(self.ledger.appended_record_count, 0)
+                    self.assertEqual(self.outbox.event_count, 0)
+            self.assertEqual(writer_code_sets, [])
+            self.assertEqual(writer_code_cells, [])
+            self.assertEqual(guard_or_writer_cells, [])
+            self.assertNotIn("_require_publisher_commit_writer", raw_ledger_append.__globals__)
+
+            original_commit = SyntheticApprovalPublisher._commit_transaction
+
+            def attacker_commit(self) -> object:
+                return raw_ledger_append(self._ledger, (forged_record,))
+
+            try:
+                SyntheticApprovalPublisher._commit_transaction = attacker_commit
+                with self.assertRaisesRegex(
+                    ApprovalBoundaryError,
+                    "publication_storage_uninstalled",
+                ):
+                    attacker_commit(self.publisher)
+            finally:
+                SyntheticApprovalPublisher._commit_transaction = original_commit
+            self.assertEqual(self.ledger.appended_record_count, 0)
+            self.assertEqual(self.outbox.event_count, 0)
+
+        for path, candidate in candidates:
+            with self.subTest(candidate=path):
+                try:
+                    candidate(
+                        self.publisher,
+                        "1" * 64,
+                        (forged_record,),
+                        forged_event,
+                        forged_result,
+                    )
+                except Exception:
+                    pass
+                self.assertEqual(self.ledger.appended_record_count, 0)
+                self.assertEqual(self.outbox.event_count, 0)
+
+        guarded_global_calls = {
+            "ledger_append_batch": lambda fn: fn(self.ledger, (forged_record,)),
+            "outbox_append": lambda fn: fn(self.outbox, forged_event),
+            "transaction_commit": lambda fn: fn(
+                self.transaction_log,
+                "3" * 64,
+                forged_result,
+                "4" * 64,
+            ),
+            "ledger_restore": lambda fn: fn(self.ledger, ({}, {}, set(), {})),
+            "outbox_restore": lambda fn: fn(self.outbox, ({}, {})),
+            "transaction_restore": lambda fn: fn(self.transaction_log, ({}, {})),
+        }
+        for name, call in guarded_global_calls.items():
+            with self.subTest(commit_global=name):
+                helper = commit_globals.get(name)
+                if callable(helper):
+                    with self.assertRaisesRegex(
+                        ApprovalBoundaryError,
+                        "publication_storage_uninstalled",
+                    ):
+                        call(helper)
+                self.assertEqual(self.ledger.appended_record_count, 0)
+                self.assertEqual(self.outbox.event_count, 0)
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "publication_storage_uninstalled"):
+            self.publisher._commit_transaction(
+                "2" * 64,
+                (forged_record,),
+                forged_event,
+                forged_result,
+            )
+        cloned_commit = FunctionType(
+            SyntheticApprovalPublisher._commit_transaction.__code__,
+            SyntheticApprovalPublisher._commit_transaction.__globals__,
+        )
+        with self.assertRaisesRegex(ApprovalBoundaryError, "publication_storage_uninstalled"):
+            cloned_commit(
+                self.publisher,
+                "5" * 64,
+                (forged_record,),
+                forged_event,
+                forged_result,
+            )
+        self.assertEqual(candidates, [])
         self.assertEqual(self.ledger.appended_record_count, 0)
         self.assertEqual(self.outbox.event_count, 0)
 

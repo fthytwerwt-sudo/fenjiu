@@ -24,6 +24,12 @@
 - 第五轮 repair 只在同一任务分支修复：authority ledger/outbox/transaction-log state 改为闭包持有且公开实例只保留读面；模块 helper、类方法默认参数、public/private append/commit/get/snapshot/restore 和 mutable map 均不得成为写 capability；committed replay 绑定完整 request/candidate/source/profile/rule/scope/version/timestamp/event semantic equality；exact committed publish/supersede/revoke replay 先于当前 expiry/grant/lifecycle freshness 检查，新操作仍 fail closed。
 - 第五轮仍是 local synthetic contract，不是真实 auth/RBAC、process/DB crash proof、真实人工批准、真实 P02 truth 或外部业务 ready；P04 只可读取 internal proof/invalidation 作为 synthetic engineering signal。
 
+## Sixth repair note｜2026-08-07
+
+- 第五轮 repair 提交 `b04b524820aa2e58f49365446334ded3a5b2689d` 经 5.6 只读复审继续标记 `CHANGES_REQUIRED`，不得作为可接受完成态引用。
+- 第六轮 repair 只在同一任务分支修复：公开 `publish()` / `revoke()` 不再关闭并泄露 raw `commit_transaction`；不存在可注入的 `publication_writer_codes` set、code-object/int writer cell 或 module-level writer guard helper；从 generated commit globals 取得的 raw helper、class attr monkeypatch、FunctionType clone 均以 `publication_storage_uninstalled` fail closed，ledger/outbox/log 保持 0 写入。
+- 第六轮仍是 local synthetic contract，不是真实 auth/RBAC、process/DB crash proof、真实人工批准、真实 P02 truth 或外部业务 ready；P04 只可读取 internal proof/invalidation 作为 synthetic engineering signal，不能当成外部执行授权。
+
 ## Goal｜目标
 
 - 只执行 `P03-03`：建立 synthetic/value-free 的 `mapped candidate -> approval request -> human decision -> immutable internal publication proof -> supersede/refresh` 闭环合同。
@@ -47,7 +53,7 @@
 ## Impact check｜影响面
 
 - 业务状态：不升级；工程能力通过不代表供应链确认、人工批准、上线、销售或履约。
-- 工程状态：只在 test、regression、扫描、commit、push、remote readback 全部通过后可写 `task_branch_fifth_repair_remote_readback_verified_not_main`。
+- 工程状态：只在 test、regression、扫描、commit、push、remote readback 全部通过后可写 `task_branch_sixth_repair_remote_readback_verified_not_main`。
 - 真值边界：P02 `TruthVersion(data_state=approved)` 与 synthetic/fixture 绝对隔离；本卡不得创建 P02 approved truth，不得用 `is_synthetic=false` 伪装 synthetic candidate。P03-03 只创建独立 immutable simulated/internal publication record，并显式标记不可被 P02 current-truth consumer 当成真值。
 - 下游刷新：只生成 internal invalidation/outbox fake event；不得存在外部同步 adapter。
 
@@ -71,6 +77,7 @@
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`
 - `python3 -m compileall -q core modules adapters tests`
 - shell syntax、`git diff --check`、forbidden value/external action scan。
+- 当前第六轮环境未验证项：`make regression` 在 Docker migration 阶段因 Docker daemon 不可用失败；`tests/control_plane` 中本地 HTTP bind 单测因 sandbox `PermissionError: [Errno 1] Operation not permitted` 未完成。未申请提权、未启动 Docker GUI、未执行外部动作。
 
 ## Blocked if｜阻断条件
 
