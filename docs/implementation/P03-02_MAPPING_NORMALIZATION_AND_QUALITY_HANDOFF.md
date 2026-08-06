@@ -9,7 +9,7 @@
 
 - **基线**：`origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb`；当前 task branch `codex/p03-02-mapping-quality`。
 - **输入合同**：P03-01 的 `SourceFileRecord`、`IngestionJobRecord`、`ExtractionResultRecord`、`StagingCandidateRecord` 与 `FieldLocator`，全部 synthetic/fixture-only。
-- **当前状态**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已被控制器标记 HIGH/not accepted，独立 reviewer 另发现 P03-01 lifecycle MEDIUM；profile-report provenance 与 lifecycle repair 已本地验证，状态为 `task_branch_repair_local_verified_pending_push_readback`，未集成 `main`。
+- **当前状态**：初始代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已被控制器标记 HIGH/not accepted，独立 reviewer 另发现 P03-01 lifecycle MEDIUM；profile-report provenance 与 lifecycle repair 代码提交 `969a2114c83350a606c917f4c9b8e11c72ca56f0` 已 push/readback，状态为 `task_branch_repair_remote_readback_verified_not_main`，未集成 `main`。
 
 ## Constraints｜边界
 
