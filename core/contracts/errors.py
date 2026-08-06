@@ -7,4 +7,3 @@ class FenjiuSkeletonError(Exception):
 
 class BoundaryViolationError(FenjiuSkeletonError):
     """Raised when a package dependency or execution boundary is violated."""
-

@@ -1,2 +1,1 @@
 """Customer-service ownership shell."""
-
