@@ -40,6 +40,7 @@ FORBIDDEN_SUFFIXES = {
 CONTENT_SKIP_PREFIXES = {
     ".git",
     ".git/",
+    ".omx/",
     "project_sync/latest/",
     "project_sync/PROJECT_SYNC_MANIFEST.json",
 }
@@ -70,34 +71,46 @@ class Finding:
     detail: str
 
 
+class GitCommandError(RuntimeError):
+    def __init__(self, args: list[str]) -> None:
+        super().__init__("git command failed")
+        self.args_for_display = " ".join(args)
+
+
 def rel_path(root: Path, path: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
-def run_git(root: Path, args: list[str]) -> list[str]:
+def run_git(root: Path, args: list[str], *, required: bool) -> list[str]:
     result = subprocess.run(["git", *args], cwd=root, text=True, capture_output=True)
     if result.returncode != 0:
+        if required:
+            raise GitCommandError(args)
         return []
     return [line for line in result.stdout.splitlines() if line]
 
 
 def tracked_files(root: Path) -> list[str]:
-    return run_git(root, ["ls-files"])
+    return run_git(root, ["ls-files"], required=False)
 
 
-def changed_files(root: Path, base_sha: str | None) -> list[str]:
+def changed_files(root: Path, base_sha: str | None, findings: list[Finding]) -> list[str]:
     if not base_sha:
         return []
-    paths = set(run_git(root, ["diff", "--name-only", base_sha, "--"]))
-    paths.update(run_git(root, ["diff", "--cached", "--name-only", base_sha, "--"]))
-    paths.update(run_git(root, ["ls-files", "--others", "--exclude-standard"]))
+    try:
+        paths = set(run_git(root, ["diff", "--name-only", base_sha, "--"], required=True))
+        paths.update(run_git(root, ["diff", "--cached", "--name-only", base_sha, "--"], required=True))
+        paths.update(run_git(root, ["ls-files", "--others", "--exclude-standard"], required=True))
+    except GitCommandError as error:
+        findings.append(Finding("git_command_failed", "<repository>", f"failed required git command: {error.args_for_display}"))
+        return []
     return sorted(paths)
 
 
 def walk_files(root: Path) -> list[str]:
     paths: list[str] = []
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [name for name in dirnames if name != ".git"]
+        dirnames[:] = [name for name in dirnames if name not in {".git", ".omx"}]
         for filename in filenames:
             path = Path(dirpath) / filename
             paths.append(rel_path(root, path))
@@ -107,6 +120,8 @@ def walk_files(root: Path) -> list[str]:
 def path_is_forbidden(path: str) -> bool:
     parts = set(Path(path).parts)
     name = Path(path).name
+    if name.startswith(".env"):
+        return True
     if name.startswith("._"):
         return True
     if name == ".DS_Store":
@@ -119,6 +134,8 @@ def path_is_forbidden(path: str) -> bool:
 
 
 def content_scan_allowed(path: str) -> bool:
+    if Path(path).name.startswith(".env"):
+        return False
     if path == ".git":
         return False
     return not any(path.startswith(prefix) for prefix in CONTENT_SKIP_PREFIXES)
@@ -222,7 +239,7 @@ def run_scan(root: Path, *, base_sha: str | None, all_files: bool, legacy: bool)
     findings.extend(scan_paths(scanned_paths, root, changed_only=False))
     findings.extend(scan_content(root, scanned_paths))
 
-    changed = changed_files(root, base_sha)
+    changed = changed_files(root, base_sha, findings)
     if changed:
         findings.extend(scan_paths(changed, root, changed_only=True))
 
