@@ -1153,13 +1153,16 @@ class InternalPublicationResult:
     def __post_init__(self) -> None:
         if not isinstance(self.approved_record, InternalPublicationRecord):
             raise ApprovalBoundaryError("internal_publication_required")
+        self.approved_record.__post_init__()
         if self.approved_record.state is not InternalPublicationState.APPROVED_INTERNAL:
             raise ApprovalBoundaryError("internal_approved_publication_required")
         if not isinstance(self.event, InternalInvalidationEvent):
             raise ApprovalBoundaryError("invalidation_event_required")
+        self.event.__post_init__()
         if self.superseded_record is not None:
             if not isinstance(self.superseded_record, InternalPublicationRecord):
                 raise ApprovalBoundaryError("internal_publication_required")
+            self.superseded_record.__post_init__()
             if self.superseded_record.state is not InternalPublicationState.SUPERSEDED_INTERNAL:
                 raise ApprovalBoundaryError("internal_superseded_publication_required")
         if self.event.publication_id != self.approved_record.id:
@@ -1188,10 +1191,12 @@ class InternalRevocationResult:
     def __post_init__(self) -> None:
         if not isinstance(self.revoked_record, InternalPublicationRecord):
             raise ApprovalBoundaryError("internal_publication_required")
+        self.revoked_record.__post_init__()
         if self.revoked_record.state is not InternalPublicationState.REVOKED_INTERNAL:
             raise ApprovalBoundaryError("internal_revoked_publication_required")
         if not isinstance(self.event, InternalInvalidationEvent):
             raise ApprovalBoundaryError("invalidation_event_required")
+        self.event.__post_init__()
         if self.event.publication_id != self.revoked_record.id:
             raise ApprovalBoundaryError("invalidation_publication_mismatch")
 
@@ -1203,6 +1208,38 @@ class InternalRevocationResult:
             "external_execution_allowed": False,
             "business_external_ready": False,
         }
+
+
+def _publication_result_records(
+    result: InternalPublicationResult,
+) -> Tuple[InternalPublicationRecord, ...]:
+    result.__post_init__()
+    if result.superseded_record is not None:
+        return (result.superseded_record, result.approved_record)
+    return (result.approved_record,)
+
+
+def _revocation_result_records(
+    result: InternalRevocationResult,
+) -> Tuple[InternalPublicationRecord, ...]:
+    result.__post_init__()
+    return (result.revoked_record,)
+
+
+def _publication_transaction_fingerprint(
+    records: Tuple[InternalPublicationRecord, ...],
+    event: InternalInvalidationEvent,
+    result,
+) -> str:
+    for record in records:
+        record.__post_init__()
+    event.__post_init__()
+    result.__post_init__()
+    return _digest(
+        *(record.fingerprint for record in records),
+        event.fingerprint,
+        repr(result.safe_summary()),
+    )
 
 
 class InMemoryApprovalRequestStore:
@@ -1598,7 +1635,28 @@ class SyntheticInternalPublicationLedger:
         ]
         return (max(versions) + 1) if versions else 1
 
-    def append_batch(
+    def _assert_committed(
+        self,
+        records: Tuple[InternalPublicationRecord, ...],
+    ) -> None:
+        if not isinstance(records, tuple) or not records:
+            raise ApprovalBoundaryError("publication_transaction_incomplete")
+        for record in records:
+            if not isinstance(record, InternalPublicationRecord):
+                raise ApprovalBoundaryError("publication_transaction_incomplete")
+            record.__post_init__()
+            stored = self._records_by_id.get(record.id)
+            if stored is None:
+                raise ApprovalBoundaryError("publication_transaction_incomplete")
+            stored.__post_init__()
+            if (
+                self._fingerprints_by_id.get(record.id) != record.fingerprint
+                or stored.fingerprint != record.fingerprint
+                or stored != record
+            ):
+                raise ApprovalBoundaryError("publication_transaction_incomplete")
+
+    def _append_batch(
         self,
         records: Tuple[InternalPublicationRecord, ...],
     ) -> Tuple[InternalPublicationRecord, ...]:
@@ -1674,7 +1732,22 @@ class InMemoryInvalidationOutbox:
             dict(snapshot[1]),
         )
 
-    def append(self, event: InternalInvalidationEvent) -> InternalInvalidationEvent:
+    def _assert_committed(self, event: InternalInvalidationEvent) -> None:
+        if not isinstance(event, InternalInvalidationEvent):
+            raise ApprovalBoundaryError("publication_transaction_incomplete")
+        event.__post_init__()
+        stored = self._events_by_id.get(event.id)
+        if stored is None:
+            raise ApprovalBoundaryError("publication_transaction_incomplete")
+        stored.__post_init__()
+        if (
+            self._fingerprints_by_id.get(event.id) != event.fingerprint
+            or stored.fingerprint != event.fingerprint
+            or stored != event
+        ):
+            raise ApprovalBoundaryError("publication_transaction_incomplete")
+
+    def _append(self, event: InternalInvalidationEvent) -> InternalInvalidationEvent:
         if not isinstance(event, InternalInvalidationEvent):
             raise ApprovalBoundaryError("invalidation_event_required")
         event = _snapshot(event)
@@ -1718,7 +1791,14 @@ class SyntheticPublicationTransactionLog:
         existing = self._results_by_key.get(key)
         return _snapshot(existing) if existing is not None else None
 
-    def commit(self, key: str, result: object, fingerprint: str) -> object:
+    def _get_committed(self, key: str) -> Optional[Tuple[object, str]]:
+        _require_safe_hash(key, "publication_transaction_key_required")
+        existing = self._results_by_key.get(key)
+        if existing is None:
+            return None
+        return _snapshot(existing), self._fingerprints_by_key[key]
+
+    def _commit(self, key: str, result: object, fingerprint: str) -> object:
         _require_safe_hash(key, "publication_transaction_key_required")
         _require_safe_hash(fingerprint, "publication_transaction_fingerprint_required")
         existing = self._results_by_key.get(key)
@@ -1788,19 +1868,30 @@ class SyntheticApprovalPublisher:
                 or superseded_source.target_field != candidate.target_field
             ):
                 raise ApprovalBoundaryError("publication_subject_mismatch")
-            if not self._ledger.is_head(superseded_source):
-                raise ApprovalBoundaryError("superseded_publication_not_current")
         publish_key = _digest(
             "publish",
             request.id,
             request.decision_id,
             superseded_source.id if superseded_source is not None else "root",
         )
-        existing = self._transaction_log.get(publish_key)
+        existing = self._committed_publication_result(
+            publish_key,
+            request,
+            superseded_source,
+        )
         if existing is not None:
-            if not isinstance(existing, InternalPublicationResult):
-                raise ApprovalBoundaryError("publication_transaction_conflict")
             return existing
+        if superseded_source is not None:
+            if (
+                superseded_source.state is InternalPublicationState.REVOKED_INTERNAL
+                and (
+                    superseded_source.request_id == request.id
+                    or superseded_source.decision_id == request.decision_id
+                )
+            ):
+                raise ApprovalBoundaryError("revoked_successor_requires_new_approval")
+            if not self._ledger.is_head(superseded_source):
+                raise ApprovalBoundaryError("superseded_publication_not_current")
 
         records: tuple[InternalPublicationRecord, ...]
         superseded_record = None
@@ -1887,10 +1978,8 @@ class SyntheticApprovalPublisher:
         _require_safe_identifier(evidence_ref, "approval_decision_evidence_required")
         _require_safe_identifier(idempotency_key, "approval_idempotency_key_required")
         revoke_key = _digest("revoke", current.id, grant.id, evidence_ref, policy_version, idempotency_key)
-        existing = self._transaction_log.get(revoke_key)
+        existing = self._committed_revocation_result(revoke_key, current)
         if existing is not None:
-            if not isinstance(existing, InternalRevocationResult):
-                raise ApprovalBoundaryError("publication_transaction_conflict")
             return existing
         if not self._ledger.is_head(current):
             raise ApprovalBoundaryError("revoked_publication_not_current")
@@ -1930,6 +2019,142 @@ class SyntheticApprovalPublisher:
         result = InternalRevocationResult(revoked_record=revoked_record, event=event)
         return self._commit_transaction(revoke_key, (revoked_record,), event, result)
 
+    def _committed_publication_result(
+        self,
+        key: str,
+        request: ApprovalRequest,
+        superseded_source: Optional[InternalPublicationRecord],
+    ) -> Optional[InternalPublicationResult]:
+        committed = self._transaction_log._get_committed(key)
+        if committed is None:
+            return None
+        existing, fingerprint = committed
+        if not isinstance(existing, InternalPublicationResult):
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        existing.__post_init__()
+        records = _publication_result_records(existing)
+        expected_fingerprint = _publication_transaction_fingerprint(
+            records,
+            existing.event,
+            existing,
+        )
+        if fingerprint != expected_fingerprint:
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        self._assert_publication_result_matches_request(
+            existing,
+            request,
+            superseded_source,
+        )
+        try:
+            if superseded_source is not None:
+                self._ledger._assert_committed((superseded_source,))
+            self._ledger._assert_committed(records)
+            self._outbox._assert_committed(existing.event)
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("publication_transaction_incomplete") from exc
+        return _snapshot(existing)
+
+    def _committed_revocation_result(
+        self,
+        key: str,
+        current: InternalPublicationRecord,
+    ) -> Optional[InternalRevocationResult]:
+        committed = self._transaction_log._get_committed(key)
+        if committed is None:
+            return None
+        existing, fingerprint = committed
+        if not isinstance(existing, InternalRevocationResult):
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        existing.__post_init__()
+        records = _revocation_result_records(existing)
+        expected_fingerprint = _publication_transaction_fingerprint(
+            records,
+            existing.event,
+            existing,
+        )
+        if fingerprint != expected_fingerprint:
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        revoked = existing.revoked_record
+        if (
+            revoked.parent_record_id != current.id
+            or revoked.revoked_record_id != current.id
+            or revoked.scope != current.scope
+            or revoked.subject_ref != current.subject_ref
+            or revoked.target_field != current.target_field
+            or revoked.version_no != current.version_no + 1
+        ):
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        try:
+            self._ledger._assert_committed((current,))
+            self._ledger._assert_committed(records)
+            self._outbox._assert_committed(existing.event)
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("publication_transaction_incomplete") from exc
+        return _snapshot(existing)
+
+    def _assert_publication_result_matches_request(
+        self,
+        result: InternalPublicationResult,
+        request: ApprovalRequest,
+        superseded_source: Optional[InternalPublicationRecord],
+    ) -> None:
+        approved = result.approved_record
+        if (
+            approved.request_id != request.id
+            or approved.decision_id != request.decision_id
+            or approved.scope != request.scope
+            or approved.subject_ref != request.subject_ref
+            or approved.target_field != request.candidate.target_field
+            or approved.actor_ref != request.decision_actor_ref
+            or approved.evidence_ref != request.decision_evidence_ref
+            or approved.policy_version != request.policy_version
+        ):
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        if superseded_source is None:
+            if (
+                result.superseded_record is not None
+                or approved.parent_record_id is not None
+                or approved.superseded_record_id is not None
+                or approved.revoked_record_id is not None
+                or result.event.superseded_publication_id is not None
+                or result.event.revoked_publication_id is not None
+            ):
+                raise ApprovalBoundaryError("publication_transaction_conflict")
+            return
+        if (
+            superseded_source.state is InternalPublicationState.REVOKED_INTERNAL
+            and (
+                superseded_source.request_id == request.id
+                or superseded_source.decision_id == request.decision_id
+            )
+        ):
+            raise ApprovalBoundaryError("revoked_successor_requires_new_approval")
+        if result.event.superseded_publication_id != superseded_source.id:
+            raise ApprovalBoundaryError("publication_transaction_conflict")
+        if superseded_source.state is InternalPublicationState.APPROVED_INTERNAL:
+            if result.superseded_record is None:
+                raise ApprovalBoundaryError("publication_transaction_conflict")
+            superseded = result.superseded_record
+            if (
+                superseded.parent_record_id != superseded_source.id
+                or superseded.superseded_record_id != superseded_source.id
+                or approved.parent_record_id != superseded.id
+                or approved.superseded_record_id != superseded_source.id
+                or superseded.version_no != superseded_source.version_no + 1
+                or approved.version_no != superseded.version_no + 1
+            ):
+                raise ApprovalBoundaryError("publication_transaction_conflict")
+        elif superseded_source.state is InternalPublicationState.REVOKED_INTERNAL:
+            if (
+                result.superseded_record is not None
+                or approved.parent_record_id != superseded_source.id
+                or approved.superseded_record_id != superseded_source.id
+                or approved.version_no != superseded_source.version_no + 1
+            ):
+                raise ApprovalBoundaryError("publication_transaction_conflict")
+        else:
+            raise ApprovalBoundaryError("internal_publication_transition_forbidden")
+
     def _commit_transaction(
         self,
         key: str,
@@ -1940,19 +2165,15 @@ class SyntheticApprovalPublisher:
         ledger_snapshot = self._ledger._snapshot()
         outbox_snapshot = self._outbox._snapshot()
         transaction_snapshot = self._transaction_log._snapshot()
-        fingerprint = _digest(
-            *(record.fingerprint for record in records),
-            event.fingerprint,
-            repr(result.safe_summary()),
-        )
+        fingerprint = _publication_transaction_fingerprint(records, event, result)
         try:
-            appended_records = self._ledger.append_batch(records)
+            appended_records = self._ledger._append_batch(records)
             if appended_records != records:
                 raise ApprovalBoundaryError("internal_publication_commit_mismatch")
-            appended_event = self._outbox.append(event)
+            appended_event = self._outbox._append(event)
             if appended_event != event:
                 raise ApprovalBoundaryError("invalidation_event_idempotency_conflict")
-            committed = self._transaction_log.commit(key, result, fingerprint)
+            committed = self._transaction_log._commit(key, result, fingerprint)
             if committed != result:
                 raise ApprovalBoundaryError("publication_transaction_conflict")
         except Exception:
