@@ -1,0 +1,2 @@
+"""Leads ownership shell."""
+
