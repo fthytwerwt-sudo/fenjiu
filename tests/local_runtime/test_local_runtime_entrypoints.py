@@ -55,7 +55,15 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
     def test_makefile_documents_safe_targets(self) -> None:
         text = (ROOT / "Makefile").read_text(encoding="utf-8")
 
-        for target in ("bootstrap", "dev-up", "dev-down", "migrate", "load-fixtures", "regression"):
+        for target in (
+            "bootstrap",
+            "dev-up",
+            "dev-down",
+            "migrate",
+            "migration-test",
+            "load-fixtures",
+            "regression",
+        ):
             self.assertIn(f"{target}:", text)
         self.assertIn("WORKTREE_PATH := $(shell pwd -P)", text)
         self.assertIn("cksum", text)
@@ -64,9 +72,23 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
         self.assertIn("does not install packages or copy .env", text)
         self.assertIn("Apply allowlisted pure SQL migrations", text)
         self.assertIn("psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1", text)
-        self.assertIn("migration-test:", text)
+        self.assertIn("sh tests/migrations/run_scope_migration_regression.sh", text)
         self.assertIn("no host ports", text)
         self.assertIn("$(MAKE) compose-config", text)
+        self.assertIn("$(MAKE) migration-test", text)
+
+        migration_runner = (
+            ROOT / "tests" / "migrations" / "run_scope_migration_regression.sh"
+        ).read_text(encoding="utf-8")
+        for required_fail_closed_token in (
+            'command -v docker',
+            'docker compose version',
+            'docker info',
+            'compose up -d --wait postgres',
+            'sh tests/migrations/test_scope_migrations.sh',
+            'compose down -v --remove-orphans',
+        ):
+            self.assertIn(required_fail_closed_token, migration_runner)
 
         for command in (
             "config --quiet",

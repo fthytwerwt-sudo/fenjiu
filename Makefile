@@ -17,10 +17,10 @@ help:
 	@printf '%s\n' '  make dev-up         Start isolated local-only containers; no host ports, ingest, send, crawl, model call, quote, payment, order, refund, or publish.'
 	@printf '%s\n' '  make health         Run container-local health probes through compose exec.'
 	@printf '%s\n' '  make migrate        Apply allowlisted pure SQL migrations to the isolated local PostgreSQL container.'
-	@printf '%s\n' '  make migration-test Replay migrations and run negative constraints in a disposable local database.'
+	@printf '%s\n' '  make migration-test Require Docker/Compose, then replay migrations and negative constraints in an isolated disposable database.'
 	@printf '%s\n' '  make load-fixtures  Safe no-op fixture probe; loads no real or synthetic rows.'
 	@printf '%s\n' '  make dev-down       Stop local containers and remove named local runtime containers.'
-	@printf '%s\n' '  make regression     Render compose config, then run compileall and all local test suites.'
+	@printf '%s\n' '  make regression     Require Docker/Compose; run migration replay/negative constraints and all local test suites.'
 
 bootstrap:
 	$(PYTHON) -m compileall -q apps core observability modules adapters workflows tests
@@ -47,7 +47,7 @@ migrate:
 	done
 
 migration-test:
-	sh tests/migrations/test_scope_migrations.sh
+	sh tests/migrations/run_scope_migration_regression.sh
 
 load-fixtures:
 	$(COMPOSE_CMD) exec -T worker python -m apps.worker.local_runtime --load-fixtures-noop
@@ -57,6 +57,7 @@ dev-down:
 
 regression:
 	$(MAKE) compose-config
+	$(MAKE) migration-test
 	$(PYTHON) -m compileall -q apps core observability modules adapters workflows tests
 	$(PYTHON) -m unittest discover -s tests/architecture
 	$(PYTHON) -m unittest discover -s tests/regression

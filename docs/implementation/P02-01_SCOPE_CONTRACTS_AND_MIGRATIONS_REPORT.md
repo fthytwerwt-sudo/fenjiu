@@ -60,13 +60,13 @@ PostgreSQL 约束强制：
 
 - `make migrate` 只枚举仓库内编号 SQL 文件，并通过固定 Compose `postgres` service 的容器内 loopback 执行 `psql -X -v ON_ERROR_STOP=1`。
 - 入口不读取 `.env`、不接受 DSN/URL/host 参数、不连接生产或外部数据库、不插入业务资料。
-- `make migration-test` 创建 disposable test database，执行两次 replay、schema/version assertions 与 5 类 negative constraints，退出时强制 drop test database。
-- `make regression` 覆盖原有 architecture/regression/local-runtime/control-plane 套件并新增 scope contract tests。
+- `make migration-test` 先强制验证 Docker command、Compose plugin 与 daemon；任一不可用即明确非零失败，不跳过数据库测试。通过后只启动当前 worktree 隔离 project 的 PostgreSQL，创建 disposable test database，执行两次 replay、schema/version assertions 与 5 类 negative constraints，退出时强制 drop test database，并清理本任务 Compose containers、network 与 volumes。
+- `make regression` 强制调用 `make migration-test`，因此默认回归同时覆盖 PostgreSQL migration replay/negative constraints、原有 architecture/regression/local-runtime/control-plane 套件与 scope contract tests；数据库验证不再是独立的可选步骤。
 - Docker health、P01 flags/readiness/log semantics 保持不变；`make load-fixtures` 仍报告 `writes_data=false` 与 `loads_fixtures=false`。
 
 ## 6. Rollback 与 deferred
 
-- 本地 probe rollback：删除 disposable test database；Compose lifecycle 用 `dev-down` 清理本任务容器。
+- 本地 probe rollback：删除 disposable test database；migration regression trap 使用 `compose down -v --remove-orphans` 清理当前 worktree 隔离的本任务容器、网络和 disposable volumes。
 - 已应用 migration 的结构变更遵循 forward-fix / expand-contract；未增加破坏性 down migration。
 - PostgreSQL RLS、advanced encryption、retention length、legal region、真实 scope、database adapter/driver 与生产连接全部 `DEFER`。
 - 本任务不解除 SKU、价格、库存、资质、账号、收款、履约或 TikTok 酒类业务闸门；external send/publish/quote/payment/order/refund 及 business external readiness 继续为 false。
