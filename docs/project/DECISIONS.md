@@ -136,10 +136,10 @@
 ### ADR-0010：P02-02 以 append-only version chain 和 evidence-gated current read 建立真值合同
 
 - **日期**：2026-08-06
-- **状态**：Accepted / PARTIAL（task branch 工程机制，待 `main` 集成）
+- **状态**：Accepted / CONFIRMED（工程机制；`main` 已远端回读）
 - **来源**：P02-02 任务卡、P02-01 contracts 与本轮 self-review/migration regression。
 - **背景**：仅有 scope/source/version metadata 不能防止 candidate、fixture、过期或冲突事实被 consumer 当作当前真值，也不能证明历史未被覆盖或审批 evidence 与 version 同源。
 - **决定**：九类 truth entity 共用 value-free payload reference 和 immutable data version；所有 successor 显式携带 parent、field diff/hash、effective window 与 scope/source/version lineage。current read 只返回唯一 approved/fresh/no-successor 且 approval evidence 完整的版本；Python repository 与 PostgreSQL trigger 同时拒绝非法状态迁移、分叉、UPDATE 和 DELETE。
 - **影响**：P02-03 可针对同一 read/lineage contract 做 adversarial isolation；Phase 3 future ingestion 只能创建 candidate，不能直接写 current truth。
 - **替代方案**：按时间戳或 version number取最新记录；未采用，因为 conflict/expired/superseded 可能被静默读出。只在 application 层检查；未采用，因为直接 SQL 会绕过状态与 append-only 防护。
-- **状态边界**：task branch 未获准 merge/push `main`；本决定不表示真实 approval actor/RBAC、production repository/RLS、业务资料、供应链、合规或外部执行成立。
+- **状态边界**：本决定不表示真实 approval actor/RBAC、production repository/RLS、业务资料、供应链、合规或外部执行成立。

@@ -69,7 +69,7 @@ tasks:
   P01-02: {phase: phase_01, status: remote_readback_verified_clean_worktree_required, depends_on: [P01-01], risk: medium}
   P01-03: {phase: phase_01, status: remote_readback_verified_clean_worktree_required, depends_on: [P01-02], risk: medium}
   P02-01: {phase: phase_02, status: remote_readback_verified_clean_worktree_required, depends_on: [P01-03], risk: high}
-  P02-02: {phase: phase_02, status: planned, depends_on: [P02-01], risk: high}
+  P02-02: {phase: phase_02, status: remote_readback_verified_clean_worktree_required, depends_on: [P02-01], risk: high}
   P02-03: {phase: phase_02, status: planned, depends_on: [P02-02], risk: high}
   P03-01: {phase: phase_03, status: planned, depends_on: [P02-03], risk: high}
   P03-02: {phase: phase_03, status: planned, depends_on: [P03-01], risk: high}

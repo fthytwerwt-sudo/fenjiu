@@ -11,9 +11,8 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P02-02 控制器集成闸门**：复审本任务分支的九类 value-free truth contracts、state/read guards、migration trigger/view、完整 regression 与远端回读；用户未授权本任务 merge/push `main`，因此集成必须由控制器另行执行。
-2. **P02-03 隔离与 fixture 防护**：仅在 P02-02 已进入 `main` 后，以 adversarial tests 验证 cross-tenant/project/business-line、unscoped、fixture external-action 与非 approved/过期 truth 的拒绝路径；任一越界路径可通即冻结后续 Phase 3。
-3. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
+1. **P02-03 隔离与 fixture 防护**：在新建干净 task worktree 中，以 adversarial tests 验证 cross-tenant/project/business-line、unscoped、fixture external-action 与非 approved/过期 truth 的拒绝路径；任一越界路径可通即冻结后续 Phase 3。
+2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据
 

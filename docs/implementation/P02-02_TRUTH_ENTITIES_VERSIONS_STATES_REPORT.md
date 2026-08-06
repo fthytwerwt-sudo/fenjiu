@@ -1,10 +1,12 @@
 # P02-02｜真值实体、版本与状态机报告
 
-> **状态：local_verification_passed_git_completion_reported_out_of_band**
+> **状态：remote_readback_verified_clean_worktree_required**
 >
 > **执行日期：2026-08-06**
 >
 > **基线提交：** `43ec53fc4441f22fd2492324c2d0d3a3da460f6b`
+>
+> **远端代码提交：** `0ba7f0575fdfe2906455c5b6301ac71c8872e727`
 >
 > **范围边界：** 仅实现 value-free、local-only 的 synthetic contract probes、纯 SQL schema/trigger/view 与测试；不包含真实 SKU、价格、库存、资质、素材、禁语正文、ORM/driver、生产连接或外部动作。
 
@@ -56,7 +58,7 @@ migration 只创建 schema、function、trigger 与 view，不插入真实 tenan
 
 - truth/scope contract suite：27 项通过，覆盖九类 entity、candidate→approved、approval lineage、effective window、fixture/candidate/expired/conflict/superseded current-read rejection、explicit conflict resolution、cross scope、immutable history、invalid input/state/diff，以及四类非法 terminal root 和 conflict-root→approved 绕过拒绝。
 - PostgreSQL migration：`0001` + `0002` 连续 replay 两次；16 类负向约束通过，包括 P02-01 五类基线，以及 P02-02 缺 approval evidence、四类非法 root、rejected conflict root 的 approved child、重复 version、跨业务线 parent、fixture 非法迁移、UPDATE 和 DELETE 拒绝。
-- 完整 `make regression` 已通过：73 项 Python tests、两次 migration replay 与 16 类 SQL 负例均通过；P00 default/all-files scan、mechanism validation、diff/shell check 均通过，且 scoped Docker container/volume/network cleanup 回读均为 0。commit/push/远端回读仍以本轮最终执行回报为准。
+- 完整 `make regression` 已通过：73 项 Python tests、两次 migration replay 与 16 类 SQL 负例均通过；P00 default/all-files scan、mechanism validation、diff/shell check 均通过，且 scoped Docker container/volume/network cleanup 回读均为 0。两笔工程提交已从远端 `main` 回读至上述代码提交。
 
 ## 5. 自我审查与回退
 
@@ -70,4 +72,4 @@ migration 只创建 schema、function、trigger 与 view，不插入真实 tenan
 - **CONFIRMED（本地工程）**：value-free truth contracts、state/read guards、migration replay 与负向约束已验证。
 - **UNKNOWN / BLOCKED（业务）**：真实 SKU、价格、库存、主体/资质、账号、收款、履约、TikTok 酒类边界和外部授权没有新增证据，所有外部业务 flags 继续 false。
 - **未实现**：RLS、encryption、retention/legal-region、production repository/driver、真实 source/approval actor authentication、approval RBAC、ingestion parser、UI、CRM/support/video adapter 与 external network。
-- **P02-03 前置**：必须先由控制器审查并把 P02-02 集成到 `main`；P02-03 再以 adversarial tests 扩大 cross-tenant/project/business-line、unscoped query、fixture injection 和 non-current truth consumer isolation，不能把本轮单进程 repository probe 写成生产隔离完成。
+- **P02-03 前置**：P02-02 已由控制器审查并集成至 `main`；P02-03 仍须以 adversarial tests 扩大 cross-tenant/project/business-line、unscoped query、fixture injection 和 non-current truth consumer isolation，不能把本轮单进程 repository probe 写成生产隔离完成。

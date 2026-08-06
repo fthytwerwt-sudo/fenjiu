@@ -46,7 +46,7 @@
 | Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
 | Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P02-01 工程代码为 `b08722a703f37a0cfcce0c928fec8c01c4596357` |
+| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P02-02 工程代码为 `0ba7f0575fdfe2906455c5b6301ac71c8872e727` |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -59,7 +59,7 @@
 - **CONFIRMED（P01-02）**：`main` 已远端回读 local-only Docker Compose / Make runtime 入口。固定镜像、named volumes、无 host `ports`、只读代码挂载、固定 loopback healthcheck 和 safe no-op migration/fixture 均已验证；Make 会从 worktree 绝对路径派生 Compose project name，避免多聊天框/临时 worktree 共享容器、网络和 volumes。控制器最终在干净 task worktree 通过 8 项 architecture、14 项 regression、8 项 local-runtime 测试、P00 两种扫描及完整 `dev-up → health → migrate → load-fixtures → dev-down` 生命周期，未留下该 project 的容器。GitHub Actions workflow 仍因当前凭据缺少 `workflow` scope 而未写入远端，不能表述为远端 CI 已启用。
 - **CONFIRMED（P01-03）**：`main` 已远端回读静态 settings、只读 FeatureFlagPort、liveness/readiness 和 correlation-aware JSON log 合同。11 个敏感 action flag 永久默认关闭且 unknown/invalid 输入 fail-closed；`/live` 健康不泄露配置，`/ready` 因 broker/provider/real configuration 缺失而返回 HTTP 503。日志仅保留安全 identifier/code、数字和布尔值，自由文本、URL/DSN、message/file/Cookie/secret/绝对路径一律脱敏。控制器在干净 worktree 复验 `make regression`（8 architecture、14 regression、8 local-runtime、16 control-plane）与 P00 两种扫描通过；P01-03 不解除业务或远端 CI 阻断。
 - **CONFIRMED（P02-01）**：`main` 已远端回读 scope/source/version contracts、synthetic fixture metadata、PostgreSQL schema migration 和 compound scope/lineage constraints。独立 code review 发现 migration replay/negative constraints 未纳入默认回归，已修复并二次复核：`make regression` 现在要求 Docker/Compose/daemon，启动 worktree 派生的隔离 PostgreSQL、完成两次 migration replay、五类 SQL 负例和 54 项 Python 测试后清理容器、network 与 volumes；不可用时非零失败而不跳过。该成果只证明 local synthetic schema 防护，不启用 production database、真实资料、审批、外部网络或业务外部动作。
-- **PARTIAL（P02-02 task branch）**：以 `main` `43ec53fc4441f22fd2492324c2d0d3a3da460f6b` 为干净基线，实现九类 value-free truth contracts、source/version/approval evidence、parent/diff/effective window、append-only state machine、scoped current read 以及 PostgreSQL constraints/triggers/view。fixture/candidate/expired/conflict/superseded 均不能成为 current truth；本轮最终 regression、扫描、push 和远端 branch/core-file readback 由执行回报确认。用户明确禁止 merge/push `main`，所以 P02-02 在控制器集成前保持 task-branch 工程事实，P02-03 不得越过该集成闸门。
+- **CONFIRMED（P02-02）**：`main` 已远端回读九类 value-free truth contracts、source/version/approval evidence、parent/diff/effective window、append-only state machine、scoped current read 与 PostgreSQL constraints/triggers/view。review 发现 terminal root 可经 `conflict → approved` 绕过 staging ancestry，已在 Python repository、SQL CHECK 与 insert trigger 使用同一 root allowlist 修复；73 项 Python tests、两次 migration replay、16 类 SQL 负例、P00 两种扫描、mechanism validation 与 Docker cleanup 均由控制器复验通过。它不启用真实资料、认证审批、RLS、production database 或业务外部动作。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口
