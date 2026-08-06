@@ -50,7 +50,7 @@
 
 1. 先增加 P02-03 adversarial contract tests，覆盖 cross tenant/project/business line、unscoped/wildcard、direct repository bypass、fixture external action、candidate/expired/conflict/superseded/stale truth、sensitivity 与 policy snapshot denial、denial audit。
 2. 建立 stdlib-only isolation policy、immutable repository read grant、append-only audit contract 和 local truth-consumer command handler。
-3. 收紧 repository current read，只接受 policy-issued、scope/version/correlation 精确一致的 grant；保持 P02-02 append-only/state semantics。
+3. 收紧 repository current read，只接受 policy-issued、scope/version/correlation/actor 精确绑定的 grant；audit actor 只能来自 validated grant；保持 P02-02 append-only/state semantics。
 4. 运行 focused tests、完整 regression（含 P02 migrations）、P00 default/all-files、mechanism validation、diff/path/shell 检查和 Docker cleanup。
 5. 自审后交由独立 code review；修复后复跑受影响与完整验证。
 6. 更新报告和必要工程状态；path-limited Lore commit，push 本任务分支并回读远端 branch/default/visibility/core files。
@@ -69,7 +69,7 @@
 
 - cross tenant/project/business line、unscoped/wildcard、fixture external、unsupported external action、candidate/expired/conflict/superseded/stale、sensitivity/policy mismatch 全部 fail closed。
 - denial 产生稳定 error code 和不含 payload/secret/path 的 append-only audit event；success 也记录 policy result。
-- repository current consumer read 不能绕过 policy grant，grant 不能跨 scope/version 重用。
+- repository current consumer read 不能绕过 policy grant，grant 不能跨 scope/version/actor 重用或替换 audit attribution。
 - `make regression` 含 P02 migration replay/negative suite 通过；P00 两种扫描、mechanism validation、diff/shell/Docker cleanup 通过。
 - 独立 code review 无未解决 blocker；任务分支 Lore commit/push、remote HEAD/core-file readback 完成；worktree clean。
 
