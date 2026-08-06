@@ -43,7 +43,7 @@
 # 无论目录规则如何，凭据与系统元数据始终不得提交。
 .env
 .env.*
-!.env.example
+!/.env.example
 .DS_Store
 ._*
 __pycache__/

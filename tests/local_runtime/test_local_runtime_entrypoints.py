@@ -7,7 +7,10 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 
+from apps.admin import local_runtime as admin_runtime
+from apps.api import local_runtime as api_runtime
 from apps.api.local_runtime import health_payload
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,6 +65,7 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
         self.assertIn("does not install packages or copy .env", text)
         self.assertIn("Safe no-op migration probe", text)
         self.assertIn("no host ports", text)
+        self.assertIn("$(MAKE) compose-config", text)
 
     def test_compose_uses_pinned_images_and_no_host_ports(self) -> None:
         text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
@@ -74,6 +78,28 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
         self.assertIn("expose:", text)
         self.assertIn("postgres_data:", text)
         self.assertIn("valkey_data:", text)
+
+    def test_api_healthcheck_rejects_external_url_before_network(self) -> None:
+        with patch.object(sys, "argv", ["api", "--healthcheck", "--url", "http://example.invalid/health"]):
+            with patch.object(api_runtime, "urlopen") as mocked_urlopen:
+                with self.assertRaises(SystemExit) as error:
+                    api_runtime.main()
+
+        self.assertEqual(error.exception.code, 2)
+        mocked_urlopen.assert_not_called()
+
+    def test_admin_healthcheck_rejects_external_url_before_network(self) -> None:
+        with patch.object(sys, "argv", ["admin", "--healthcheck", "--url", "http://example.invalid/health"]):
+            with patch.object(admin_runtime, "urlopen") as mocked_urlopen:
+                with self.assertRaises(SystemExit) as error:
+                    admin_runtime.main()
+
+        self.assertEqual(error.exception.code, 2)
+        mocked_urlopen.assert_not_called()
+
+    def test_healthcheck_urls_are_fixed_loopback_constants(self) -> None:
+        self.assertEqual(api_runtime.API_HEALTH_URL, "http://127.0.0.1:8000/health")
+        self.assertEqual(admin_runtime.ADMIN_HEALTH_URL, "http://127.0.0.1:8001/health")
 
 
 if __name__ == "__main__":

@@ -10,6 +10,8 @@ from urllib.request import urlopen
 
 from apps.api.local_runtime import health_payload
 
+ADMIN_HEALTH_URL = "http://127.0.0.1:8001/health"
+
 
 class AdminHealthHandler(BaseHTTPRequestHandler):
     server_version = "FenjiuLocalAdminHealth/1"
@@ -33,9 +35,9 @@ def serve(host: str, port: int) -> None:
     ThreadingHTTPServer((host, port), AdminHealthHandler).serve_forever()
 
 
-def healthcheck(url: str) -> int:
+def healthcheck() -> int:
     try:
-        with urlopen(url, timeout=2) as response:
+        with urlopen(ADMIN_HEALTH_URL, timeout=2) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except (OSError, URLError, json.JSONDecodeError):
         return 1
@@ -48,11 +50,10 @@ def main() -> int:
     parser.add_argument("--healthcheck", action="store_true")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8001)
-    parser.add_argument("--url", default="http://127.0.0.1:8001/health")
     args = parser.parse_args()
 
     if args.healthcheck:
-        return healthcheck(args.url)
+        return healthcheck()
     if args.serve:
         serve(args.host, args.port)
         return 0
