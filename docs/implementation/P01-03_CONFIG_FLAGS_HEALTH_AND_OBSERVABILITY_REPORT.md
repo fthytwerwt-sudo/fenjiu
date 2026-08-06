@@ -1,6 +1,6 @@
 # P01-03｜配置、默认关闭 flags、健康检查与基础日志报告
 
-> **状态：verified_locally_pending_task_branch_push**
+> **状态：completed_on_task_branch_remote_readback_verified**
 > **执行日期：2026-08-06**
 > **任务卡：** `docs/implementation/codex_tasks/phase_01/P01-03_config_flags_health_and_observability.md`
 > **基线提交：** `0c4a699d0cf20cad9090581230e70649e0d7665d`
@@ -39,4 +39,4 @@
 - Docker 生命周期：isolated `dev-up`、liveness、migration no-op、fixture no-op 与 `dev-down` 通过；API/admin/worker readiness 均按预期拒绝，未留下该 project 容器。
 - `git diff --check`：通过。
 
-Git commit、push 与 remote readback 仍须在本报告所在任务分支完成后，才可在执行回报中写为完成。
+任务分支的实现提交已完成 push，且 remote HEAD 与 settings、flags、health、logging 及本报告的远程内容已回读一致。该状态仅适用于 task branch，不表示已合并 `main`、已开启远程 CI 或已具备外部业务条件。
