@@ -1,2 +1,1 @@
 """CRM ownership shell."""
-

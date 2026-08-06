@@ -1,2 +1,1 @@
 """Truth center ownership shell."""
-

@@ -1,2 +1,1 @@
 """Ingestion ownership shell."""
-
