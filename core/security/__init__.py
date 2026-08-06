@@ -11,6 +11,17 @@ from core.security.settings import (
     default_settings,
     fail_closed_settings,
 )
+from core.security.isolation import (
+    AuditPolicyResult,
+    InMemoryIsolationAuditLog,
+    IsolationAction,
+    IsolationAuditEvent,
+    IsolationPolicy,
+    IsolationTarget,
+    PolicyDeniedError,
+    PolicyEvaluation,
+    disabled_feature_flag_snapshot,
+)
 
 __all__ = [
     "ConfigStatus",
@@ -18,6 +29,15 @@ __all__ = [
     "FailClosedFeatureFlags",
     "FeatureFlagName",
     "FeatureFlagPort",
+    "AuditPolicyResult",
+    "InMemoryIsolationAuditLog",
+    "IsolationAction",
+    "IsolationAuditEvent",
+    "IsolationPolicy",
+    "IsolationTarget",
+    "PolicyDeniedError",
+    "PolicyEvaluation",
     "default_settings",
     "fail_closed_settings",
+    "disabled_feature_flag_snapshot",
 ]
