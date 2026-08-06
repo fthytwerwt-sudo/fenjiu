@@ -22,7 +22,9 @@
 !/workflows/
 !/workflows/**
 !/fixtures/
-!/fixtures/**
+/fixtures/*
+!/fixtures/README.md
+!/fixtures/synthetic_metadata.json
 !/migrations/
 !/migrations/**
 !/tests/
