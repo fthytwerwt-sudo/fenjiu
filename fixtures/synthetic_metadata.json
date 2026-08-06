@@ -1,0 +1,12 @@
+{
+  "is_synthetic": true,
+  "external_execution_allowed": false,
+  "business_external_ready": false,
+  "scope": {
+    "tenant_id": "synthetic_tenant",
+    "project_id": "synthetic_project",
+    "business_line_id": "synthetic_business_line",
+    "correlation_id": "synthetic_correlation"
+  },
+  "description": "P01-01 synthetic-only metadata; not a business fact source."
+}
