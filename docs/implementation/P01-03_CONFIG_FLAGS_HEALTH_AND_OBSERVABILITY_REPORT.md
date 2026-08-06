@@ -1,6 +1,6 @@
 # P01-03｜配置、默认关闭 flags、健康检查与基础日志报告
 
-> **状态：followup_fix_verified_locally_pending_remote_readback**
+> **状态：followup_fix_completed_on_task_branch_remote_readback_verified**
 > **执行日期：2026-08-06**
 > **任务卡：** `docs/implementation/codex_tasks/phase_01/P01-03_config_flags_health_and_observability.md`
 > **基线提交：** `0c4a699d0cf20cad9090581230e70649e0d7665d`
@@ -41,4 +41,4 @@
 - Docker 生命周期：isolated `dev-up`、liveness、migration no-op、fixture no-op 与 `dev-down` 通过；API/admin/worker readiness 均按预期拒绝，未留下该 project 容器。
 - `git diff --check`：通过。
 
-原 P01-03 实现提交已完成 push 和 remote readback。本次日志 fail-closed 跟进修复已完成本地验证，须在新 Lore commit push 且远程核心文件回读一致后才可写为 task branch 跟进完成。无论该技术状态如何，都不表示已合并 `main`、已开启远程 CI 或已具备外部业务条件。
+原 P01-03 实现与本次日志 fail-closed 跟进修复均已完成 push 和 remote readback；远程 HEAD、日志实现、负向测试与本报告内容 hash 已回读一致。该状态仅适用于 task branch，不表示已合并 `main`、已开启远程 CI 或已具备外部业务条件。
