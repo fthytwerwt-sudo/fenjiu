@@ -2,6 +2,13 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P02-02 真值实体、版本与状态机
+
+- **目标**：只以 value-free contract probes 建立 product/SKU/price/inventory/delivery/compliance/asset/approved_fact/forbidden expression 的 candidate/version/expiry/conflict/supersede 与 current-read 防护；不实现真实资料、parser、UI、adapter 或外部连接。
+- **实际改动**：新增九类 truth entity enum、payload/source/version/parent/diff/effective-window/approval evidence 合同、append-only in-memory repository、明确状态图、`0002` PostgreSQL table/trigger/current view、22 项 truth contract tests 和扩展后的 migration negative suite。fixture/mock 不可提升，candidate/expired/blocked/conflict/superseded 不可作为 current truth；approved 必须同 scope 且 source/version/approval evidence 完整。
+- **自审与验证**：自审统一 Python/SQL 的 `parent_version_id=data_version_id` 语义，并将 transition 和 update/delete 拒绝下沉到 PostgreSQL trigger。两次 migration replay 与 11 类 SQL 负例已单独通过；完整 `make regression`、P00 两种扫描、mechanism validation、Docker cleanup、commit/push 和远端回读以本轮最终执行回报为准，本文不构造自引用 commit 状态。
+- **状态边界**：本轮基线为 `main` `43ec53fc4441f22fd2492324c2d0d3a3da460f6b`；用户禁止 merge/push `main`，因此 task branch 在控制器集成前不是下一轮默认 P1。业务事实和所有外部 flags 不变化；P02-03 必须等待 P02-02 进入 `main` 后再执行。
+
 ## 2026-08-06｜P02-01 scope contracts、migration 与 synthetic isolation 基线
 
 - **目标**：只建立 local PostgreSQL schema、stdlib metadata contracts 与 synthetic fixture 防护，为后续 truth model 提供 scope/source/version/lineage 基础；不导入真实资料或开放外部能力。

@@ -31,4 +31,4 @@ sh tests/migrations/test_scope_migrations.sh
 cleanup
 trap - EXIT HUP INT TERM
 
-printf 'P02-01 isolated migration regression passed and cleaned up.\n'
+printf 'P02-01/P02-02 isolated migration regression passed and cleaned up.\n'
