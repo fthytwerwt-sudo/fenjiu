@@ -350,9 +350,68 @@ class TruthContractTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             ContractValidationError,
-            "approved_truth_requires_candidate_parent",
+            "initial_truth_state_forbidden",
         ):
             repository.append(approved)
+
+    def _assert_terminal_root_rejected(self, state: DataState, seed: int) -> None:
+        repository = InMemoryTruthRepository()
+        root = truth_record(
+            state=state,
+            version_no=1,
+            seed=seed,
+            effective_from=NOW if state is DataState.EXPIRED else None,
+            effective_until=(
+                NOW + timedelta(days=1) if state is DataState.EXPIRED else None
+            ),
+        )
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "initial_truth_state_forbidden",
+        ):
+            repository.append(root)
+
+    def test_conflict_root_is_rejected(self) -> None:
+        self._assert_terminal_root_rejected(DataState.CONFLICT, 51)
+
+    def test_blocked_root_is_rejected(self) -> None:
+        self._assert_terminal_root_rejected(DataState.BLOCKED, 52)
+
+    def test_expired_root_is_rejected(self) -> None:
+        self._assert_terminal_root_rejected(DataState.EXPIRED, 53)
+
+    def test_superseded_root_is_rejected(self) -> None:
+        self._assert_terminal_root_rejected(DataState.SUPERSEDED, 54)
+
+    def test_conflict_root_cannot_seed_an_approved_current_truth(self) -> None:
+        repository = InMemoryTruthRepository()
+        conflict_root = truth_record(
+            state=DataState.CONFLICT,
+            version_no=1,
+            seed=55,
+        )
+        approved_child = truth_record(
+            state=DataState.APPROVED,
+            version_no=2,
+            seed=56,
+            parent_version_id=conflict_root.version.id,
+        )
+
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "initial_truth_state_forbidden",
+        ):
+            repository.append(conflict_root)
+        with self.assertRaisesRegex(ContractValidationError, "parent_version_not_found"):
+            repository.append(approved_child)
+        self.assertIsNone(
+            repository.current(
+                approved_child.scope,
+                approved_child.entity_kind,
+                approved_child.payload.subject_ref,
+                at=NOW,
+            )
+        )
 
     def test_cross_scope_transition_and_read_are_rejected(self) -> None:
         repository = InMemoryTruthRepository()

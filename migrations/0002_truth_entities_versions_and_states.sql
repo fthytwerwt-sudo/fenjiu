@@ -86,8 +86,11 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.truth_versions (
         data_state NOT IN ('fixture', 'mock', 'staging') OR
         approval_evidence_id IS NULL
     ),
-    CONSTRAINT truth_versions_initial_parent_shape CHECK (
-        (version_no = 1 AND parent_version_id IS NULL) OR
+    CONSTRAINT truth_versions_initial_root_shape CHECK (
+        (version_no = 1 AND parent_version_id IS NULL AND (
+            (is_synthetic AND data_state IN ('fixture', 'mock')) OR
+            (NOT is_synthetic AND data_state = 'staging')
+        )) OR
         (version_no > 1 AND parent_version_id IS NOT NULL)
     ),
     CONSTRAINT truth_versions_scope_version_unique UNIQUE (
@@ -134,8 +137,11 @@ DECLARE
     parent_record fenjiu_contract.truth_versions%ROWTYPE;
 BEGIN
     IF NEW.parent_version_id IS NULL THEN
-        IF NEW.version_no <> 1 OR NEW.data_state = 'approved' THEN
-            RAISE EXCEPTION 'invalid initial truth version';
+        IF NEW.version_no <> 1 OR NOT (
+            (NEW.is_synthetic AND NEW.data_state IN ('fixture', 'mock')) OR
+            (NOT NEW.is_synthetic AND NEW.data_state = 'staging')
+        ) THEN
+            RAISE EXCEPTION 'invalid initial truth state';
         END IF;
         RETURN NEW;
     END IF;

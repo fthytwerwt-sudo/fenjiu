@@ -43,8 +43,13 @@ class InMemoryTruthRepository:
         if record.parent_version_id is None:
             if record.version.version_no != 1:
                 raise ContractValidationError("initial_truth_version_required")
-            if record.data_state is DataState.APPROVED:
-                raise ContractValidationError("approved_truth_requires_candidate_parent")
+            allowed_root_states = (
+                {DataState.FIXTURE, DataState.MOCK}
+                if record.metadata.is_synthetic
+                else {DataState.STAGING}
+            )
+            if record.data_state not in allowed_root_states:
+                raise ContractValidationError("initial_truth_state_forbidden")
         else:
             parent = self._versions_by_id.get(record.parent_version_id)
             if parent is None:

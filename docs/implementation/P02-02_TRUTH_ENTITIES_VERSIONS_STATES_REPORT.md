@@ -21,6 +21,10 @@
 ```text
 fixture/mock ──X──> approved
 
+root(synthetic) -> fixture | mock only
+root(non-synthetic contract) -> staging only
+root -> conflict | blocked | expired | superseded ──X
+
 staging -> approved | blocked | conflict | superseded
 approved -> expired | blocked | conflict | superseded
 expired/blocked/superseded -> staging
@@ -31,6 +35,7 @@ conflict -> staging | approved(with new approval evidence)
 - `expired`、`blocked`、`conflict` 与 `superseded` head 永不作为 current truth。
 - 只有唯一 chain head 同时满足 `approved`、source/version/approval lineage 完整、effective window fresh、scope 精确匹配时，read model 才返回。
 - conflict 不使用 timestamp、confidence 或 version number 做 latest-wins；冲突期间返回空，只有新的 approved successor 和新 approval evidence 才恢复 current read。
+- `conflict → approved` 只对已从合法 staging root 建立的 persisted chain 可达；非法 conflict root 在 repository/schema root guard 即被拒绝，不能作为 approved child 的 ancestry。
 - effective window 未开始或已到期均返回空；无默认日期、币种、金额、库存或资质有效期。
 
 ## 3. PostgreSQL schema 防护
@@ -39,6 +44,7 @@ conflict -> staging | approved(with new approval evidence)
 
 - 九类 `truth_entity_kind` enum 和 `truth_versions` append-only table。
 - compound scope/source/data-version/parent lineage foreign keys、scope+subject+version uniqueness、single-child chain 和 external execution 永久 false。
+- root shape 同时由 CHECK constraint 与 insert trigger 强制：synthetic root 仅 `fixture/mock`，non-synthetic contract root 仅 `staging`；`approved/conflict/blocked/expired/superseded` root 全部 fail closed。
 - approval fields 原子完整性、approved evidence/effective window/parent 必填、fixture/mock 与 synthetic marker 一致性。
 - insert trigger 对 parent scope、连续 version number 与状态图做二次校验。
 - update/delete trigger 阻止覆盖或删除历史；更正只能 append 新 version。
@@ -48,14 +54,15 @@ migration 只创建 schema、function、trigger 与 view，不插入真实 tenan
 
 ## 4. 验证证据
 
-- truth/scope contract suite：22 项通过，覆盖九类 entity、candidate→approved、approval lineage、effective window、fixture/candidate/expired/conflict/superseded current-read rejection、explicit conflict resolution、cross scope、immutable history、invalid input/state/diff。
-- PostgreSQL migration：`0001` + `0002` 连续 replay 两次；11 类负向约束通过，包括 P02-01 五类基线以及 P02-02 缺 approval evidence、重复 version、跨业务线 parent、fixture 非法迁移、UPDATE 和 DELETE 拒绝。
-- `make regression`、P00 default/all-files scan、mechanism validation、diff check 与 Docker cleanup 以本轮最终执行输出为准；本报告不把生成时状态预写成 Git/远端完成。
+- truth/scope contract suite：27 项通过，覆盖九类 entity、candidate→approved、approval lineage、effective window、fixture/candidate/expired/conflict/superseded current-read rejection、explicit conflict resolution、cross scope、immutable history、invalid input/state/diff，以及四类非法 terminal root 和 conflict-root→approved 绕过拒绝。
+- PostgreSQL migration：`0001` + `0002` 连续 replay 两次；16 类负向约束通过，包括 P02-01 五类基线，以及 P02-02 缺 approval evidence、四类非法 root、rejected conflict root 的 approved child、重复 version、跨业务线 parent、fixture 非法迁移、UPDATE 和 DELETE 拒绝。
+- 完整 `make regression` 已通过：73 项 Python tests、两次 migration replay 与 16 类 SQL 负例均通过；P00 default/all-files scan、mechanism validation、diff/shell check 均通过，且 scoped Docker container/volume/network cleanup 回读均为 0。commit/push/远端回读仍以本轮最终执行回报为准。
 
 ## 5. 自我审查与回退
 
 - 自审发现并修正 Python parent chain 与 SQL parent FK 初版指向不同 ID 的问题；两层现统一以 `data_version_id` 作为 `parent_version_id`。
 - 自审将状态迁移和 append-only 从 application-only guard 下沉到 PostgreSQL trigger，避免将数据库直写路径留为隐式绕过。
+- 独立 code review 发现初版仅拒绝 approved root，terminal root 可通过 `conflict → approved` 绕过 staging lineage。修复后 Python repository、SQL CHECK 与 insert trigger 使用同一 root allowlist；修复前新增回归已分别在 Python 和 PostgreSQL 复现失败，修复后全部通过。
 - 回退为删除 P02-02 的独立 `0002` schema contract、truth module 文件和对应 tests；已应用数据库不提供破坏性 down migration，遵循 forward-fix / expand-contract。
 
 ## 6. 状态边界与 P02-03 依赖
