@@ -7,7 +7,7 @@
 - **目标**：只建立 stdlib/local-only/synthetic/value-free 的 versioned mapping profile、deterministic normalization fingerprint、missing/conflict/expiry/duplicate quality report 和 profile change replay/diff proof；不读取真实文件、不写 approved truth 或外部动作。
 - **实际改动**：新增 `modules/ingestion/mapping.py` 与 10 项 mapping contract probes；只消费 P03-01 source/job/result/staging chain，candidate 保留 scope、source/job/result/staging IDs、locator、content hash、rule/profile lineage。strict profile schema 拒绝 implicit/generic mapping，unknown unit/currency/date/language、missing、conflict、duplicate、freshness、scope/lineage/signature 以 stable code fail closed。新增一个 synthetic mapping fixture，并以 `.gitignore` 精确 allowlist，其他 ingestion fixtures 继续被忽略。
 - **审查与验证**：test-first 从缺少 `modules.ingestion.mapping` 的 ImportError 开始；fixture allowlist test 首次正确发现新 fixture 被忽略。自审发现 P00 all-files scan 将测试中的字面绝对路径检测样例视作违规，改为运行时构造后保持同一断言且两种扫描通过。focused mapping 10 项、ingestion 24 项、`make regression`（两次 migration replay、16 类 SQL negative、116 项 Python suites）、P00 default/all-files、mechanism validation、compile/shell/diff 均通过。
-- **Git 证据**：基线为 `origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb`，状态回填基线 `535857f376765b16c056049e3c9ae86a348fee64`；当前为 `codex/p03-02-mapping-quality`，尚待本任务 commit/push/remote readback 和控制器集成。
+- **Git 证据**：基线为 `origin/main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb`，状态回填基线 `535857f376765b16c056049e3c9ae86a348fee64`；任务代码提交 `a219463108ca3cf098920d57d17a6b7d8657b01f` 已 push，并从远端同名分支 readback。`main` 仍为 `535857f376765b16c056049e3c9ae86a348fee64`，尚待控制器集成。
 - **状态边界**：仅为 task-branch local engineering `PARTIAL`；业务状态、business gates、真实资料、approved truth、生产 storage/database/auth/RBAC/RLS 与所有 external flags 均不变化。
 
 ## 2026-08-06｜P03-01 原始登记、隔离存储与 extraction ports
