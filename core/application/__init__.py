@@ -5,5 +5,12 @@ from core.application.interfaces import (
     ExternalActionGuard,
     PortProbe,
 )
+from core.application.truth_consumer import ScopedTruthConsumer, TruthConsumerCommand
 
-__all__ = ["CapabilityStatus", "ExternalActionGuard", "PortProbe"]
+__all__ = [
+    "CapabilityStatus",
+    "ExternalActionGuard",
+    "PortProbe",
+    "ScopedTruthConsumer",
+    "TruthConsumerCommand",
+]

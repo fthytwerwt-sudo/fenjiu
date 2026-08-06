@@ -6,6 +6,10 @@ from datetime import datetime
 from uuid import UUID
 
 from core.contracts import ContractValidationError, DataState, ScopeRef
+from core.contracts.access import (
+    RepositoryGrantVerifier,
+    RepositoryReadGrant,
+)
 from core.contracts.scope import _require_identifier, _require_uuid
 from modules.truth_center.models import (
     TruthEntityKind,
@@ -23,6 +27,19 @@ class InMemoryTruthRepository:
         self._entity_ids: set[UUID] = set()
         self._series_versions: set[tuple[ScopeRef, TruthEntityKind, str, int]] = set()
         self._child_by_parent: dict[UUID, UUID] = {}
+        self.__grant_verifier: RepositoryGrantVerifier | None = None
+
+    def _bind_grant_verifier(self, verifier: RepositoryGrantVerifier) -> None:
+        """Bind one policy verifier for all public current reads."""
+
+        if (
+            type(verifier) is RepositoryGrantVerifier
+            or not isinstance(verifier, RepositoryGrantVerifier)
+        ):
+            raise ContractValidationError("repository_grant_verifier_required")
+        if self.__grant_verifier is not None and self.__grant_verifier is not verifier:
+            raise ContractValidationError("repository_grant_verifier_already_bound")
+        self.__grant_verifier = verifier
 
     def append(self, record: TruthVersion) -> None:
         if not isinstance(record, TruthVersion):
@@ -64,7 +81,11 @@ class InMemoryTruthRepository:
         if record.parent_version_id is not None:
             self._child_by_parent[record.parent_version_id] = record.version.id
 
-    def get_by_id(self, scope: ScopeRef, version_id: UUID) -> TruthVersion | None:
+    def _get_by_id_for_policy(
+        self,
+        scope: ScopeRef,
+        version_id: UUID,
+    ) -> TruthVersion | None:
         if not isinstance(scope, ScopeRef):
             raise ContractValidationError("scope_required")
         _require_uuid(version_id, "data_version_id_required")
@@ -75,7 +96,7 @@ class InMemoryTruthRepository:
             raise ContractValidationError("cross_scope_forbidden")
         return record
 
-    def versions(
+    def _versions_for_contract_probe(
         self,
         scope: ScopeRef,
         entity_kind: TruthEntityKind,
@@ -95,7 +116,7 @@ class InMemoryTruthRepository:
         )
         return tuple(sorted(records, key=lambda record: record.version.version_no))
 
-    def current(
+    def _current_for_contract_probe(
         self,
         scope: ScopeRef,
         entity_kind: TruthEntityKind,
@@ -105,7 +126,7 @@ class InMemoryTruthRepository:
     ) -> TruthVersion | None:
         if not isinstance(at, datetime) or at.tzinfo is None or at.utcoffset() is None:
             raise ContractValidationError("read_time_required")
-        records = self.versions(scope, entity_kind, subject_ref)
+        records = self._versions_for_contract_probe(scope, entity_kind, subject_ref)
         if not records:
             return None
         heads = [
@@ -123,3 +144,30 @@ class InMemoryTruthRepository:
         if not head.is_fresh_at(at):
             return None
         return head
+
+    def current(
+        self,
+        grant: RepositoryReadGrant,
+        entity_kind: TruthEntityKind,
+        subject_ref: str,
+    ) -> TruthVersion | None:
+        """Return current truth only through a policy-issued exact grant."""
+
+        if self.__grant_verifier is None:
+            raise ContractValidationError("repository_grant_verifier_required")
+        validated = self.__grant_verifier.assert_repository_grant(grant)
+        current = self._current_for_contract_probe(
+            validated.scope,
+            entity_kind,
+            subject_ref,
+            at=validated.read_at,
+        )
+        if current is not None and current.version.id != validated.data_version_id:
+            raise ContractValidationError("repository_grant_target_mismatch")
+        if current is not None and (
+            current.data_state is not validated.data_state
+            or current.metadata.sensitivity is not validated.sensitivity
+            or current.metadata.is_synthetic is not validated.is_synthetic
+        ):
+            raise ContractValidationError("repository_grant_target_metadata_mismatch")
+        return current

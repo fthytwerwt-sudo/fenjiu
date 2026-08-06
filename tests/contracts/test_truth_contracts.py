@@ -184,7 +184,7 @@ class TruthContractTests(unittest.TestCase):
         repository, candidate, approved = approved_chain()
 
         self.assertEqual(
-            repository.current(
+            repository._current_for_contract_probe(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -194,7 +194,7 @@ class TruthContractTests(unittest.TestCase):
         )
         self.assertEqual(
             len(
-                repository.versions(
+                repository._versions_for_contract_probe(
                     approved.scope,
                     approved.entity_kind,
                     approved.payload.subject_ref,
@@ -210,7 +210,7 @@ class TruthContractTests(unittest.TestCase):
             repository.append(record)
             with self.subTest(state=state):
                 self.assertIsNone(
-                    repository.current(
+                    repository._current_for_contract_probe(
                         record.scope,
                         record.entity_kind,
                         record.payload.subject_ref,
@@ -244,7 +244,7 @@ class TruthContractTests(unittest.TestCase):
         repository, _, approved = approved_chain()
 
         self.assertIsNone(
-            repository.current(
+            repository._current_for_contract_probe(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -252,7 +252,7 @@ class TruthContractTests(unittest.TestCase):
             )
         )
         self.assertIsNone(
-            repository.current(
+            repository._current_for_contract_probe(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -284,7 +284,7 @@ class TruthContractTests(unittest.TestCase):
             repository.append(terminal)
             with self.subTest(state=terminal_state):
                 self.assertIsNone(
-                    repository.current(
+                    repository._current_for_contract_probe(
                         terminal.scope,
                         terminal.entity_kind,
                         terminal.payload.subject_ref,
@@ -310,7 +310,7 @@ class TruthContractTests(unittest.TestCase):
         repository.append(candidate)
         repository.append(conflict)
         self.assertIsNone(
-            repository.current(
+            repository._current_for_contract_probe(
                 conflict.scope,
                 conflict.entity_kind,
                 conflict.payload.subject_ref,
@@ -319,7 +319,7 @@ class TruthContractTests(unittest.TestCase):
         )
         repository.append(resolved)
         self.assertEqual(
-            repository.current(
+            repository._current_for_contract_probe(
                 resolved.scope,
                 resolved.entity_kind,
                 resolved.payload.subject_ref,
@@ -405,7 +405,7 @@ class TruthContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractValidationError, "parent_version_not_found"):
             repository.append(approved_child)
         self.assertIsNone(
-            repository.current(
+            repository._current_for_contract_probe(
                 approved_child.scope,
                 approved_child.entity_kind,
                 approved_child.payload.subject_ref,
@@ -432,7 +432,7 @@ class TruthContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
             repository.append(cross_scope_approved)
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
-            repository.get_by_id(other_scope, candidate.version.id)
+            repository._get_by_id_for_policy(other_scope, candidate.version.id)
 
     def test_history_is_immutable_and_cannot_branch(self) -> None:
         repository, _, approved = approved_chain()
@@ -499,7 +499,7 @@ class TruthContractTests(unittest.TestCase):
     def test_invalid_read_inputs_fail_closed(self) -> None:
         repository = InMemoryTruthRepository()
         with self.assertRaisesRegex(ContractValidationError, "read_time_required"):
-            repository.current(
+            repository._current_for_contract_probe(
                 synthetic_scope(),
                 TruthEntityKind.PRICE,
                 "synthetic_subject",
@@ -509,7 +509,7 @@ class TruthContractTests(unittest.TestCase):
             ContractValidationError,
             "truth_subject_ref_required",
         ):
-            repository.versions(
+            repository._versions_for_contract_probe(
                 synthetic_scope(),
                 TruthEntityKind.PRICE,
                 "not a safe subject",
