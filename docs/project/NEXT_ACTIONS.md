@@ -11,9 +11,8 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **集成并回读 P02-03**：task branch 已完成 adversarial isolation/fixture/policy/audit contracts；须先由控制器审查并安全集成远端 `main`，回读 core files/tests/report 后才可把 Phase 2 写为 main 完成。
-2. **P03-01 仍待 Phase 2 main 完成**：只在新的干净 task worktree 单卡启动 synthetic source registration/extraction、quarantine、locator 与 staging contract；不得读取真实供应链包、连接生产服务或绕过 P02-03 current-truth consumer policy。
-3. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
+1. **P03-01（工程）**：Phase 2 已在 `main` 远端回读；只在新的干净 task worktree 单卡启动 synthetic source registration/extraction、quarantine、locator 与 staging contract。不得读取真实供应链包、连接生产服务或绕过 P02-03 current-truth consumer policy。
+2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据
 

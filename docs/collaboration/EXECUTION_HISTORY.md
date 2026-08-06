@@ -7,8 +7,8 @@
 - **目标**：只把 tenant/project/business-line、fixture production separation、sensitivity/flags、approved/fresh/no-conflict truth consumer 与 denial audit 锁进 local repository/command contracts；不实现真实资料、production connection 或外部 adapter。
 - **实际改动**：新增 sealed policy-issued repository grant、fixed local sensitivity、scoped `TruthConsumerCommand`、exact current read 与 payload-free immutable audit；runtime probes 已移至 tests-only harness，guarded current 在返回 truth 前强制 success audit。最新修复把 `actor_ref` 纳入 policy issuance、grant field/signature/validation；repository 删除独立 actor 参数且只记录 validated grant actor。adversarial tests 覆盖 scope/fixture/state/sensitivity/flags、grant tamper/reuse/forgery、fake verifier/audit recorder、direct read/audit enforcement 与 actor attribution replacement。
 - **审查与验证**：控制器和独立 reviewer 先后复现 runtime helper direct truth read、real-policy direct current audit bypass 与合法 grant 的 actor attribution replacement（均为 HIGH）。依次移除 helper、下沉 mandatory audit、绑定 actor 到 signed grant 后，最终 actor-binding 专项独立复审 0 findings / `APPROVE`。最终 `make regression` 通过 92 项 Python tests、两次 migration replay 和 16 类 SQL 负例；P00 default/all-files、mechanism validation、compile/shell/diff 与 Docker cleanup 通过。
-- **Git 证据**：从远端 main `6d247b0613b517ff4474095abece2f64331a40a8` 新建干净 worktree；最新修复代码提交 `3341042c51a83d0eeac9abd91b1b01a3e07e2551` 已 push，并从远端 task branch 回读五份受影响 core/test SHA。`main` 未修改，仍为上述基线；default branch 仍为旧协作分支，visibility 因 GitHub API 连接失败保持 `UNKNOWN/BLOCKED`。
-- **状态边界**：仅 task branch engineering evidence；尚未集成 main，Phase 2/main completion 与 P03-01 仍阻断。业务状态、业务闸门和所有 external flags 不变化。
+- **Git 证据**：从远端 main `6d247b0613b517ff4474095abece2f64331a40a8` 新建干净 worktree；任务分支代码提交 `3341042c51a83d0eeac9abd91b1b01a3e07e2551` 已 push 并回读。控制器在 review 通过后逐笔集成六笔任务提交，并将 `main` push/readback 至 `451843601a1a610e50bfbd9794f437b5781f1401`；四份核心代码/测试文件从远端读取 SHA-256 一致。default branch 仍为旧协作分支，visibility 因 GitHub API 连接失败保持 `UNKNOWN/BLOCKED`。
+- **状态边界**：Phase 2 engineering contracts 已在 `main`；P03-01 可在新干净 worktree 单卡开始。业务状态、业务闸门和所有 external flags 不变化；production auth/RBAC/RLS、真实资料与外部执行仍阻断。
 
 ## 2026-08-06｜P02-02 真值实体、版本与状态机
 

@@ -9,8 +9,8 @@
 | R-05 | **INFERRED** | 历史 B2B、多平台和 90 天研究可能被误用为当前指令 | 范围漂移或错误投入 | 以 BUSINESS_STATUS、DECISIONS 和 SOURCE_OF_TRUTH 为准；旧研究仅作历史背景 |
 | R-06 | **BLOCKED** | V2 的干净 main、远端默认分支、visibility 与同步包最终验证尚待最终远端回读 | 不能把仓库安全收口或远端状态写为已完成 | 以 COLLABORATION_STATUS 的最终远端回读更新为准 |
 | R-07 | **CONFIRMED** | 本地存在私有配置、联系资料和大体积派生产物 | 可能泄露秘密/隐私或污染 Git/同步包 | 保持忽略、allowlist、敏感扫描和最小披露；发现真实凭据须评估轮换 |
-| R-08 | **PARTIAL / local-workspace risk** | 外置盘根目录含既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项；干净 P00-03 task worktree 的 12 项测试和两种扫描均通过 | 禁止把外置盘根目录用作回归入口；不阻断在新建、干净 task worktree 中继续工程任务 | 不读取 `.env*` 内容、不删除 `._*`；后续一任务一 worktree，扫描失败立即停止该任务分支 |
+| R-08 | **PARTIAL / local-workspace risk** | 外置盘根目录含既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项；干净 P00-03 task worktree 的 12 项测试和两种扫描均通过 | 不得在外置盘根目录运行 P00 default/`--all-files` 扫描；不阻断已跳过 AppleDouble 编译元数据的本地 `make regression`，也不阻断在新建、干净 task worktree 中继续工程任务 | 不读取 `.env*` 内容、不删除 `._*`；后续一任务一 worktree，扫描失败立即停止该任务分支 |
 | R-09 | **PARTIAL / engineering governance** | 当前推送凭据缺少 GitHub `workflow` scope，P01-02 的静态 GitHub Actions workflow 被远端拒绝 | 远端 CI 尚未启用；本地 `make regression` 与 Compose render 不能写成远端 CI 通过 | 由具备 `workflow` scope 的授权凭据单独提交 workflow；提交后单独回读 workflow、Actions run 与分支保护状态 |
-| R-10 | **PARTIAL / engineering boundary** | P02-01/02 已在 main；P02-03 local isolation/fixture/policy/audit contracts 仅在远端 task branch 完成，尚未集成 main。RLS、加密、retention、法域、真实 scope、authenticated approval、database adapter/driver 与 production connection 仍为 `DEFER` | 不能把 task-branch contracts、local migration、trigger 或 in-memory read/audit model 写成 Phase 2 main completion、生产数据隔离、真实审批、数据合规或真实资料可导入 | 先审查并把 P02-03 安全集成/回读 main，才可单卡启动 P03-01；真实资料和生产路径仍须另行获得范围、合规、连接与用户授权 |
+| R-10 | **PARTIAL / production boundary** | P02-01 至 P02-03 已在 `main` 远端回读；仍缺 RLS、加密、retention、法域、真实 scope、authenticated approval/RBAC、database adapter/driver 与 production connection | 不得把 local migration、trigger、in-memory policy/read/audit contract 写成生产数据隔离、真实审批、数据合规或真实资料可导入 | P03-01 只能在干净 worktree 做 synthetic staging；真实资料和生产路径仍须另行获得范围、合规、连接与用户授权 |
 
 R-01 至 R-04 不阻断内部资料、清单、核验和草稿准备；它们阻断的是公开传播、广告、真实销售、收款和履约。机制完成不得被描述为业务上线。

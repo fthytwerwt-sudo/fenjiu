@@ -147,10 +147,10 @@
 ### ADR-0011：P02-03 以 sealed policy grant 和 append-only denial audit 锁定 consumer read
 
 - **日期**：2026-08-06
-- **状态**：Accepted / PARTIAL（task branch engineering；待 main integration）
+- **状态**：Accepted / CONFIRMED（工程机制；`main` 已远端回读至 `451843601a1a610e50bfbd9794f437b5781f1401`）
 - **来源**：P02-03 任务卡、adversarial regression、自审、控制器 REQUEST CHANGES 与最终独立 code review。
 - **背景**：仅靠 scope 参数和 UI/prompt filter 不能阻止 downstream 直接读 repository；caller-controlled sensitivity、可伪造 grant/verifier、runtime probe helper、未强制 audit 的 direct current、read-time actor replacement 或可清空 denial log 均会破坏隔离或审计归因。
 - **决定**：current truth consumer 必须走 command → fixed local policy → sealed nominal policy registry grant → exact repository current read → immutable audit result。external flags 必须完整且全 false；runtime repository 不暴露 history/by-id/current probe helpers；guarded current 在返回 truth 前必须通过 sealed audit recorder 强制写入 success audit；`actor_ref` 必须在 policy issuance 时进入 grant signature/validation，repository 不接受独立 actor 参数，只记录 validated grant actor。
 - **影响**：P03-01 及以后只能在完整 scope 与 approved/fresh/no-conflict truth 合同内工作；synthetic staging 可写入候选，但不能成为 current truth 或任何 external fallback。
 - **替代方案**：caller-supplied sensitivity allowlist；未采用，因为调用者可自我提权。自洽 dataclass grant 或 structural verifier protocol；未采用，因为 direct issuer/fake verifier 可绕过。用 Python underscore 隐藏 runtime probe；未采用，因为命名约定不是安全边界。只在 consumer 成功后写 audit；未采用，因为 direct grant read 可绕过。仅在 `current` 校验 actor 字符串；未采用，因为合法 grant holder 仍可替换归因。mutable list audit；未采用，因为 denial evidence 可被普通 clear。
-- **状态边界**：本决定当前只在远端 task branch 有代码证据，尚未集成 main；不表示 production auth/RBAC/RLS、真实 data classification、业务资料、合规或外部执行成立。
+- **状态边界**：本决定只证明 local in-process contract integrity；不表示 production auth/RBAC/RLS、真实 data classification、业务资料、合规或外部执行成立。

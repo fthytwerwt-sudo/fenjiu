@@ -1,14 +1,16 @@
 # P02-03｜业务线隔离、fixture 防护与合同测试报告
 
-> **状态：remote_task_branch_code_readback_verified_pending_main_integration**
+> **状态：remote_main_code_readback_verified**
 >
 > **执行日期：** 2026-08-06
 >
 > **精确基线：** 远端 `main` `6d247b0613b517ff4474095abece2f64331a40a8`
 >
-> **远端任务分支代码提交：** `3341042c51a83d0eeac9abd91b1b01a3e07e2551`
+> **远端任务分支最终代码提交：** `3341042c51a83d0eeac9abd91b1b01a3e07e2551`
 >
-> **范围边界：** 只完成 stdlib/local-only 的 isolation policy、repository grant、command 与 audit contract probes；没有 merge/push `main`，没有真实资料、production connection、外部 adapter、ORM/driver 或新依赖。
+> **控制器集成远端 main：** `451843601a1a610e50bfbd9794f437b5781f1401`
+>
+> **范围边界：** 只完成 stdlib/local-only 的 isolation policy、repository grant、command 与 audit contract probes；控制器已审查、集成并回读 `main`，但没有真实资料、production connection、外部 adapter、ORM/driver 或新依赖。
 
 ## 1. 实现结论
 
@@ -66,14 +68,14 @@
 - `modules/truth_center/repository.py` remote SHA-256：`83a62543fb913fc25c0e9b8ff8adde8ee233a44c76016d91e65f300dcb8f225e`。
 - `tests/contracts/test_isolation_policy.py` remote SHA-256：`ebf464f705233a50dfab329011fcce2c3eeeba5d9fa82c17e1bb2ad98c91b148`。
 - `tests/contracts/truth_repository_harness.py` remote SHA-256：`336ad8bff88dc516e23d61a835d2f01babd1fafcb645ef8f1cb5a4000c9354dd`。
-- remote `main` 仍为精确基线 `6d247b0613b517ff4474095abece2f64331a40a8`；本任务没有 merge/push `main`。
+- 任务精确基线是远端 `main` `6d247b0613b517ff4474095abece2f64331a40a8`；控制器随后将审查后提交集成并从远端 `main` 回读为 `451843601a1a610e50bfbd9794f437b5781f1401`。
 - remote default branch 仍为 `chore/project-collaboration-system`；visibility 因 GitHub API 连接失败保持 `UNKNOWN/BLOCKED`。
 
 ## 5. 边界、回退与 Phase 3 依赖
 
-- **CONFIRMED（task branch engineering）**：P02-03 local isolation/fixture/policy/audit contracts、adversarial tests、代码 commit/push/core-file readback 已完成。
-- **PARTIAL（Phase 2 integration）**：代码尚未集成并从远端 `main` 回读，因此不能写 Phase 2 已在 main 完成，也不能启动依赖 `Phase 02` 的 P03-01。
+- **CONFIRMED（Phase 2 engineering）**：P02-03 local isolation/fixture/policy/audit contracts、adversarial tests、代码 commit、控制器集成与远端 `main` core-file readback 已完成。
+- **P03-01 入口**：可在新的干净 worktree 单卡开始，只能 synthetic source registration/extraction、quarantine、relative/reference locator 和 staging output，不能读取真实供应链包或绕过 current-truth consumer policy。
 - **DEFER / 未实现**：authenticated actor/RBAC、RLS、encryption、retention/legal region、production repository/driver/connection、真实 tenant/scope、真实 data classification、真实资料和外部执行。
-- **Phase 3 进入条件**：先由控制器审查并将本任务安全集成到 `main`，从新的远端 main 回读本报告列出的 core contracts/tests，再在新建干净 worktree 单独执行 P03-01；P03-01 仍只能 synthetic source registration/extraction、quarantine、relative/reference locator 和 staging output，不能读取真实供应链包或绕过 current-truth consumer policy。
+- **Phase 3 进入条件**：已满足工程集成与远端 readback 条件；P03-01 仍必须在新建干净 worktree 单独执行，且只能 synthetic source registration/extraction、quarantine、relative/reference locator 和 staging output，不能读取真实供应链包或绕过 current-truth consumer policy。
 - 回退采用单独 revert/forward fix 本任务提交；不删除 audit/history，不使用 destructive reset，不提供 production down migration。
 - 所有业务 external flags 与 `business_external_ready` 保持 false；业务状态和 `business_gates` 没有变化。
