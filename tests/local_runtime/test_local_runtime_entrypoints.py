@@ -17,20 +17,15 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class LocalRuntimeEntrypointTests(unittest.TestCase):
-    def test_health_payload_is_fail_closed_and_synthetic(self) -> None:
+    def test_health_payload_is_live_without_configuration_details(self) -> None:
         payload = health_payload("api")
 
         self.assertEqual(payload["status"], "ok")
-        self.assertEqual(payload["capability_status"], "local_only")
-        self.assertFalse(payload["external_send"])
-        self.assertFalse(payload["public_publish"])
-        self.assertFalse(payload["real_quote"])
-        self.assertFalse(payload["payment"])
-        self.assertFalse(payload["order_create"])
-        self.assertFalse(payload["refund"])
-        self.assertFalse(payload["external_execution_allowed"])
-        self.assertFalse(payload["business_external_ready"])
-        self.assertEqual(payload["scope"]["business_line_id"], "synthetic_business_line")
+        self.assertEqual(payload["check"], "liveness")
+        self.assertTrue(payload["live"])
+        self.assertEqual(payload["capability_status"], "local_control_plane")
+        self.assertNotIn("scope", payload)
+        self.assertNotIn("config", payload)
 
     def test_worker_noop_commands_do_not_write_or_load(self) -> None:
         for flag in ("--migrate-noop", "--load-fixtures-noop", "--healthcheck"):
@@ -45,7 +40,7 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
                 payload = json.loads(result.stdout)
                 self.assertFalse(payload["writes_data"])
                 self.assertFalse(payload["loads_fixtures"])
-                self.assertFalse(payload["external_execution_allowed"])
+                self.assertEqual(payload["capability_status"], "local_control_plane")
 
     def test_env_example_contains_only_local_placeholders(self) -> None:
         text = (ROOT / ".env.example").read_text(encoding="utf-8")
@@ -116,6 +111,8 @@ class LocalRuntimeEntrypointTests(unittest.TestCase):
     def test_healthcheck_urls_are_fixed_loopback_constants(self) -> None:
         self.assertEqual(api_runtime.API_HEALTH_URL, "http://127.0.0.1:8000/health")
         self.assertEqual(admin_runtime.ADMIN_HEALTH_URL, "http://127.0.0.1:8001/health")
+        self.assertEqual(api_runtime.API_READINESS_URL, "http://127.0.0.1:8000/ready")
+        self.assertEqual(admin_runtime.ADMIN_READINESS_URL, "http://127.0.0.1:8001/ready")
 
 
 if __name__ == "__main__":

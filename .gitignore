@@ -18,6 +18,8 @@
 !/apps/**
 !/core/
 !/core/**
+!/observability/
+!/observability/**
 !/modules/
 !/modules/**
 !/adapters/

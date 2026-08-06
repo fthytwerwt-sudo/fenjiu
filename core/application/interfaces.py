@@ -31,16 +31,5 @@ class ExternalActionGuard:
         self._policy = policy
 
     def assert_no_external_action(self) -> None:
-        if any(
-            (
-                self._policy.external_send,
-                self._policy.public_publish,
-                self._policy.real_quote,
-                self._policy.payment,
-                self._policy.order_create,
-                self._policy.refund,
-                self._policy.external_execution_allowed,
-                self._policy.business_external_ready,
-            )
-        ):
-            raise BoundaryViolationError("external actions are disabled in P01-01")
+        if self._policy.any_sensitive_action_enabled():
+            raise BoundaryViolationError("sensitive actions are disabled by the local control plane")

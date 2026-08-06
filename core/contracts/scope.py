@@ -27,8 +27,34 @@ class ExecutionPolicy:
     payment: bool = False
     order_create: bool = False
     refund: bool = False
+    inventory_writeback: bool = False
+    real_crawl: bool = False
+    real_video: bool = False
     external_execution_allowed: bool = False
     business_external_ready: bool = False
+
+    def __post_init__(self) -> None:
+        if self.any_sensitive_action_enabled():
+            raise ValueError("sensitive action flags must remain disabled")
+
+    def any_sensitive_action_enabled(self) -> bool:
+        """Return true if any action that can cross the local boundary is on."""
+
+        return any(
+            (
+                self.external_send,
+                self.public_publish,
+                self.real_quote,
+                self.payment,
+                self.order_create,
+                self.refund,
+                self.inventory_writeback,
+                self.real_crawl,
+                self.real_video,
+                self.external_execution_allowed,
+                self.business_external_ready,
+            )
+        )
 
 
 def synthetic_scope() -> ScopeRef:

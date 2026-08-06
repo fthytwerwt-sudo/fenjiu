@@ -6,11 +6,11 @@ import argparse
 import json
 import time
 
-from apps.api.local_runtime import health_payload
+from apps.api.local_runtime import health_payload, readiness_payload
 
 
-def print_payload(component: str, action: str) -> None:
-    payload = health_payload(component)
+def print_payload(component: str, action: str, *, readiness: bool = False) -> None:
+    payload = readiness_payload(component) if readiness else health_payload(component)
     payload["action"] = action
     payload["writes_data"] = False
     payload["loads_fixtures"] = False
@@ -27,6 +27,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="P01-02 local-only worker probe.")
     parser.add_argument("--idle", action="store_true")
     parser.add_argument("--healthcheck", action="store_true")
+    parser.add_argument("--readinesscheck", action="store_true")
     parser.add_argument("--migrate-noop", action="store_true")
     parser.add_argument("--load-fixtures-noop", action="store_true")
     args = parser.parse_args()
@@ -34,6 +35,9 @@ def main() -> int:
     if args.healthcheck:
         print_payload("worker", "healthcheck")
         return 0
+    if args.readinesscheck:
+        print_payload("worker", "readinesscheck", readiness=True)
+        return 1
     if args.migrate_noop:
         print_payload("worker", "migrate_noop")
         return 0
