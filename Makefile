@@ -23,7 +23,7 @@ help:
 	@printf '%s\n' '  make regression     Require Docker/Compose; run migration replay/negative constraints and all local test suites.'
 
 bootstrap:
-	$(PYTHON) -m compileall -q apps core observability modules adapters workflows tests
+	$(PYTHON) -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests
 
 compose-config:
 	$(COMPOSE_CMD) config --quiet
@@ -58,7 +58,7 @@ dev-down:
 regression:
 	$(MAKE) compose-config
 	$(MAKE) migration-test
-	$(PYTHON) -m compileall -q apps core observability modules adapters workflows tests
+	$(PYTHON) -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests
 	$(PYTHON) -m unittest discover -s tests/architecture
 	$(PYTHON) -m unittest discover -s tests/regression
 	$(PYTHON) -m unittest discover -s tests/local_runtime
