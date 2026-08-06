@@ -50,6 +50,12 @@
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
+## AI Native Sales OS 执行状态
+
+- **部分成立**：P00-01 工程资产审计与 P00-02 架构冻结已在 `main` 远端回读。
+- **BLOCKED**：P00-03 dry-safe 扫描器与 12 项回归测试已在控制器审查后集成候选 main；授权主工作区仍发现既有 ignored 禁入路径（AppleDouble、`.env*` 等），所以 Phase 0 不得写为完成、Phase 1 不得启动。
+- **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
+
 ## 剩余机制收口
 
 1. **高优先待办**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
