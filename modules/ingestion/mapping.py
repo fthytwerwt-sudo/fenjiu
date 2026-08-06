@@ -22,6 +22,7 @@ from modules.ingestion.contracts import (
     FieldLocator,
     IngestionBoundaryError,
     IngestionJobRecord,
+    IngestionWorkflowState,
     PrivateStorageLocator,
     SourceDisposition,
     SourceFileRecord,
@@ -427,6 +428,12 @@ class MappingEvidence:
             _require_aware_time(self.observed_at, "lineage_invalid")
         except IngestionBoundaryError as exc:
             raise MappingBoundaryError("lineage_invalid") from exc
+        if (
+            self.source_file.disposition is not SourceDisposition.REGISTERED
+            or self.ingestion_job.workflow_state is not IngestionWorkflowState.STAGED
+            or self.staging_candidate.workflow_state is not IngestionWorkflowState.STAGED
+        ):
+            raise MappingBoundaryError("lineage_invalid")
         records = (
             self.source_file,
             self.ingestion_job,
@@ -661,6 +668,7 @@ class MappingReport:
     scope: ScopeRef
     profile_id: Optional[str]
     profile_version: Optional[str]
+    profile_fingerprint: Optional[str]
     input_fingerprint: str
     input_evidence_ids: Tuple[MappingEvidenceLineage, ...]
     candidates: Tuple[MappedCandidate, ...]
@@ -671,9 +679,20 @@ class MappingReport:
         if not isinstance(self.state, MappingRunState):
             raise MappingBoundaryError("mapping_report_invalid")
         _require_scope_mapping(self.scope, "mapping_report_invalid")
+        profile_identity = (
+            self.profile_id,
+            self.profile_version,
+            self.profile_fingerprint,
+        )
+        if any(value is None for value in profile_identity) and any(
+            value is not None for value in profile_identity
+        ):
+            raise MappingBoundaryError("mapping_report_invalid")
         for value in (self.profile_id, self.profile_version):
             if value is not None:
                 _require_mapping_identifier(value, "mapping_report_invalid")
+        if self.profile_fingerprint is not None:
+            _require_mapping_hash(self.profile_fingerprint, "mapping_report_invalid")
         _require_mapping_hash(self.input_fingerprint, "mapping_report_invalid")
         _require_mapping_hash(self.run_fingerprint, "mapping_report_invalid")
         if any(not isinstance(item, MappingEvidenceLineage) for item in self.input_evidence_ids):
@@ -1026,6 +1045,7 @@ class SyntheticMappingEngine:
             scope=batch.scope,
             profile_id=profile.profile_id if profile else None,
             profile_version=profile.version if profile else None,
+            profile_fingerprint=profile.fingerprint if profile else None,
             input_fingerprint=batch.fingerprint,
             input_evidence_ids=lineages,
             candidates=candidates,
@@ -1117,7 +1137,7 @@ class MappingProfileRegistry:
     ) -> MappingProfile:
         if not isinstance(profile, MappingProfile) or not isinstance(proof, ProfileReplayDiff):
             raise MappingBoundaryError("profile_replay_diff_invalid")
-        prior_key = (profile.scope, profile.profile_id, proof.previous_version)
+        prior_key = (previous.scope, profile.profile_id, proof.previous_version)
         current_key = (profile.scope, profile.profile_id, profile.version)
         prior_profile = self._profiles.get(prior_key)
         if (
@@ -1132,6 +1152,13 @@ class MappingProfileRegistry:
             or proof.current_run_fingerprint != current.run_fingerprint
         ):
             raise MappingBoundaryError("profile_replay_diff_invalid")
+        if (
+            previous.scope != prior_profile.scope
+            or current.scope != profile.scope
+            or previous.profile_fingerprint != prior_profile.fingerprint
+            or current.profile_fingerprint != profile.fingerprint
+        ):
+            raise MappingBoundaryError("profile_report_provenance_mismatch")
         expected = diff_replays(previous, current)
         if expected != proof:
             raise MappingBoundaryError("profile_replay_diff_invalid")

@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P03-02 profile replay provenance HIGH 与 lifecycle MEDIUM repair（task branch）
+
+- **控制器发现**：初始 P03-02 `MappingProfileRegistry.register_profile_change` 只检查 profile ID/version、run fingerprints 与 diff，未证明 current report 由传入完整 profile 生成；合法 forged v2 可改变 transforms 且仍借用 canonical report/proof 被接受，故 task branch 暂不接受或集成。
+- **独立 reviewer 发现**：`MappingEvidence.validate()` 仅校验 scope/IDs/locator；调用方以公开 P03-01 runtime API 组装 lineage 一致、但 `source_file.disposition=QUARANTINED` 或 job/candidate 非 `STAGED` 的对象时，engine 仍返回 mapped candidate，故同一 task branch 继续不接受或集成。
+- **实际修复**：`MappingReport` 新增 engine-constructed `profile_fingerprint`；registry 写入前验证 registered prior profile/previous report 与传入 current profile/current report 各自的完整 fingerprint 和 scope，再验证 replay diff。差异 profile 的 transforms、target contract、rules、source signature 或 scope 均返回 `profile_report_provenance_mismatch`，写入前停止；canonical replay/diff 仍可登记。
+- **实际修复**：`MappingEvidence.validate()` 在 mapping 前使用实际 `SourceDisposition.REGISTERED` 与 `IngestionWorkflowState.STAGED` enum；source quarantine、non-staged job 或 adversarial non-staged candidate 都统一抛出 `lineage_invalid`，engine 因而只返回 `blocked_manual` / 零 candidate。
+- **验证**：先新增 forged-profile 与三条 lifecycle regression，修复前均复现失败；修复后 focused mapping 12 项、ingestion 26 项、`make regression`（两次 migration replay、16 类 SQL negative、118 项 Python suites）、P00 default/all-files、mechanism validation、compile/shell/diff 均通过，isolated Docker resources 无残留。
+- **状态边界**：repair 仍仅在 `codex/p03-02-mapping-quality` 本地，待 commit/push/remote readback 与控制器复核；未改变 `main`、业务状态、approved truth、真实资料或任何 external flag。
+
 ## 2026-08-06｜P03-02 字段 mapping、清洗与数据质量（task branch）
 
 - **目标**：只建立 stdlib/local-only/synthetic/value-free 的 versioned mapping profile、deterministic normalization fingerprint、missing/conflict/expiry/duplicate quality report 和 profile change replay/diff proof；不读取真实文件、不写 approved truth 或外部动作。

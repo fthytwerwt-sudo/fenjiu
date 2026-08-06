@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import fields as dataclass_fields, replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json
@@ -15,6 +15,7 @@ from modules.ingestion.contracts import (
     FieldLocator,
     IngestionJobRecord,
     IngestionWorkflowState,
+    SourceDisposition,
     SourceFileRecord,
     StagingCandidateRecord,
 )
@@ -126,6 +127,15 @@ def batch_for(profile: MappingProfile, *evidence: MappingEvidence) -> MappingBat
         source_signature=profile.source_signature,
         evidence=tuple(evidence),
     )
+
+
+def unsafe_replace_frozen(instance: object, **changes: object) -> object:
+    """Construct an adversarial lifecycle object without invoking its guard."""
+
+    forged = object.__new__(type(instance))
+    for field in dataclass_fields(instance):
+        object.__setattr__(forged, field.name, changes.get(field.name, getattr(instance, field.name)))
+    return forged
 
 
 class MappingNormalizationAndQualityTests(unittest.TestCase):
@@ -283,6 +293,37 @@ class MappingNormalizationAndQualityTests(unittest.TestCase):
         self.assertFalse(mismatched.candidates)
         self.assertFalse(invalid.candidates)
 
+    def test_non_staged_source_job_or_candidate_lifecycle_never_maps(self) -> None:
+        evidence = evidence_for(profile=self.profile, sequence=12)
+        quarantined_source = replace(
+            evidence.source_file,
+            disposition=SourceDisposition.QUARANTINED,
+            quarantine_code="source_oversize",
+        )
+        unstarted_job = replace(
+            evidence.ingestion_job,
+            workflow_state=IngestionWorkflowState.REGISTERED,
+        )
+        unstarted_candidate = unsafe_replace_frozen(
+            evidence.staging_candidate,
+            workflow_state=IngestionWorkflowState.REGISTERED,
+        )
+        cases = (
+            replace(evidence, source_file=quarantined_source),
+            replace(evidence, ingestion_job=unstarted_job),
+            replace(evidence, staging_candidate=unstarted_candidate),
+        )
+
+        for lifecycle_evidence in cases:
+            with self.subTest(lifecycle_evidence=lifecycle_evidence):
+                report = self.engine.map(
+                    self.profile,
+                    batch_for(self.profile, lifecycle_evidence),
+                )
+                self.assertEqual(report.state, MappingRunState.BLOCKED_MANUAL)
+                self.assertEqual({item.code for item in report.findings}, {QualityCode.LINEAGE_INVALID})
+                self.assertFalse(report.candidates)
+
     def test_deterministic_replay_and_profile_change_require_append_only_diff_proof(self) -> None:
         evidence = evidence_for(profile=self.profile, sequence=9)
         first = self.engine.map(self.profile, batch_for(self.profile, evidence))
@@ -301,6 +342,46 @@ class MappingNormalizationAndQualityTests(unittest.TestCase):
         self.assertEqual(proof.previous_run_fingerprint, first.run_fingerprint)
         self.assertEqual(proof.current_run_fingerprint, changed.run_fingerprint)
         self.assertTrue(proof.changed_or_added_or_removed)
+
+    def test_profile_change_rejects_forged_profile_that_does_not_match_current_replay(self) -> None:
+        evidence = evidence_for(profile=self.profile, sequence=11)
+        canonical = self.profiles["profile_alpha_v2"]
+        previous = self.engine.map(self.profile, batch_for(self.profile, evidence))
+        current = self.engine.map(canonical, batch_for(canonical, evidence))
+        proof = diff_replays(previous, current)
+        forged_profiles = (
+            replace(
+                canonical,
+                rules=(
+                    replace(
+                        canonical.rules[0],
+                        transforms=("unicode_nfkc", "trim", "casefold"),
+                    ),
+                ),
+            ),
+            replace(
+                canonical,
+                target_contract=replace(canonical.target_contract, fields=("target_beta",)),
+                rules=(replace(canonical.rules[0], target_field="target_beta"),),
+            ),
+            replace(canonical, rules=(replace(canonical.rules[0], rule_id="rule_forged"),)),
+            replace(canonical, source_signature=f"{1011:064x}"),
+            replace(canonical, scope=replace(SCOPE, correlation_id="forged_scope")),
+        )
+
+        self.assertEqual(current.profile_fingerprint, canonical.fingerprint)
+        for forged in forged_profiles:
+            with self.subTest(fingerprint=forged.fingerprint):
+                registry = MappingProfileRegistry()
+                self.assertEqual(forged.profile_id, canonical.profile_id)
+                self.assertEqual(forged.version, canonical.version)
+                self.assertNotEqual(forged.fingerprint, canonical.fingerprint)
+                registry.register(self.profile)
+                with self.assertRaisesRegex(ValueError, "profile_report_provenance_mismatch"):
+                    registry.register_profile_change(forged, previous, current, proof)
+        registry = MappingProfileRegistry()
+        registry.register(self.profile)
+        registry.register_profile_change(canonical, previous, current, proof)
 
     def test_safe_reports_never_expose_values_bodies_paths_or_secrets(self) -> None:
         marker = "runtime-private-marker"
