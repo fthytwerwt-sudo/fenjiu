@@ -391,6 +391,49 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
                 quality_checked_at=NOW,
             )
 
+    def test_defensive_snapshots_reject_candidate_report_and_lineage_mutation(self) -> None:
+        report = self._report_for(44)
+        canonical = self.candidate_gate.register_report(
+            self.profile,
+            report,
+            quality_checked_at=NOW,
+        )[0]
+        object.__setattr__(
+            canonical.candidate,
+            "source_file_id",
+            UUID("00000000-0000-4000-8000-00000000f001"),
+        )
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "canonical_candidate_required"):
+            self._request(candidate=canonical, subject_ref="subject_mutated_candidate")
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+        locator_report = self._report_for(45)
+        locator_canonical = self.candidate_gate.register_report(
+            self.profile,
+            locator_report,
+            quality_checked_at=NOW,
+        )[0]
+        object.__setattr__(locator_canonical.candidate.locator, "cell", "ZZ999")
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "canonical_candidate_required"):
+            self._request(candidate=locator_canonical, subject_ref="subject_mutated_locator")
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+    def test_profile_registration_return_is_a_defensive_snapshot(self) -> None:
+        returned_profile = self.candidate_gate.register_profile(self.profile)
+        object.__setattr__(returned_profile, "source_signature", f"{8181:064x}")
+        report = self._report_for(46)
+        canonical = self.candidate_gate.register_report(
+            self.profile,
+            report,
+            quality_checked_at=NOW,
+        )[0]
+
+        self.assertEqual(canonical.profile_fingerprint, self.profile.fingerprint)
+
     def test_publish_rejects_replaced_or_noncanonical_approved_request(self) -> None:
         pending = self._request()
         fake = replace(
@@ -407,6 +450,33 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ApprovalBoundaryError, "approval_request_not_canonical"):
             self.publisher.publish(fake)
+
+    def test_grant_request_and_publication_returns_are_defensive_snapshots(self) -> None:
+        request = self._request(subject_ref="subject_grant_drift")
+        object.__setattr__(self.reviewer_grant, "actor_ref", "system_worker_alias")
+        approved = self._approve(request)
+
+        self.assertEqual(approved.decision_actor_ref, "human_reviewer")
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+        object.__setattr__(approved, "subject_ref", "subject_poisoned_request")
+        with self.assertRaisesRegex(ApprovalBoundaryError, "approval_request_not_canonical"):
+            self.publisher.publish(approved)
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+        canonical_approved = self._approve(request)
+        publication = self.publisher.publish(canonical_approved)
+        object.__setattr__(publication.approved_record, "subject_ref", "subject_poisoned_record")
+        with self.assertRaisesRegex(ApprovalBoundaryError, "internal_publication_not_found"):
+            self.publisher.revoke(
+                publication,
+                reviewer_grant_id=self.reviewer_grant.id,
+                evidence_ref="revoke_mutated_publication",
+                policy_version="approval_policy_v1",
+                idempotency_key="revoke_mutated_publication",
+            )
 
     def test_publish_rechecks_expiry_after_decision(self) -> None:
         request = self._request()
@@ -447,6 +517,100 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
         retry = self.publisher.publish(approved)
         self.assertEqual(retry.approved_record.state, InternalPublicationState.APPROVED_INTERNAL)
         self.assertEqual(self.ledger.appended_record_count, 1)
+        self.assertEqual(self.outbox.event_count, 1)
+
+    def test_publish_transaction_rolls_back_transaction_log_when_log_commit_fails(self) -> None:
+        class FailingTransactionLog(SyntheticPublicationTransactionLog):
+            def commit(self, key, result, fingerprint):  # type: ignore[override]
+                committed = super().commit(key, result, fingerprint)
+                if not getattr(self, "_failed_once", False):
+                    self._failed_once = True
+                    raise ApprovalBoundaryError("forced_log_post_write_failure")
+                return committed
+
+        request = self._request(subject_ref="subject_log_atomic")
+        approved = self._approve(request)
+        failing_log = FailingTransactionLog()
+        failing_publisher = SyntheticApprovalPublisher(
+            request_store=self.store,
+            reviewer_registry=self.reviewer_registry,
+            ledger=self.ledger,
+            outbox=self.outbox,
+            transaction_log=failing_log,
+            now=lambda: NOW,
+        )
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "forced_log_post_write_failure"):
+            failing_publisher.publish(approved)
+        self.assertEqual(self.ledger.appended_record_count, 0)
+        self.assertEqual(self.outbox.event_count, 0)
+
+        retry_publisher = SyntheticApprovalPublisher(
+            request_store=self.store,
+            reviewer_registry=self.reviewer_registry,
+            ledger=self.ledger,
+            outbox=self.outbox,
+            transaction_log=failing_log,
+            now=lambda: NOW,
+        )
+        retry = retry_publisher.publish(approved)
+        self.assertEqual(retry.approved_record.state, InternalPublicationState.APPROVED_INTERNAL)
+        self.assertEqual(self.ledger.appended_record_count, 1)
+        self.assertEqual(self.outbox.event_count, 1)
+
+    def test_append_only_surfaces_do_not_expose_public_restore_or_snapshot(self) -> None:
+        publication = self.publisher.publish(
+            self._approve(self._request(subject_ref="subject_no_restore"))
+        )
+        self.publisher.revoke(
+            publication,
+            reviewer_grant_id=self.reviewer_grant.id,
+            evidence_ref="revoke_no_restore",
+            policy_version="approval_policy_v1",
+            idempotency_key="revoke_no_restore",
+        )
+
+        forbidden_public_mutators = {"snapshot", "restore", "recover", "clear", "replace"}
+        for surface in (self.store, self.ledger, self.outbox, self.transaction_log):
+            public_methods = {
+                name
+                for name in dir(surface)
+                if not name.startswith("_") and callable(getattr(surface, name))
+            }
+            self.assertFalse(forbidden_public_mutators & public_methods)
+        self.assertEqual(self.ledger.appended_record_count, 2)
+        self.assertEqual(self.outbox.event_count, 2)
+
+    def test_poisoned_same_id_outbox_event_fails_atomically(self) -> None:
+        request = self._request(subject_ref="subject_poison_event")
+        approved = self._approve(request)
+        expected_record = self.publisher._record_for(
+            request=approved,
+            state=InternalPublicationState.APPROVED_INTERNAL,
+            version_no=1,
+            parent_record_id=None,
+            superseded_record_id=None,
+            revoked_record_id=None,
+            published_at=NOW,
+        )
+        expected_event = self.publisher._event_for(
+            record=expected_record,
+            occurred_at=NOW,
+            superseded_publication_id=None,
+            revoked_publication_id=None,
+        )
+        poison_scope = replace(SCOPE, correlation_id="poisoned_correlation")
+        poison = replace(
+            expected_event,
+            scope=poison_scope,
+            correlation_id=poison_scope.correlation_id,
+            occurred_at=NOW + timedelta(minutes=1),
+        )
+        self.outbox.append(poison)
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "invalidation_event_idempotency_conflict"):
+            self.publisher.publish(approved)
+        self.assertEqual(self.ledger.appended_record_count, 0)
         self.assertEqual(self.outbox.event_count, 1)
 
     def test_restart_idempotency_uses_shared_transaction_state(self) -> None:
@@ -529,6 +693,34 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
         self.assertFalse(revoke.revoked_record.external_execution_allowed)
         self.assertEqual(self.ledger.appended_record_count, 2)
         self.assertEqual(self.outbox.event_count, 2)
+
+    def test_revoked_publication_can_be_superseded_by_independent_approval(self) -> None:
+        first = self.publisher.publish(
+            self._approve(self._request(subject_ref="subject_revoke_successor"))
+        )
+        revoke = self.publisher.revoke(
+            first,
+            reviewer_grant_id=self.reviewer_grant.id,
+            evidence_ref="revoke_successor_evidence",
+            policy_version="approval_policy_v1",
+            idempotency_key="revoke_successor",
+        )
+        successor_request = self._request(
+            candidate=self._canonical_candidate(47),
+            subject_ref="subject_revoke_successor",
+            idempotency_key="request_revoked_successor",
+        )
+        successor_approved = self._approve(successor_request)
+
+        with self.assertRaisesRegex(ApprovalBoundaryError, "superseded_publication_not_current"):
+            self.publisher.publish(successor_approved, supersedes=first)
+        successor = self.publisher.publish(successor_approved, supersedes=revoke)
+
+        self.assertEqual(successor.approved_record.state, InternalPublicationState.APPROVED_INTERNAL)
+        self.assertEqual(successor.approved_record.parent_record_id, revoke.revoked_record.id)
+        self.assertEqual(successor.event.superseded_publication_id, revoke.revoked_record.id)
+        self.assertEqual(self.ledger.appended_record_count, 3)
+        self.assertEqual(self.outbox.event_count, 3)
 
     def test_safe_summaries_do_not_expose_values_paths_or_external_actions(self) -> None:
         publication = self.publisher.publish(self._approve(self._request()))

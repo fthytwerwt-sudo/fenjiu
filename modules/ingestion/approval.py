@@ -8,6 +8,7 @@ write the P02 truth center, and these records are not P02 current truth.
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
@@ -90,7 +91,9 @@ _PUBLICATION_TRANSITIONS = {
     InternalPublicationState.SUPERSEDED_INTERNAL: frozenset(
         {InternalPublicationState.APPROVED_INTERNAL}
     ),
-    InternalPublicationState.REVOKED_INTERNAL: frozenset(),
+    InternalPublicationState.REVOKED_INTERNAL: frozenset(
+        {InternalPublicationState.APPROVED_INTERNAL}
+    ),
 }
 
 
@@ -101,6 +104,20 @@ def _digest(*parts: object) -> str:
 
 def _uuid_for(*parts: object) -> UUID:
     return uuid5(NAMESPACE_URL, _digest(*parts))
+
+
+def _snapshot(value):
+    return deepcopy(value)
+
+
+def _scope_fingerprint_parts(scope: ScopeRef) -> tuple[object, ...]:
+    _require_scope(scope, "scope_required")
+    return (
+        scope.tenant_id,
+        scope.project_id,
+        scope.business_line_id,
+        scope.correlation_id,
+    )
 
 
 def _require_uuid(value: object, code: str) -> None:
@@ -165,6 +182,29 @@ def _locator_fingerprint(candidate: MappedCandidate) -> str:
         candidate.locator.bbox,
         candidate.locator.export_record,
         candidate.locator.member_relative_path,
+    )
+
+
+def _approval_request_fingerprint(
+    *,
+    scope: ScopeRef,
+    candidate_fingerprint: str,
+    subject_ref: str,
+    requested_by: str,
+    evidence_ref: str,
+    policy_version: str,
+    requested_at: datetime,
+    expires_at: datetime,
+) -> str:
+    return _digest(
+        *_scope_fingerprint_parts(scope),
+        candidate_fingerprint,
+        subject_ref,
+        requested_by,
+        evidence_ref,
+        policy_version,
+        requested_at.isoformat(),
+        expires_at.isoformat(),
     )
 
 
@@ -315,12 +355,14 @@ class CanonicalMappingCandidateGate:
     def register_profile(self, profile: MappingProfile) -> MappingProfile:
         if not isinstance(profile, MappingProfile):
             raise ApprovalBoundaryError("mapping_profile_required")
+        profile = _snapshot(profile)
+        profile.__post_init__()
         key = self._profile_key(profile)
         existing = self._profile_fingerprint_by_key.get(key)
         if existing is not None and existing != profile.fingerprint:
             raise ApprovalBoundaryError("mapping_profile_fingerprint_mismatch")
         self._profile_fingerprint_by_key[key] = profile.fingerprint
-        return profile
+        return _snapshot(profile)
 
     def register_report(
         self,
@@ -333,6 +375,10 @@ class CanonicalMappingCandidateGate:
             raise ApprovalBoundaryError("mapping_profile_required")
         if not isinstance(report, MappingReport):
             raise ApprovalBoundaryError("mapping_report_required")
+        profile = _snapshot(profile)
+        report = _snapshot(report)
+        profile.__post_init__()
+        report.__post_init__()
         self._assert_registered_profile(profile)
         checked_at = _require_safe_time(quality_checked_at, "quality_checked_at_required")
         if report.state is not MappingRunState.MAPPED or report.findings:
@@ -386,22 +432,36 @@ class CanonicalMappingCandidateGate:
             if existing_fingerprint is not None:
                 if existing_fingerprint != record.fingerprint:
                     raise ApprovalBoundaryError("canonical_candidate_conflict")
-                canonical.append(self._canonical_by_id[record.id])
+                canonical.append(_snapshot(self._canonical_by_id[record.id]))
                 continue
-            self._canonical_by_id[record.id] = record
+            stored = _snapshot(record)
+            stored.__post_init__()
+            self._canonical_by_id[record.id] = stored
             self._fingerprint_by_id[record.id] = record.fingerprint
-            canonical.append(record)
+            canonical.append(_snapshot(stored))
         return tuple(canonical)
 
     def assert_canonical(self, candidate: object) -> CanonicalMappedCandidate:
         if not isinstance(candidate, CanonicalMappedCandidate):
             raise ApprovalBoundaryError("canonical_candidate_required")
+        try:
+            candidate.__post_init__()
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("canonical_candidate_required") from exc
         stored = self._canonical_by_id.get(candidate.id)
+        if stored is None:
+            raise ApprovalBoundaryError("canonical_candidate_required")
+        try:
+            stored.__post_init__()
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("canonical_candidate_required") from exc
         if stored != candidate:
             raise ApprovalBoundaryError("canonical_candidate_required")
         if self._fingerprint_by_id.get(candidate.id) != candidate.fingerprint:
             raise ApprovalBoundaryError("canonical_candidate_required")
-        return stored
+        if self._fingerprint_by_id.get(stored.id) != stored.fingerprint:
+            raise ApprovalBoundaryError("canonical_candidate_required")
+        return _snapshot(stored)
 
     def _evidence_for(
         self,
@@ -431,10 +491,10 @@ class CanonicalMappingCandidateGate:
         ):
             raise ApprovalBoundaryError("mapping_report_lineage_mismatch")
         return MappingEvidence(
-            source_file=source,
-            ingestion_job=job,
-            extraction_result=result,
-            staging_candidate=staging,
+            source_file=_snapshot(source),
+            ingestion_job=_snapshot(job),
+            extraction_result=_snapshot(result),
+            staging_candidate=_snapshot(staging),
             descriptor=candidate.descriptor,
             observed_at=candidate.observed_at,
         )
@@ -525,6 +585,22 @@ class ReviewerCapabilityGrant:
             self.business_external_ready,
         )
 
+    @property
+    def fingerprint(self) -> str:
+        return _digest(
+            self.id,
+            *_scope_fingerprint_parts(self.scope),
+            self.actor_ref,
+            self.role.value,
+            self.policy_version,
+            self.evidence_ref,
+            self.issued_at.isoformat(),
+            self.expires_at.isoformat(),
+            self.is_synthetic,
+            self.external_execution_allowed,
+            self.business_external_ready,
+        )
+
 
 class SyntheticReviewerCapabilityRegistry:
     """Synthetic local capability registry; not production auth or RBAC."""
@@ -532,6 +608,7 @@ class SyntheticReviewerCapabilityRegistry:
     def __init__(self, now: Optional[Callable[[], datetime]] = None) -> None:
         self._now = now or (lambda: datetime.now(timezone.utc))
         self._grants_by_id: Dict[UUID, ReviewerCapabilityGrant] = {}
+        self._fingerprint_by_id: Dict[UUID, str] = {}
         self._fingerprint_by_key: Dict[str, str] = {}
         self._grant_by_key: Dict[str, ReviewerCapabilityGrant] = {}
 
@@ -557,9 +634,9 @@ class SyntheticReviewerCapabilityRegistry:
         issued_at = _require_safe_time(issued_at, "reviewer_capability_issued_at_required")
         expires_at = _require_safe_time(expires_at, "reviewer_capability_expires_at_required")
         fingerprint = _digest(
+            *_scope_fingerprint_parts(scope),
             actor_ref,
             role.value,
-            scope,
             policy_version,
             evidence_ref,
             issued_at.isoformat(),
@@ -569,7 +646,7 @@ class SyntheticReviewerCapabilityRegistry:
         if existing_fingerprint is not None:
             if existing_fingerprint != fingerprint:
                 raise ApprovalBoundaryError("reviewer_capability_idempotency_conflict")
-            return self._grant_by_key[idempotency_key]
+            return _snapshot(self._grant_by_key[idempotency_key])
         grant = ReviewerCapabilityGrant(
             id=_uuid_for("reviewer-capability", idempotency_key, fingerprint),
             scope=scope,
@@ -580,10 +657,13 @@ class SyntheticReviewerCapabilityRegistry:
             issued_at=issued_at,
             expires_at=expires_at,
         )
+        stored = _snapshot(grant)
+        stored.__post_init__()
         self._fingerprint_by_key[idempotency_key] = fingerprint
-        self._grant_by_key[idempotency_key] = grant
-        self._grants_by_id[grant.id] = grant
-        return grant
+        self._grant_by_key[idempotency_key] = stored
+        self._grants_by_id[grant.id] = stored
+        self._fingerprint_by_id[grant.id] = stored.fingerprint
+        return _snapshot(stored)
 
     def assert_grant(
         self,
@@ -599,6 +679,9 @@ class SyntheticReviewerCapabilityRegistry:
         grant = self._grants_by_id.get(grant_id)
         if grant is None:
             raise ApprovalBoundaryError("reviewer_capability_not_found")
+        grant.__post_init__()
+        if self._fingerprint_by_id.get(grant.id) != grant.fingerprint:
+            raise ApprovalBoundaryError("reviewer_capability_drift")
         if grant.scope != scope:
             raise ApprovalBoundaryError("cross_scope_forbidden")
         if grant.policy_version != policy_version:
@@ -607,7 +690,7 @@ class SyntheticReviewerCapabilityRegistry:
             raise ApprovalBoundaryError("reviewer_role_forbidden")
         if at < grant.issued_at or at > grant.expires_at:
             raise ApprovalBoundaryError("reviewer_capability_expired")
-        return grant
+        return _snapshot(grant)
 
 
 @dataclass(frozen=True)
@@ -665,6 +748,26 @@ class ApprovalAuditEvent:
             "business_external_ready": False,
         }
 
+    @property
+    def fingerprint(self) -> str:
+        return _digest(
+            self.id,
+            *_scope_fingerprint_parts(self.scope),
+            self.request_id,
+            self.sequence,
+            self.actor_ref,
+            self.action,
+            self.state.value,
+            self.policy_version,
+            self.evidence_ref,
+            self.recorded_at.isoformat(),
+            self.decision_id,
+            self.reviewer_grant_id,
+            self.is_synthetic,
+            self.external_execution_allowed,
+            self.business_external_ready,
+        )
+
 
 @dataclass(frozen=True)
 class ApprovalRequest:
@@ -697,6 +800,7 @@ class ApprovalRequest:
         _require_scope(self.scope, "scope_required")
         if not isinstance(self.candidate, CanonicalMappedCandidate):
             raise ApprovalBoundaryError("canonical_candidate_required")
+        self.candidate.__post_init__()
         if self.candidate.scope != self.scope:
             raise ApprovalBoundaryError("cross_scope_forbidden")
         for value, code in (
@@ -712,6 +816,18 @@ class ApprovalRequest:
         expires_at = _require_safe_time(self.expires_at, "approval_expires_at_required")
         if expires_at <= requested_at:
             raise ApprovalBoundaryError("approval_expiry_window_invalid")
+        expected_fingerprint = _approval_request_fingerprint(
+            scope=self.scope,
+            candidate_fingerprint=self.candidate.fingerprint,
+            subject_ref=self.subject_ref,
+            requested_by=self.requested_by,
+            evidence_ref=self.evidence_ref,
+            policy_version=self.policy_version,
+            requested_at=requested_at,
+            expires_at=expires_at,
+        )
+        if self.request_fingerprint != expected_fingerprint:
+            raise ApprovalBoundaryError("approval_request_fingerprint_mismatch")
         if not isinstance(self.state, ApprovalRequestState):
             raise ApprovalBoundaryError("approval_state_required")
         if not isinstance(self.version_no, int) or isinstance(self.version_no, bool) or self.version_no < 1:
@@ -771,6 +887,34 @@ class ApprovalRequest:
             "external_execution_allowed": False,
             "business_external_ready": False,
         }
+
+    @property
+    def fingerprint(self) -> str:
+        return _digest(
+            self.id,
+            *_scope_fingerprint_parts(self.scope),
+            self.candidate.fingerprint,
+            self.subject_ref,
+            self.requested_by,
+            self.evidence_ref,
+            self.policy_version,
+            self.requested_at.isoformat(),
+            self.expires_at.isoformat(),
+            self.idempotency_key,
+            self.request_fingerprint,
+            self.state.value,
+            self.version_no,
+            self.decision_id,
+            self.decision_kind.value if self.decision_kind is not None else None,
+            self.decision_actor_ref,
+            self.decision_evidence_ref,
+            self.reviewer_grant_id,
+            self.decided_at.isoformat() if self.decided_at is not None else None,
+            self.is_synthetic,
+            self.p02_current_truth_readable,
+            self.external_execution_allowed,
+            self.business_external_ready,
+        )
 
 
 @dataclass(frozen=True)
@@ -865,9 +1009,7 @@ class InternalPublicationRecord:
     def fingerprint(self) -> str:
         return _digest(
             self.id,
-            self.scope.tenant_id,
-            self.scope.project_id,
-            self.scope.business_line_id,
+            *_scope_fingerprint_parts(self.scope),
             self.request_id,
             self.decision_id,
             self.candidate_id,
@@ -876,9 +1018,26 @@ class InternalPublicationRecord:
             self.version_no,
             self.state.value,
             self.payload_hash,
+            self.source_content_hash,
+            self.source_file_id,
+            self.ingestion_job_id,
+            self.extraction_result_id,
+            self.staging_candidate_id,
+            self.locator_fingerprint,
+            self.profile_id,
+            self.profile_version,
+            self.rule_id,
+            self.actor_ref,
+            self.evidence_ref,
+            self.policy_version,
+            self.published_at.isoformat(),
             self.parent_record_id,
             self.superseded_record_id,
             self.revoked_record_id,
+            self.is_synthetic,
+            self.p02_current_truth_readable,
+            self.external_execution_allowed,
+            self.business_external_ready,
         )
 
     def safe_summary(self) -> dict[str, object]:
@@ -929,6 +1088,8 @@ class InternalInvalidationEvent:
             (self.correlation_id, "correlation_id_required"),
         ):
             _require_safe_identifier(value, code)
+        if self.correlation_id != self.scope.correlation_id:
+            raise ApprovalBoundaryError("invalidation_event_scope_mismatch")
         if not isinstance(self.version_no, int) or isinstance(self.version_no, bool) or self.version_no < 1:
             raise ApprovalBoundaryError("internal_publication_version_required")
         _require_safe_time(self.occurred_at, "invalidation_event_time_required")
@@ -951,13 +1112,21 @@ class InternalInvalidationEvent:
     def fingerprint(self) -> str:
         return _digest(
             self.id,
+            *_scope_fingerprint_parts(self.scope),
             self.publication_id,
+            self.event_type,
+            self.destination,
             self.subject_ref,
             self.target_field,
             self.version_no,
-            self.destination,
+            self.correlation_id,
+            self.occurred_at.isoformat(),
             self.superseded_publication_id,
             self.revoked_publication_id,
+            self.is_synthetic,
+            self.p02_current_truth_readable,
+            self.external_execution_allowed,
+            self.business_external_ready,
         )
 
     def safe_summary(self) -> dict[str, object]:
@@ -1055,11 +1224,14 @@ class InMemoryApprovalRequestStore:
         self._now = now or (lambda: datetime.now(timezone.utc))
         self._initial_by_key: dict[str, ApprovalRequest] = {}
         self._current_by_id: dict[UUID, ApprovalRequest] = {}
+        self._current_fingerprint_by_id: dict[UUID, str] = {}
         self._versions_by_id: dict[UUID, Tuple[ApprovalRequest, ...]] = {}
+        self._version_fingerprint_by_id: dict[tuple[UUID, int], str] = {}
         self._request_fingerprint_by_key: dict[str, str] = {}
         self._decision_by_key: dict[str, ApprovalRequest] = {}
         self._decision_fingerprint_by_key: dict[str, str] = {}
         self._audit_events: Tuple[ApprovalAuditEvent, ...] = ()
+        self._audit_fingerprint_by_id: dict[UUID, str] = {}
 
     def create_request(
         self,
@@ -1088,21 +1260,21 @@ class InMemoryApprovalRequestStore:
             _require_safe_identifier(value, code)
         requested_at = _require_safe_time(requested_at, "approval_requested_at_required")
         expires_at = _require_safe_time(expires_at, "approval_expires_at_required")
-        fingerprint = _digest(
-            request_scope,
-            candidate.fingerprint,
-            subject_ref,
-            requested_by,
-            evidence_ref,
-            policy_version,
-            requested_at.isoformat(),
-            expires_at.isoformat(),
+        fingerprint = _approval_request_fingerprint(
+            scope=request_scope,
+            candidate_fingerprint=candidate.fingerprint,
+            subject_ref=subject_ref,
+            requested_by=requested_by,
+            evidence_ref=evidence_ref,
+            policy_version=policy_version,
+            requested_at=requested_at,
+            expires_at=expires_at,
         )
         existing_fingerprint = self._request_fingerprint_by_key.get(idempotency_key)
         if existing_fingerprint is not None:
             if existing_fingerprint != fingerprint:
                 raise ApprovalBoundaryError("approval_request_idempotency_conflict")
-            return self._initial_by_key[idempotency_key]
+            return _snapshot(self._initial_by_key[idempotency_key])
         request = ApprovalRequest(
             id=_uuid_for("approval-request", idempotency_key, fingerprint),
             scope=request_scope,
@@ -1117,17 +1289,17 @@ class InMemoryApprovalRequestStore:
             request_fingerprint=fingerprint,
         )
         self._request_fingerprint_by_key[idempotency_key] = fingerprint
-        self._initial_by_key[idempotency_key] = request
-        self._append_request_version(request)
+        stored = self._append_request_version(request)
+        self._initial_by_key[idempotency_key] = stored
         self._append_audit(
-            request=request,
+            request=stored,
             actor_ref=requested_by,
             action="create_request",
-            state=request.state,
+            state=stored.state,
             evidence_ref=evidence_ref,
             recorded_at=requested_at,
         )
-        return request
+        return _snapshot(stored)
 
     def record_decision(
         self,
@@ -1150,9 +1322,7 @@ class InMemoryApprovalRequestStore:
         ):
             _require_safe_identifier(value, code)
         decided_at = _require_safe_time(decided_at, "approval_decided_at_required")
-        current = self._current_by_id.get(request_id)
-        if current is None:
-            raise ApprovalBoundaryError("approval_request_not_found")
+        current = self._current_request(request_id)
         if policy_version != current.policy_version:
             raise ApprovalBoundaryError("approval_policy_mismatch")
         existing_fingerprint = self._decision_fingerprint_by_key.get(idempotency_key)
@@ -1175,7 +1345,7 @@ class InMemoryApprovalRequestStore:
             )
             if existing_fingerprint != fingerprint:
                 raise ApprovalBoundaryError("approval_decision_idempotency_conflict")
-            return self._decision_by_key[idempotency_key]
+            return _snapshot(self._decision_by_key[idempotency_key])
         if current.state is not ApprovalRequestState.PENDING:
             raise ApprovalBoundaryError("approval_decision_already_recorded")
         if decision is not ApprovalDecisionKind.EXPIRE and decided_at > current.expires_at:
@@ -1219,20 +1389,20 @@ class InMemoryApprovalRequestStore:
             reviewer_grant_id=grant.id,
             decided_at=decided_at,
         )
+        stored = self._append_request_version(decided)
         self._decision_fingerprint_by_key[idempotency_key] = fingerprint
-        self._decision_by_key[idempotency_key] = decided
-        self._append_request_version(decided)
+        self._decision_by_key[idempotency_key] = stored
         self._append_audit(
-            request=decided,
+            request=stored,
             actor_ref=grant.actor_ref,
             action=f"decision_{decision.value}",
-            state=decided.state,
+            state=stored.state,
             evidence_ref=evidence_ref,
             recorded_at=decided_at,
-            decision_id=decided.decision_id,
+            decision_id=stored.decision_id,
             reviewer_grant_id=grant.id,
         )
-        return decided
+        return _snapshot(stored)
 
     def assert_publishable_request(
         self,
@@ -1243,8 +1413,12 @@ class InMemoryApprovalRequestStore:
         if not isinstance(request, ApprovalRequest):
             raise ApprovalBoundaryError("approval_request_required")
         at = _require_safe_time(at, "publication_time_required")
-        current = self._current_by_id.get(request.id)
-        if current != request:
+        try:
+            request.__post_init__()
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("approval_request_not_canonical") from exc
+        current = self._current_request(request.id)
+        if current != request or current.fingerprint != request.fingerprint:
             raise ApprovalBoundaryError("approval_request_not_canonical")
         if current.state is not ApprovalRequestState.APPROVED:
             raise ApprovalBoundaryError("approval_request_not_publishable")
@@ -1261,7 +1435,7 @@ class InMemoryApprovalRequestStore:
         )
         if not self._has_decision_audit(current):
             raise ApprovalBoundaryError("approval_decision_audit_required")
-        return current
+        return _snapshot(current)
 
     def request_version_count(self, request_id: UUID) -> int:
         _require_uuid(request_id, "approval_request_id_required")
@@ -1274,12 +1448,35 @@ class InMemoryApprovalRequestStore:
     def safe_audit_summary(self) -> tuple[dict[str, object], ...]:
         return tuple(event.safe_summary() for event in self._audit_events)
 
-    def _append_request_version(self, request: ApprovalRequest) -> None:
+    def _current_request(self, request_id: UUID) -> ApprovalRequest:
+        current = self._current_by_id.get(request_id)
+        if current is None:
+            raise ApprovalBoundaryError("approval_request_not_found")
+        current.__post_init__()
+        if self._current_fingerprint_by_id.get(current.id) != current.fingerprint:
+            raise ApprovalBoundaryError("approval_request_drift")
+        return current
+
+    def _append_request_version(self, request: ApprovalRequest) -> ApprovalRequest:
+        request.__post_init__()
         versions = self._versions_by_id.get(request.id, ())
+        if versions:
+            previous = versions[-1]
+            previous.__post_init__()
+            if (
+                self._version_fingerprint_by_id.get((previous.id, previous.version_no))
+                != previous.fingerprint
+            ):
+                raise ApprovalBoundaryError("approval_request_drift")
         if versions and request.version_no != versions[-1].version_no + 1:
             raise ApprovalBoundaryError("approval_request_version_sequence_invalid")
-        self._versions_by_id[request.id] = (*versions, request)
-        self._current_by_id[request.id] = request
+        stored = _snapshot(request)
+        stored.__post_init__()
+        self._versions_by_id[request.id] = (*versions, stored)
+        self._current_by_id[request.id] = stored
+        self._current_fingerprint_by_id[request.id] = stored.fingerprint
+        self._version_fingerprint_by_id[(request.id, request.version_no)] = stored.fingerprint
+        return stored
 
     def _append_audit(
         self,
@@ -1308,19 +1505,27 @@ class InMemoryApprovalRequestStore:
             decision_id=decision_id,
             reviewer_grant_id=reviewer_grant_id,
         )
-        self._audit_events = (*self._audit_events, event)
+        stored = _snapshot(event)
+        stored.__post_init__()
+        self._audit_events = (*self._audit_events, stored)
+        self._audit_fingerprint_by_id[stored.id] = stored.fingerprint
 
     def _has_decision_audit(self, request: ApprovalRequest) -> bool:
-        return any(
-            event.request_id == request.id
-            and event.decision_id == request.decision_id
-            and event.reviewer_grant_id == request.reviewer_grant_id
-            and event.actor_ref == request.decision_actor_ref
-            and event.state is request.state
-            and event.evidence_ref == request.decision_evidence_ref
-            and event.policy_version == request.policy_version
-            for event in self._audit_events
-        )
+        for event in self._audit_events:
+            event.__post_init__()
+            if self._audit_fingerprint_by_id.get(event.id) != event.fingerprint:
+                raise ApprovalBoundaryError("approval_audit_drift")
+            if (
+                event.request_id == request.id
+                and event.decision_id == request.decision_id
+                and event.reviewer_grant_id == request.reviewer_grant_id
+                and event.actor_ref == request.decision_actor_ref
+                and event.state is request.state
+                and event.evidence_ref == request.decision_evidence_ref
+                and event.policy_version == request.policy_version
+            ):
+                return True
+        return False
 
 
 class SyntheticInternalPublicationLedger:
@@ -1328,6 +1533,7 @@ class SyntheticInternalPublicationLedger:
 
     def __init__(self) -> None:
         self._records_by_id: dict[UUID, InternalPublicationRecord] = {}
+        self._fingerprints_by_id: dict[UUID, str] = {}
         self._series_versions: set[tuple[ScopeRef, str, str, int]] = set()
         self._child_by_parent: dict[UUID, UUID] = {}
 
@@ -1335,35 +1541,48 @@ class SyntheticInternalPublicationLedger:
     def appended_record_count(self) -> int:
         return len(self._records_by_id)
 
-    def snapshot(self) -> tuple[
+    def _snapshot(self) -> tuple[
         dict[UUID, InternalPublicationRecord],
+        dict[UUID, str],
         set[tuple[ScopeRef, str, str, int]],
         dict[UUID, UUID],
     ]:
         return (
-            dict(self._records_by_id),
+            _snapshot(self._records_by_id),
+            dict(self._fingerprints_by_id),
             set(self._series_versions),
             dict(self._child_by_parent),
         )
 
-    def restore(
+    def _restore_from_snapshot(
         self,
         snapshot: tuple[
             dict[UUID, InternalPublicationRecord],
+            dict[UUID, str],
             set[tuple[ScopeRef, str, str, int]],
             dict[UUID, UUID],
         ],
     ) -> None:
-        self._records_by_id, self._series_versions, self._child_by_parent = (
-            dict(snapshot[0]),
-            set(snapshot[1]),
-            dict(snapshot[2]),
+        self._records_by_id, self._fingerprints_by_id, self._series_versions, self._child_by_parent = (
+            _snapshot(snapshot[0]),
+            dict(snapshot[1]),
+            set(snapshot[2]),
+            dict(snapshot[3]),
         )
 
     def is_head(self, record: InternalPublicationRecord) -> bool:
         if not isinstance(record, InternalPublicationRecord):
             raise ApprovalBoundaryError("internal_publication_required")
+        try:
+            record.__post_init__()
+        except ApprovalBoundaryError as exc:
+            raise ApprovalBoundaryError("internal_publication_not_found") from exc
         stored = self._records_by_id.get(record.id)
+        if stored is None:
+            raise ApprovalBoundaryError("internal_publication_not_found")
+        stored.__post_init__()
+        if self._fingerprints_by_id.get(stored.id) != stored.fingerprint:
+            raise ApprovalBoundaryError("internal_publication_drift")
         if stored != record:
             raise ApprovalBoundaryError("internal_publication_not_found")
         return record.id not in self._child_by_parent
@@ -1379,15 +1598,22 @@ class SyntheticInternalPublicationLedger:
         ]
         return (max(versions) + 1) if versions else 1
 
-    def append_batch(self, records: Tuple[InternalPublicationRecord, ...]) -> None:
+    def append_batch(
+        self,
+        records: Tuple[InternalPublicationRecord, ...],
+    ) -> Tuple[InternalPublicationRecord, ...]:
         if not isinstance(records, tuple) or not records:
             raise ApprovalBoundaryError("internal_publication_batch_required")
         if any(not isinstance(record, InternalPublicationRecord) for record in records):
             raise ApprovalBoundaryError("internal_publication_required")
+        staged_input = tuple(_snapshot(record) for record in records)
+        for record in staged_input:
+            record.__post_init__()
         staged_records = dict(self._records_by_id)
+        staged_fingerprints = dict(self._fingerprints_by_id)
         staged_series = set(self._series_versions)
         staged_children = dict(self._child_by_parent)
-        for record in records:
+        for record in staged_input:
             if record.id in staged_records:
                 raise ApprovalBoundaryError("internal_publication_immutable")
             series_key = (*record.series_key, record.version_no)
@@ -1402,6 +1628,9 @@ class SyntheticInternalPublicationLedger:
                 parent = staged_records.get(record.parent_record_id)
                 if parent is None:
                     raise ApprovalBoundaryError("parent_publication_not_found")
+                parent.__post_init__()
+                if staged_fingerprints.get(parent.id) != parent.fingerprint:
+                    raise ApprovalBoundaryError("internal_publication_drift")
                 if record.parent_record_id in staged_children:
                     raise ApprovalBoundaryError("publication_history_branch_forbidden")
                 if record.series_key != parent.series_key:
@@ -1411,12 +1640,15 @@ class SyntheticInternalPublicationLedger:
                 if record.state not in _PUBLICATION_TRANSITIONS[parent.state]:
                     raise ApprovalBoundaryError("internal_publication_transition_forbidden")
             staged_records[record.id] = record
+            staged_fingerprints[record.id] = record.fingerprint
             staged_series.add(series_key)
             if record.parent_record_id is not None:
                 staged_children[record.parent_record_id] = record.id
         self._records_by_id = staged_records
+        self._fingerprints_by_id = staged_fingerprints
         self._series_versions = staged_series
         self._child_by_parent = staged_children
+        return tuple(_snapshot(record) for record in staged_input)
 
 
 class InMemoryInvalidationOutbox:
@@ -1430,29 +1662,36 @@ class InMemoryInvalidationOutbox:
     def event_count(self) -> int:
         return len(self._events_by_id)
 
-    def snapshot(self) -> tuple[dict[UUID, InternalInvalidationEvent], dict[UUID, str]]:
-        return dict(self._events_by_id), dict(self._fingerprints_by_id)
+    def _snapshot(self) -> tuple[dict[UUID, InternalInvalidationEvent], dict[UUID, str]]:
+        return _snapshot(self._events_by_id), dict(self._fingerprints_by_id)
 
-    def restore(
+    def _restore_from_snapshot(
         self,
         snapshot: tuple[dict[UUID, InternalInvalidationEvent], dict[UUID, str]],
     ) -> None:
         self._events_by_id, self._fingerprints_by_id = (
-            dict(snapshot[0]),
+            _snapshot(snapshot[0]),
             dict(snapshot[1]),
         )
 
     def append(self, event: InternalInvalidationEvent) -> InternalInvalidationEvent:
         if not isinstance(event, InternalInvalidationEvent):
             raise ApprovalBoundaryError("invalidation_event_required")
+        event = _snapshot(event)
+        event.__post_init__()
         existing = self._events_by_id.get(event.id)
         if existing is not None:
-            if self._fingerprints_by_id[event.id] != event.fingerprint:
+            existing.__post_init__()
+            if (
+                self._fingerprints_by_id[event.id] != event.fingerprint
+                or existing.fingerprint != event.fingerprint
+                or existing != event
+            ):
                 raise ApprovalBoundaryError("invalidation_event_idempotency_conflict")
-            return existing
+            return _snapshot(existing)
         self._events_by_id[event.id] = event
         self._fingerprints_by_id[event.id] = event.fingerprint
-        return event
+        return _snapshot(event)
 
     def safe_summary(self) -> tuple[dict[str, object], ...]:
         return tuple(event.safe_summary() for event in self._events_by_id.values())
@@ -1465,21 +1704,31 @@ class SyntheticPublicationTransactionLog:
         self._results_by_key: Dict[str, object] = {}
         self._fingerprints_by_key: Dict[str, str] = {}
 
+    def _snapshot(self) -> tuple[dict[str, object], dict[str, str]]:
+        return _snapshot(self._results_by_key), dict(self._fingerprints_by_key)
+
+    def _restore_from_snapshot(self, snapshot: tuple[dict[str, object], dict[str, str]]) -> None:
+        self._results_by_key, self._fingerprints_by_key = (
+            _snapshot(snapshot[0]),
+            dict(snapshot[1]),
+        )
+
     def get(self, key: str) -> object | None:
         _require_safe_hash(key, "publication_transaction_key_required")
-        return self._results_by_key.get(key)
+        existing = self._results_by_key.get(key)
+        return _snapshot(existing) if existing is not None else None
 
     def commit(self, key: str, result: object, fingerprint: str) -> object:
         _require_safe_hash(key, "publication_transaction_key_required")
         _require_safe_hash(fingerprint, "publication_transaction_fingerprint_required")
         existing = self._results_by_key.get(key)
         if existing is not None:
-            if self._fingerprints_by_key[key] != fingerprint:
+            if self._fingerprints_by_key[key] != fingerprint or existing != result:
                 raise ApprovalBoundaryError("publication_transaction_conflict")
-            return existing
-        self._results_by_key[key] = result
+            return _snapshot(existing)
+        self._results_by_key[key] = _snapshot(result)
         self._fingerprints_by_key[key] = fingerprint
-        return result
+        return _snapshot(result)
 
 
 class SyntheticApprovalPublisher:
@@ -1516,16 +1765,23 @@ class SyntheticApprovalPublisher:
         self,
         request: ApprovalRequest,
         *,
-        supersedes: Optional[InternalPublicationResult] = None,
+        supersedes: Optional[object] = None,
     ) -> InternalPublicationResult:
         published_at = _require_safe_time(self._now(), "publication_time_required")
         request = self._request_store.assert_publishable_request(request, at=published_at)
         candidate = request.candidate
         superseded_source: Optional[InternalPublicationRecord] = None
         if supersedes is not None:
-            if not isinstance(supersedes, InternalPublicationResult):
+            if isinstance(supersedes, InternalPublicationResult):
+                superseded_source = supersedes.approved_record
+            elif isinstance(supersedes, InternalRevocationResult):
+                superseded_source = supersedes.revoked_record
+            elif isinstance(supersedes, InternalPublicationRecord):
+                superseded_source = supersedes
+            else:
                 raise ApprovalBoundaryError("superseded_publication_required")
-            superseded_source = supersedes.approved_record
+            superseded_source = _snapshot(superseded_source)
+            superseded_source.__post_init__()
             if (
                 superseded_source.scope != request.scope
                 or superseded_source.subject_ref != request.subject_ref
@@ -1561,7 +1817,7 @@ class SyntheticApprovalPublisher:
                 published_at=published_at,
             )
             records = (approved_record,)
-        else:
+        elif superseded_source.state is InternalPublicationState.APPROVED_INTERNAL:
             superseded_record = self._record_for(
                 request=request,
                 state=InternalPublicationState.SUPERSEDED_INTERNAL,
@@ -1582,6 +1838,17 @@ class SyntheticApprovalPublisher:
                 published_at=published_at,
             )
             records = (superseded_record, approved_record)
+        else:
+            approved_record = self._record_for(
+                request=request,
+                state=InternalPublicationState.APPROVED_INTERNAL,
+                version_no=superseded_source.version_no + 1,
+                parent_record_id=superseded_source.id,
+                superseded_record_id=superseded_source.id,
+                revoked_record_id=None,
+                published_at=published_at,
+            )
+            records = (approved_record,)
         event = self._event_for(
             record=approved_record,
             occurred_at=published_at,
@@ -1670,25 +1937,30 @@ class SyntheticApprovalPublisher:
         event: InternalInvalidationEvent,
         result,
     ):
-        ledger_snapshot = self._ledger.snapshot()
-        outbox_snapshot = self._outbox.snapshot()
+        ledger_snapshot = self._ledger._snapshot()
+        outbox_snapshot = self._outbox._snapshot()
+        transaction_snapshot = self._transaction_log._snapshot()
         fingerprint = _digest(
             *(record.fingerprint for record in records),
             event.fingerprint,
             repr(result.safe_summary()),
         )
         try:
-            self._ledger.append_batch(records)
-            self._outbox.append(event)
-            self._transaction_log.commit(key, result, fingerprint)
+            appended_records = self._ledger.append_batch(records)
+            if appended_records != records:
+                raise ApprovalBoundaryError("internal_publication_commit_mismatch")
+            appended_event = self._outbox.append(event)
+            if appended_event != event:
+                raise ApprovalBoundaryError("invalidation_event_idempotency_conflict")
+            committed = self._transaction_log.commit(key, result, fingerprint)
+            if committed != result:
+                raise ApprovalBoundaryError("publication_transaction_conflict")
         except Exception:
-            self._ledger.restore(ledger_snapshot)
-            self._outbox.restore(outbox_snapshot)
+            self._ledger._restore_from_snapshot(ledger_snapshot)
+            self._outbox._restore_from_snapshot(outbox_snapshot)
+            self._transaction_log._restore_from_snapshot(transaction_snapshot)
             raise
-        committed = self._transaction_log.get(key)
-        if committed != result:
-            raise ApprovalBoundaryError("publication_transaction_conflict")
-        return result
+        return _snapshot(result)
 
     @staticmethod
     def _record_for(

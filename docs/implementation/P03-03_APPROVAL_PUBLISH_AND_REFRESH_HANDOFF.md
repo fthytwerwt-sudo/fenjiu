@@ -6,6 +6,12 @@
 - 本 repair 只在 `codex/p03-03-approval-publish-refresh` 上修复：canonical P03-01/P03-02 lineage gate、synthetic reviewer capability registry、publisher canonical decision/audit dependency、publish expiry recheck、ledger/outbox/idempotency atomic transaction、append-only revoke、P02 boundary assertion。
 - 修复仍是 synthetic/value-free/internal proof only；P03 internal publication record 不是 P02 `TruthVersion`，不能被 P02 current-truth consumer 当成真值，也不代表真实 reviewer、真实业务资料、真实人工审批、生产 RBAC 或外部执行授权。
 
+## Third repair note｜2026-08-06
+
+- 第二轮 repair 提交 `074807b21fc215e4d28d21e524200c5029d70643` 经 5.6 独立复审继续标记 `CHANGES_REQUIRED`，不得作为可接受完成态引用。
+- 第三轮 repair 只在同一任务分支修复：defensive deep snapshot、canonical fingerprint revalidation、grant/request/audit drift protection、ledger/outbox/transaction log atomic rollback、移除 public restore/snapshot mutation surface、full invalidation event fingerprint/outbox return validation、revoked successor append-only publish。
+- 第三轮仍是 local synthetic contract，不是真实 auth/RBAC、process/DB crash proof、真实人工批准、真实 P02 truth 或外部业务 ready。
+
 ## Goal｜目标
 
 - 只执行 `P03-03`：建立 synthetic/value-free 的 `mapped candidate -> approval request -> human decision -> immutable internal publication proof -> supersede/refresh` 闭环合同。
