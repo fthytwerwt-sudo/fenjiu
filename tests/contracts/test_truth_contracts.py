@@ -26,6 +26,7 @@ from modules.truth_center import (
     is_current_readable_state,
     validate_transition,
 )
+from tests.contracts.truth_repository_harness import TruthRepositoryContractHarness
 
 
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -153,6 +154,30 @@ def approved_chain(
     return repository, candidate, approved
 
 
+def approved_chain_probe(
+    entity_kind: TruthEntityKind = TruthEntityKind.PRICE,
+) -> tuple[TruthRepositoryContractHarness, TruthVersion, TruthVersion]:
+    harness = TruthRepositoryContractHarness()
+    candidate = truth_record(
+        state=DataState.STAGING,
+        version_no=1,
+        seed=1,
+        entity_kind=entity_kind,
+    )
+    approved = truth_record(
+        state=DataState.APPROVED,
+        version_no=2,
+        seed=2,
+        entity_kind=entity_kind,
+        parent_version_id=candidate.version.id,
+        effective_from=NOW,
+        effective_until=NOW + timedelta(days=2),
+    )
+    harness.append(candidate)
+    harness.append(approved)
+    return harness, candidate, approved
+
+
 class TruthContractTests(unittest.TestCase):
     def test_all_required_entity_kinds_have_candidate_contracts(self) -> None:
         self.assertEqual(
@@ -181,10 +206,10 @@ class TruthContractTests(unittest.TestCase):
                 self.assertFalse(record.payload.external_execution_allowed)
 
     def test_candidate_to_approved_requires_explicit_successor(self) -> None:
-        repository, candidate, approved = approved_chain()
+        repository, candidate, approved = approved_chain_probe()
 
         self.assertEqual(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -194,7 +219,7 @@ class TruthContractTests(unittest.TestCase):
         )
         self.assertEqual(
             len(
-                repository._versions_for_contract_probe(
+                repository.probe_versions(
                     approved.scope,
                     approved.entity_kind,
                     approved.payload.subject_ref,
@@ -205,12 +230,12 @@ class TruthContractTests(unittest.TestCase):
 
     def test_fixture_and_candidate_are_never_current_truth(self) -> None:
         for seed, state in enumerate((DataState.FIXTURE, DataState.STAGING), start=10):
-            repository = InMemoryTruthRepository()
+            repository = TruthRepositoryContractHarness()
             record = truth_record(state=state, version_no=1, seed=seed)
             repository.append(record)
             with self.subTest(state=state):
                 self.assertIsNone(
-                    repository._current_for_contract_probe(
+                    repository.probe_current(
                         record.scope,
                         record.entity_kind,
                         record.payload.subject_ref,
@@ -241,10 +266,10 @@ class TruthContractTests(unittest.TestCase):
             )
 
     def test_approved_truth_outside_effective_window_is_not_current(self) -> None:
-        repository, _, approved = approved_chain()
+        repository, _, approved = approved_chain_probe()
 
         self.assertIsNone(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -252,7 +277,7 @@ class TruthContractTests(unittest.TestCase):
             )
         )
         self.assertIsNone(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
@@ -267,7 +292,7 @@ class TruthContractTests(unittest.TestCase):
             DataState.SUPERSEDED,
         )
         for seed, terminal_state in enumerate(terminal_states, start=20):
-            repository, _, approved = approved_chain()
+            repository, _, approved = approved_chain_probe()
             terminal = truth_record(
                 state=terminal_state,
                 version_no=3,
@@ -284,7 +309,7 @@ class TruthContractTests(unittest.TestCase):
             repository.append(terminal)
             with self.subTest(state=terminal_state):
                 self.assertIsNone(
-                    repository._current_for_contract_probe(
+                    repository.probe_current(
                         terminal.scope,
                         terminal.entity_kind,
                         terminal.payload.subject_ref,
@@ -293,7 +318,7 @@ class TruthContractTests(unittest.TestCase):
                 )
 
     def test_conflict_resolution_needs_new_approved_version_and_evidence(self) -> None:
-        repository = InMemoryTruthRepository()
+        repository = TruthRepositoryContractHarness()
         candidate = truth_record(state=DataState.STAGING, version_no=1, seed=30)
         conflict = truth_record(
             state=DataState.CONFLICT,
@@ -310,7 +335,7 @@ class TruthContractTests(unittest.TestCase):
         repository.append(candidate)
         repository.append(conflict)
         self.assertIsNone(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 conflict.scope,
                 conflict.entity_kind,
                 conflict.payload.subject_ref,
@@ -319,7 +344,7 @@ class TruthContractTests(unittest.TestCase):
         )
         repository.append(resolved)
         self.assertEqual(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 resolved.scope,
                 resolved.entity_kind,
                 resolved.payload.subject_ref,
@@ -345,7 +370,7 @@ class TruthContractTests(unittest.TestCase):
             validate_transition(fixture, approved)
 
     def test_direct_approved_root_is_rejected(self) -> None:
-        repository = InMemoryTruthRepository()
+        repository = TruthRepositoryContractHarness()
         approved = truth_record(state=DataState.APPROVED, version_no=1, seed=50)
 
         with self.assertRaisesRegex(
@@ -384,7 +409,7 @@ class TruthContractTests(unittest.TestCase):
         self._assert_terminal_root_rejected(DataState.SUPERSEDED, 54)
 
     def test_conflict_root_cannot_seed_an_approved_current_truth(self) -> None:
-        repository = InMemoryTruthRepository()
+        repository = TruthRepositoryContractHarness()
         conflict_root = truth_record(
             state=DataState.CONFLICT,
             version_no=1,
@@ -405,7 +430,7 @@ class TruthContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractValidationError, "parent_version_not_found"):
             repository.append(approved_child)
         self.assertIsNone(
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 approved_child.scope,
                 approved_child.entity_kind,
                 approved_child.payload.subject_ref,
@@ -414,7 +439,7 @@ class TruthContractTests(unittest.TestCase):
         )
 
     def test_cross_scope_transition_and_read_are_rejected(self) -> None:
-        repository = InMemoryTruthRepository()
+        repository = TruthRepositoryContractHarness()
         candidate = truth_record(state=DataState.STAGING, version_no=1, seed=60)
         other_scope = replace(
             synthetic_scope(),
@@ -432,7 +457,7 @@ class TruthContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
             repository.append(cross_scope_approved)
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
-            repository._get_by_id_for_policy(other_scope, candidate.version.id)
+            repository.probe_get_by_id(other_scope, candidate.version.id)
 
     def test_history_is_immutable_and_cannot_branch(self) -> None:
         repository, _, approved = approved_chain()
@@ -497,9 +522,9 @@ class TruthContractTests(unittest.TestCase):
                 )
 
     def test_invalid_read_inputs_fail_closed(self) -> None:
-        repository = InMemoryTruthRepository()
+        repository = TruthRepositoryContractHarness()
         with self.assertRaisesRegex(ContractValidationError, "read_time_required"):
-            repository._current_for_contract_probe(
+            repository.probe_current(
                 synthetic_scope(),
                 TruthEntityKind.PRICE,
                 "synthetic_subject",
@@ -509,7 +534,7 @@ class TruthContractTests(unittest.TestCase):
             ContractValidationError,
             "truth_subject_ref_required",
         ):
-            repository._versions_for_contract_probe(
+            repository.probe_versions(
                 synthetic_scope(),
                 TruthEntityKind.PRICE,
                 "not a safe subject",

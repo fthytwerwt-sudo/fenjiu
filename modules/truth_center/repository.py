@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from dataclasses import dataclass
 from uuid import UUID
 
-from core.contracts import ContractValidationError, DataState, ScopeRef
+from core.contracts import ContractValidationError, DataState, ScopeRef, Sensitivity
 from core.contracts.access import (
+    RepositoryAuditRecorder,
     RepositoryGrantVerifier,
     RepositoryReadGrant,
 )
@@ -19,6 +20,19 @@ from modules.truth_center.models import (
 )
 
 
+@dataclass(frozen=True)
+class TruthPolicyTarget:
+    """Value-free repository metadata used only to make a policy decision."""
+
+    scope: ScopeRef
+    data_version_id: UUID
+    entity_kind: TruthEntityKind
+    subject_ref: str
+    data_state: DataState
+    sensitivity: Sensitivity
+    is_synthetic: bool
+
+
 class InMemoryTruthRepository:
     """A no-I/O probe for repository invariants; it is not a production adapter."""
 
@@ -28,18 +42,34 @@ class InMemoryTruthRepository:
         self._series_versions: set[tuple[ScopeRef, TruthEntityKind, str, int]] = set()
         self._child_by_parent: dict[UUID, UUID] = {}
         self.__grant_verifier: RepositoryGrantVerifier | None = None
+        self.__audit_recorder: RepositoryAuditRecorder | None = None
 
-    def _bind_grant_verifier(self, verifier: RepositoryGrantVerifier) -> None:
-        """Bind one policy verifier for all public current reads."""
+    def _bind_read_context(
+        self,
+        verifier: RepositoryGrantVerifier,
+        audit_recorder: RepositoryAuditRecorder,
+    ) -> None:
+        """Bind the exact policy and mandatory audit sink for current reads."""
 
         if (
             type(verifier) is RepositoryGrantVerifier
             or not isinstance(verifier, RepositoryGrantVerifier)
         ):
             raise ContractValidationError("repository_grant_verifier_required")
+        if (
+            type(audit_recorder) is RepositoryAuditRecorder
+            or not isinstance(audit_recorder, RepositoryAuditRecorder)
+        ):
+            raise ContractValidationError("repository_audit_recorder_required")
         if self.__grant_verifier is not None and self.__grant_verifier is not verifier:
             raise ContractValidationError("repository_grant_verifier_already_bound")
+        if (
+            self.__audit_recorder is not None
+            and self.__audit_recorder is not audit_recorder
+        ):
+            raise ContractValidationError("repository_audit_recorder_already_bound")
         self.__grant_verifier = verifier
+        self.__audit_recorder = audit_recorder
 
     def append(self, record: TruthVersion) -> None:
         if not isinstance(record, TruthVersion):
@@ -81,11 +111,13 @@ class InMemoryTruthRepository:
         if record.parent_version_id is not None:
             self._child_by_parent[record.parent_version_id] = record.version.id
 
-    def _get_by_id_for_policy(
+    def policy_target(
         self,
         scope: ScopeRef,
         version_id: UUID,
-    ) -> TruthVersion | None:
+    ) -> TruthPolicyTarget | None:
+        """Return policy metadata, never the truth payload or source record."""
+
         if not isinstance(scope, ScopeRef):
             raise ContractValidationError("scope_required")
         _require_uuid(version_id, "data_version_id_required")
@@ -94,74 +126,58 @@ class InMemoryTruthRepository:
             return None
         if record.scope != scope:
             raise ContractValidationError("cross_scope_forbidden")
-        return record
-
-    def _versions_for_contract_probe(
-        self,
-        scope: ScopeRef,
-        entity_kind: TruthEntityKind,
-        subject_ref: str,
-    ) -> tuple[TruthVersion, ...]:
-        if not isinstance(scope, ScopeRef):
-            raise ContractValidationError("scope_required")
-        if not isinstance(entity_kind, TruthEntityKind):
-            raise ContractValidationError("truth_entity_kind_required")
-        _require_identifier(subject_ref, "truth_subject_ref_required")
-        records = (
-            record
-            for record in self._versions_by_id.values()
-            if record.scope == scope
-            and record.entity_kind is entity_kind
-            and record.payload.subject_ref == subject_ref
+        return TruthPolicyTarget(
+            scope=record.scope,
+            data_version_id=record.version.id,
+            entity_kind=record.entity_kind,
+            subject_ref=record.payload.subject_ref,
+            data_state=record.data_state,
+            sensitivity=record.metadata.sensitivity,
+            is_synthetic=record.metadata.is_synthetic,
         )
-        return tuple(sorted(records, key=lambda record: record.version.version_no))
-
-    def _current_for_contract_probe(
-        self,
-        scope: ScopeRef,
-        entity_kind: TruthEntityKind,
-        subject_ref: str,
-        *,
-        at: datetime,
-    ) -> TruthVersion | None:
-        if not isinstance(at, datetime) or at.tzinfo is None or at.utcoffset() is None:
-            raise ContractValidationError("read_time_required")
-        records = self._versions_for_contract_probe(scope, entity_kind, subject_ref)
-        if not records:
-            return None
-        heads = [
-            record
-            for record in records
-            if record.version.id not in self._child_by_parent
-        ]
-        if len(heads) != 1:
-            raise ContractValidationError("truth_head_conflict")
-        head = heads[0]
-        if not is_current_readable_state(head.data_state):
-            return None
-        if head.approval is None:
-            raise ContractValidationError("approval_evidence_required")
-        if not head.is_fresh_at(at):
-            return None
-        return head
 
     def current(
         self,
         grant: RepositoryReadGrant,
         entity_kind: TruthEntityKind,
         subject_ref: str,
+        *,
+        actor_ref: str,
     ) -> TruthVersion | None:
-        """Return current truth only through a policy-issued exact grant."""
+        """Audit, then return truth through a policy-issued exact grant."""
 
         if self.__grant_verifier is None:
             raise ContractValidationError("repository_grant_verifier_required")
+        if self.__audit_recorder is None:
+            raise ContractValidationError("repository_audit_recorder_required")
         validated = self.__grant_verifier.assert_repository_grant(grant)
-        current = self._current_for_contract_probe(
-            validated.scope,
-            entity_kind,
-            subject_ref,
-            at=validated.read_at,
+        if not isinstance(entity_kind, TruthEntityKind):
+            raise ContractValidationError("truth_entity_kind_required")
+        _require_identifier(subject_ref, "truth_subject_ref_required")
+        _require_identifier(actor_ref, "actor_ref_required")
+        records = tuple(
+            record
+            for record in self._versions_by_id.values()
+            if record.scope == validated.scope
+            and record.entity_kind is entity_kind
+            and record.payload.subject_ref == subject_ref
         )
+        if not records:
+            return None
+        heads = tuple(
+            record
+            for record in records
+            if record.version.id not in self._child_by_parent
+        )
+        if len(heads) != 1:
+            raise ContractValidationError("truth_head_conflict")
+        current = heads[0]
+        if not is_current_readable_state(current.data_state):
+            return None
+        if current.approval is None:
+            raise ContractValidationError("approval_evidence_required")
+        if not current.is_fresh_at(validated.read_at):
+            return None
         if current is not None and current.version.id != validated.data_version_id:
             raise ContractValidationError("repository_grant_target_mismatch")
         if current is not None and (
@@ -170,4 +186,13 @@ class InMemoryTruthRepository:
             or current.metadata.is_synthetic is not validated.is_synthetic
         ):
             raise ContractValidationError("repository_grant_target_metadata_mismatch")
+        self.__audit_recorder.record_repository_read_allowed(
+            scope=validated.scope,
+            actor_ref=actor_ref,
+            target_ref=subject_ref,
+            data_version_id=current.version.id,
+            data_state=current.data_state,
+            sensitivity=current.metadata.sensitivity,
+            policy_decision_ref=validated.policy_decision_ref,
+        )
         return current
