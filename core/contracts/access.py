@@ -2,7 +2,8 @@
 
 The grant is an in-process contract capability, not authentication or a
 production authorization token.  Its signature prevents ordinary dataclass
-replacement from silently widening scope, target, or read time.
+replacement from silently widening scope, actor attribution, target, or read
+time.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ class RepositoryReadGrant:
 
     grant_id: UUID
     scope: ScopeRef
+    actor_ref: str
     data_version_id: UUID
     read_at: datetime
     policy_decision_ref: str
@@ -41,6 +43,7 @@ class RepositoryReadGrant:
 def _grant_signature(
     grant_id: UUID,
     scope: ScopeRef,
+    actor_ref: str,
     data_version_id: UUID,
     read_at: datetime,
     policy_decision_ref: str,
@@ -52,6 +55,7 @@ def _grant_signature(
         _GRANT_ISSUER,
         grant_id,
         scope,
+        actor_ref,
         data_version_id,
         read_at,
         policy_decision_ref,
@@ -64,6 +68,7 @@ def _grant_signature(
 def _issue_repository_read_grant(
     *,
     scope: ScopeRef,
+    actor_ref: str,
     data_version_id: UUID,
     read_at: datetime,
     policy_decision_ref: str,
@@ -77,6 +82,7 @@ def _issue_repository_read_grant(
     return RepositoryReadGrant(
         grant_id=grant_id,
         scope=scope,
+        actor_ref=actor_ref,
         data_version_id=data_version_id,
         read_at=read_at,
         policy_decision_ref=policy_decision_ref,
@@ -86,6 +92,7 @@ def _issue_repository_read_grant(
         _signature=_grant_signature(
             grant_id,
             scope,
+            actor_ref,
             data_version_id,
             read_at,
             policy_decision_ref,
@@ -105,6 +112,7 @@ def validate_repository_read_grant(grant: object) -> RepositoryReadGrant:
         raise ContractValidationError("repository_read_grant_invalid")
     _require_uuid(grant.grant_id, "repository_read_grant_invalid")
     _require_uuid(grant.data_version_id, "repository_read_grant_invalid")
+    _require_identifier(grant.actor_ref, "repository_read_grant_invalid")
     if (
         not isinstance(grant.read_at, datetime)
         or grant.read_at.tzinfo is None
@@ -124,6 +132,7 @@ def validate_repository_read_grant(grant: object) -> RepositoryReadGrant:
     expected = _grant_signature(
         grant.grant_id,
         grant.scope,
+        grant.actor_ref,
         grant.data_version_id,
         grant.read_at,
         grant.policy_decision_ref,

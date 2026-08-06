@@ -145,7 +145,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
                 approved.scope,
                 approved.entity_kind,
                 approved.payload.subject_ref,
-                actor_ref="synthetic_consumer",
             )
 
     def test_repository_rejects_structural_fake_verifier_binding(self) -> None:
@@ -182,6 +181,7 @@ class IsolationPolicyContractTests(unittest.TestCase):
         assert target is not None
         evaluation = direct_policy.evaluate(
             scope=approved.scope,
+            actor_ref="signed_direct_actor",
             target=IsolationTarget(
                 scope=target.scope,
                 data_version_id=target.data_version_id,
@@ -200,7 +200,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
             evaluation.grant,
             approved.entity_kind,
             approved.payload.subject_ref,
-            actor_ref="direct_in_process_caller",
         )
 
         self.assertEqual(current, approved)
@@ -210,12 +209,66 @@ class IsolationPolicyContractTests(unittest.TestCase):
             AuditPolicyResult.ALLOWED,
         )
         self.assertEqual(direct_audit.events[0].data_version_id, approved.version.id)
+        self.assertEqual(direct_audit.events[0].actor_ref, "signed_direct_actor")
+
+    def test_actor_attribution_is_bound_to_policy_grant(self) -> None:
+        repository, _, approved = approved_chain()
+        direct_policy = IsolationPolicy()
+        direct_audit = InMemoryIsolationAuditLog(clock=lambda: NOW)
+        repository._bind_read_context(direct_policy, direct_audit)
+        target = repository.policy_target(approved.scope, approved.version.id)
+        assert target is not None
+        evaluation = direct_policy.evaluate(
+            scope=approved.scope,
+            actor_ref="signed_actor",
+            target=IsolationTarget(
+                scope=target.scope,
+                data_version_id=target.data_version_id,
+                data_state=target.data_state,
+                sensitivity=target.sensitivity,
+                is_synthetic=target.is_synthetic,
+            ),
+            action=IsolationAction.INTERNAL_TRUTH_READ,
+            feature_flag_snapshot=disabled_feature_flag_snapshot(),
+            read_at=NOW + timedelta(hours=1),
+            policy_decision_ref="actor_bound_policy_read",
+        )
+        assert evaluation.grant is not None
+
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "repository_read_grant_invalid",
+        ):
+            repository.current(
+                replace(evaluation.grant, actor_ref="substituted_actor"),
+                approved.entity_kind,
+                approved.payload.subject_ref,
+            )
+        with self.assertRaises(TypeError):
+            repository.current(
+                evaluation.grant,
+                approved.entity_kind,
+                approved.payload.subject_ref,
+                actor_ref="substituted_actor",  # type: ignore[call-arg]
+            )
+        self.assertEqual(direct_audit.events, ())
+
+        current = repository.current(
+            evaluation.grant,
+            approved.entity_kind,
+            approved.payload.subject_ref,
+        )
+
+        self.assertEqual(current, approved)
+        self.assertEqual(len(direct_audit.events), 1)
+        self.assertEqual(direct_audit.events[0].actor_ref, "signed_actor")
 
     def test_repository_grant_cannot_be_tampered_or_reused_for_another_version(self) -> None:
         repository, _, approved = approved_chain()
         self.consumer(repository)
         evaluation = self.policy.evaluate(
             scope=approved.scope,
+            actor_ref="synthetic_consumer",
             target=IsolationTarget(
                 scope=approved.scope,
                 data_version_id=approved.version.id,
@@ -244,7 +297,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
                 ),
                 approved.entity_kind,
                 approved.payload.subject_ref,
-                actor_ref="synthetic_consumer",
             )
 
         other_candidate = truth_record(
@@ -270,7 +322,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
                 grant,
                 other_approved.entity_kind,
                 other_approved.payload.subject_ref,
-                actor_ref="synthetic_consumer",
             )
 
     def test_direct_grant_issuer_call_is_rejected_without_policy_registration(self) -> None:
@@ -278,6 +329,7 @@ class IsolationPolicyContractTests(unittest.TestCase):
         self.consumer(repository)
         forged = _issue_repository_read_grant(
             scope=approved.scope,
+            actor_ref="synthetic_consumer",
             data_version_id=approved.version.id,
             read_at=NOW + timedelta(hours=1),
             policy_decision_ref="forged_policy_decision",
@@ -294,7 +346,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
                 forged,
                 approved.entity_kind,
                 approved.payload.subject_ref,
-                actor_ref="synthetic_consumer",
             )
 
     def test_fixture_external_action_is_denied_and_records_intent(self) -> None:
@@ -424,6 +475,7 @@ class IsolationPolicyContractTests(unittest.TestCase):
         self.consumer(repository)
         evaluation = self.policy.evaluate(
             scope=restricted.scope,
+            actor_ref="synthetic_consumer",
             target=IsolationTarget(
                 scope=restricted.scope,
                 data_version_id=restricted.version.id,
@@ -446,7 +498,6 @@ class IsolationPolicyContractTests(unittest.TestCase):
                 evaluation.grant,
                 restricted.entity_kind,
                 restricted.payload.subject_ref,
-                actor_ref="synthetic_consumer",
             )
 
     def test_incomplete_or_enabled_feature_snapshot_is_denied(self) -> None:

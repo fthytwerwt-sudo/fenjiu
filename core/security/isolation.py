@@ -17,6 +17,7 @@ from core.contracts.access import (
     validate_repository_read_grant,
 )
 from core.contracts.errors import ContractValidationError
+from core.contracts.scope import _require_identifier
 from core.security.feature_flags import FailClosedFeatureFlags, FeatureFlagName
 
 
@@ -185,12 +186,18 @@ class IsolationPolicy(RepositoryGrantVerifier):
         self,
         *,
         scope: ScopeRef,
+        actor_ref: object,
         target: IsolationTarget,
         action: object,
         feature_flag_snapshot: object,
         read_at: datetime,
         policy_decision_ref: str,
     ) -> PolicyEvaluation:
+        try:
+            _require_identifier(actor_ref, "actor_ref_required")
+        except ContractValidationError as exc:
+            return PolicyEvaluation(False, str(exc), None)
+        assert isinstance(actor_ref, str)
         flag_error = self._validate_feature_flags(feature_flag_snapshot)
         if flag_error is not None:
             return PolicyEvaluation(False, flag_error, None)
@@ -215,6 +222,7 @@ class IsolationPolicy(RepositoryGrantVerifier):
             return PolicyEvaluation(False, "sensitivity_forbidden", None)
         grant = _issue_repository_read_grant(
             scope=scope,
+            actor_ref=actor_ref,
             data_version_id=target.data_version_id,
             read_at=read_at,
             policy_decision_ref=policy_decision_ref,

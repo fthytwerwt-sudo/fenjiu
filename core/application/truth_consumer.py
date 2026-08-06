@@ -84,6 +84,7 @@ class ScopedTruthConsumer:
 
         evaluation = self._policy.evaluate(
             scope=command.scope,
+            actor_ref=command.actor_ref,
             target=IsolationTarget(
                 scope=target.scope,
                 data_version_id=target.data_version_id,
@@ -107,7 +108,6 @@ class ScopedTruthConsumer:
                 evaluation.grant,
                 command.entity_kind,
                 command.subject_ref,
-                actor_ref=command.actor_ref,
             )
         except ContractValidationError as exc:
             self._deny(command, str(exc), target)
