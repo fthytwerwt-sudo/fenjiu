@@ -1,0 +1,98 @@
+{
+  "fixture_kind": "synthetic_mapping_profiles",
+  "is_synthetic": true,
+  "external_execution_allowed": false,
+  "business_external_ready": false,
+  "profiles": [
+    {
+      "profile_id": "profile_alpha",
+      "version": "v1",
+      "scope": {
+        "tenant_id": "00000000-0000-4000-8000-000000000001",
+        "project_id": "00000000-0000-4000-8000-000000000101",
+        "business_line_id": "00000000-0000-4000-8000-000000000201",
+        "correlation_id": "synthetic_correlation"
+      },
+      "source_signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_contract": {
+        "id": "contract_alpha",
+        "version": "v1",
+        "fields": ["target_alpha"]
+      },
+      "rules": [
+        {
+          "id": "rule_alpha",
+          "source_field": "field_alpha",
+          "target_field": "target_alpha",
+          "transforms": ["unicode_nfkc", "trim", "casefold"],
+          "required": true,
+          "required_attributes": ["unit", "currency", "date", "language"],
+          "freshness_seconds": 60
+        }
+      ]
+    },
+    {
+      "profile_id": "profile_alpha",
+      "version": "v2",
+      "scope": {
+        "tenant_id": "00000000-0000-4000-8000-000000000001",
+        "project_id": "00000000-0000-4000-8000-000000000101",
+        "business_line_id": "00000000-0000-4000-8000-000000000201",
+        "correlation_id": "synthetic_correlation"
+      },
+      "source_signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_contract": {
+        "id": "contract_alpha",
+        "version": "v1",
+        "fields": ["target_alpha"]
+      },
+      "rules": [
+        {
+          "id": "rule_alpha_v2",
+          "source_field": "field_alpha",
+          "target_field": "target_alpha",
+          "transforms": ["unicode_nfkc", "trim", "decimal_canonical"],
+          "required": true,
+          "required_attributes": ["unit", "currency", "date", "language"],
+          "freshness_seconds": 60
+        }
+      ]
+    },
+    {
+      "profile_id": "profile_with_required_gap",
+      "version": "v1",
+      "scope": {
+        "tenant_id": "00000000-0000-4000-8000-000000000001",
+        "project_id": "00000000-0000-4000-8000-000000000101",
+        "business_line_id": "00000000-0000-4000-8000-000000000201",
+        "correlation_id": "synthetic_correlation"
+      },
+      "source_signature": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "target_contract": {
+        "id": "contract_gap",
+        "version": "v1",
+        "fields": ["target_alpha", "target_required"]
+      },
+      "rules": [
+        {
+          "id": "rule_alpha",
+          "source_field": "field_alpha",
+          "target_field": "target_alpha",
+          "transforms": ["unicode_nfkc", "trim", "casefold"],
+          "required": true,
+          "required_attributes": ["unit", "currency", "date", "language"],
+          "freshness_seconds": 60
+        },
+        {
+          "id": "rule_required",
+          "source_field": "field_required",
+          "target_field": "target_required",
+          "transforms": ["unicode_nfkc", "trim"],
+          "required": true,
+          "required_attributes": [],
+          "freshness_seconds": null
+        }
+      ]
+    }
+  ]
+}

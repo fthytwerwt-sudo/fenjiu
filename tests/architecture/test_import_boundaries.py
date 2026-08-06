@@ -337,6 +337,21 @@ class ImportBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(ingestion_approved.returncode, 1, ingestion_approved.stdout)
 
+        mapping_approved = subprocess.run(
+            [
+                "git",
+                "check-ignore",
+                "--no-index",
+                "fixtures/ingestion/synthetic_mapping_profiles.json",
+            ],
+            cwd=ROOT,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(mapping_approved.returncode, 1, mapping_approved.stdout)
+
     def test_external_action_defaults_are_fail_closed(self) -> None:
         from core.application import ExternalActionGuard
         from core.contracts import default_execution_policy
