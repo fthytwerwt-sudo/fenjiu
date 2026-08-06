@@ -1,12 +1,14 @@
 # P03-01｜原始登记、隔离存储与 extraction ports 报告
 
-> **状态：remote_task_branch_code_readback_verified_main_not_merged**
+> **状态：remote_main_code_readback_verified**
 >
 > **执行日期：** 2026-08-06
 >
 > **精确基线：** 远端 `main` `bce35a01fa7c13cce797069198ce71dcf29ea2dc`
 >
-> **远端任务分支代码提交：** `e17196e06380827224a1463f01b53a9975382f22`
+> **任务分支修复提交：** `e17196e06380827224a1463f01b53a9975382f22`
+>
+> **控制器远端 main 工程代码提交：** `f92612bf03b5ac740e52d1d56e99f9959369b9fb`
 >
 > **范围边界：** 只完成 stdlib/local-only/synthetic-only 的登记、hash、quarantine、fake extraction、locator 与 fixture staging contract；没有读取真实供应链文件，没有接 production storage/database/auth/RBAC/RLS，没有写 approved truth，也没有打开任何 external flag。
 
@@ -67,19 +69,19 @@ fixture allowlist 只新增 `fixtures/ingestion/synthetic_source_profiles.json`�
 
 ## 6. Git 与远端回读
 
-- task branch：`codex/p03-01-ingestion-ports`。
-- remote code commit：`e17196e06380827224a1463f01b53a9975382f22`。
+- task branch：`codex/p03-01-ingestion-ports`；任务分支修复提交为 `e17196e06380827224a1463f01b53a9975382f22`。
+- 控制器已依次集成任务提交和 AppleDouble 静态审计兼容性修复，并将 `main` 工程代码 push/readback 至 `f92612bf03b5ac740e52d1d56e99f9959369b9fb`；本地 `HEAD`、`origin/main` 和 `git ls-remote` 一致。
 - `modules/ingestion/store.py` remote SHA-256：`2d9dd42fabdcd9952c8187f7ca8b3fcf4c8f975c8b5fe5c5b6aaf9c750b8dea8`。
 - `modules/ingestion/pipeline.py` remote SHA-256：`e97e0d06236c84d7dcc7568c2726e6c8b87eba52fe187ae41b4ccdd8b09b56dd`。
 - `modules/ingestion/contracts.py` remote SHA-256：`57ac6039f37388dc8d244e3833f4b09a2d9c82d6cd522158bc1af5915a880ed4`。
 - `adapters/storage/fake_extractors.py` remote SHA-256：`6b0f89c8f0b348cefb93efe5bd436027ee219ff78cc41b4b99b2db8006233014`。
-- `tests/ingestion/test_source_registration_and_extraction.py` remote SHA-256：`9a949f43ad8d8c2d66429ab75c4c582dc5bc1a59dc1079708269956077c8d08a`。
-- 本任务未 merge、未 push `main`；是否集成由控制器/用户后续决定。本报告也不生成或修改 sync archive。
+- `tests/ingestion/test_source_registration_and_extraction.py` remote SHA-256：`6388db73a3200894201a0feacb0b32f9354f4f46e4ed0dcc89190956c7922907`。该静态审计只忽略外置盘 `._*` AppleDouble sidecar，不忽略普通源码。
+- P03-01 工程代码已合入、推送并回读 `main`；本报告状态回填后不生成或修改 sync archive。
 
 ## 7. 事实分级、剩余阻断与 P03-02 输入
 
-- **CONFIRMED（任务分支工程）**：synthetic source registration/extraction、quarantine、locator、idempotency、failure retention、测试、独立 review、code commit/push 与远端 core-file readback 已完成。
-- **部分成立（Phase 3）**：P03-01 代码尚未合入远端 `main`，所以 P03-02 不应以 `main` 前置已完成开始；须先由控制器审查/集成，再从新的精确 `main` 创建干净 worktree。
+- **CONFIRMED（工程）**：synthetic source registration/extraction、quarantine、locator、idempotency、failure retention、测试、独立 review、controller integration、`main` code commit/push 与远端 core-file readback 已完成。
+- **部分成立（Phase 3）**：P03-01 只完成 synthetic/local engineering contract；P03-02 可在本次状态回填也被远端回读后，从新的精确 `main` 创建干净 worktree，仍不得引入真实资料或提升 approved truth。
 - **BLOCKED / DEFER**：真实 source storage、真实 XLSX/CSV/DOCX/PDF/image/folder/JSON parsing、OCR、database adapter/driver、authenticated actor/RBAC、RLS、encryption、retention/legal region、production connection、approved publish 与所有外部动作。
 - **P03-02 输入**：可复用 `SourceFileRecord`、`IngestionJobRecord`、`ExtractionResultRecord`、`StagingCandidateRecord`、`FieldLocator`、source/job/result IDs、content hash 与 parser/extractor/mapping profile version；P03-02 仍只能新增 synthetic versioned mapping、normalizer 与 missing/conflict/expiry/duplicate quality reports，必须保留 source+locator+rule lineage，未知字段/单位/币种/日期转 manual/blocked，不得补值或批准。
 

@@ -46,7 +46,7 @@
 | Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
 | Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P02-02 工程代码为 `0ba7f0575fdfe2906455c5b6301ac71c8872e727` |
+| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P03-01 工程代码为 `f92612bf03b5ac740e52d1d56e99f9959369b9fb` |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -61,7 +61,7 @@
 - **CONFIRMED（P02-01）**：`main` 已远端回读 scope/source/version contracts、synthetic fixture metadata、PostgreSQL schema migration 和 compound scope/lineage constraints。独立 code review 发现 migration replay/negative constraints 未纳入默认回归，已修复并二次复核：`make regression` 现在要求 Docker/Compose/daemon，启动 worktree 派生的隔离 PostgreSQL、完成两次 migration replay、五类 SQL 负例和 54 项 Python 测试后清理容器、network 与 volumes；不可用时非零失败而不跳过。该成果只证明 local synthetic schema 防护，不启用 production database、真实资料、审批、外部网络或业务外部动作。
 - **CONFIRMED（P02-02）**：`main` 已远端回读九类 value-free truth contracts、source/version/approval evidence、parent/diff/effective window、append-only state machine、scoped current read 与 PostgreSQL constraints/triggers/view。review 发现 terminal root 可经 `conflict → approved` 绕过 staging ancestry，已在 Python repository、SQL CHECK 与 insert trigger 使用同一 root allowlist 修复；73 项 Python tests、两次 migration replay、16 类 SQL 负例、P00 两种扫描、mechanism validation 与 Docker cleanup 均由控制器复验通过。它不启用真实资料、认证审批、RLS、production database 或业务外部动作。
 - **CONFIRMED（P02-03 / Phase 2）**：控制器已将 P02-03 六笔审查后提交安全集成并从远端 `main` `451843601a1a610e50bfbd9794f437b5781f1401` 回读 sealed policy grant、tests-only lifecycle probe、mandatory audit 与 signed actor attribution contracts。控制器和独立 reviewer 复现的 runtime direct read、audit bypass 与 actor replacement HIGH 均已修复并补精确回归；最终 actor-binding 专项独立复审 `APPROVE`。集成后 `make regression` 通过 92 项 Python tests、两次 migration replay、16 类 SQL 负例与 Docker cleanup；P00 两种扫描只在干净 task worktree 通过。该 local capability 不认证 actor/RBAC；P03-01 可开始，但真实资料、production isolation 与所有外部业务动作仍阻断。
-- **PARTIAL（P03-01 / task branch）**：从精确远端 `main` `bce35a01fa7c13cce797069198ce71dcf29ea2dc` 创建的干净 worktree 已完成 synthetic-only source/hash/private locator/quarantine、七类 fake extraction 与 fixture staging。独立 review 第一轮 HIGH/MEDIUM 已修复；控制器后续发现的 runtime 单条 staging atomicity bypass HIGH 也已通过移除 mutator 与强制一对一 batch 修复，原 reviewer 专项复审为 0 findings / `APPROVE`。`make regression` 通过 106 项 Python tests、两次 migration replay与 16 类 SQL 负例，P00 两种扫描和远端代码/core-file readback通过。任务代码仅在 `codex/p03-01-ingestion-ports` `e17196e06380827224a1463f01b53a9975382f22`，尚未 merge/push `main`；P03-02 须等待控制器集成后另建干净 worktree。
+- **CONFIRMED（P03-01 / Phase 3 engineering）**：控制器已从任务分支 `codex/p03-01-ingestion-ports` 安全集成 P03-01，并从远端 `main` `f92612bf03b5ac740e52d1d56e99f9959369b9fb` 回读。synthetic-only source/hash/private locator/quarantine、七类 fake extraction 与 fixture staging 均保持 value-free；runtime 单条 staging mutator 已移除，全批次入口在写入前强制 result/candidate 一对一、无重复与 lineage/scope 一致。控制器 `make regression` 通过 106 项 Python tests、两次 migration replay 与 16 类 SQL 负例，mechanism validation 与 Docker cleanup 通过；独立专项复审为 0 findings / `APPROVE`。P03 static audit 仅过滤外置盘 AppleDouble `._*` sidecar，普通源码仍被审计。P03-02 可从含本次状态回填的最新远端 `main` 新建干净 worktree。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口
