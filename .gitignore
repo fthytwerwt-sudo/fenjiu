@@ -33,6 +33,7 @@
 !/fixtures/ingestion/
 /fixtures/ingestion/*
 !/fixtures/ingestion/synthetic_source_profiles.json
+!/fixtures/ingestion/synthetic_mapping_profiles.json
 !/migrations/
 !/migrations/**
 !/tests/
