@@ -2,6 +2,13 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P01-01 模块化单体 skeleton 与导入边界
+
+- **目标**：只建立可 import、可测试的 Python skeleton，不实现产品、CRM、客服、数据库、网络或任何外部 adapter。
+- **实际改动**：新增 apps/core/modules/adapters/workflows 的空包、模块 ownership README、typed scope/error/port 占位、synthetic-only fixture metadata、迁移占位与 architecture tests；`.gitignore` 仅放行 P01 必需源码及两份 fixture 文件。
+- **审查与验证**：控制器发现并修复了 committed diff 尾部空白、相对导入可绕过 application/security 边界、fixtures allowlist 过宽及 AppleDouble 元数据导致边界测试解码失败四项问题。最终在干净 task worktree 通过 `compileall`、8 项 architecture tests、12 项 P00 回归以及两种 P00 扫描；控制器在外置盘根目录复验 8 项 architecture tests 与 12 项 P00 回归均通过，`main` 远端已回读。
+- **状态边界**：外部动作默认全为 false；无新增依赖、ORM、数据库、网络、模型、SDK、真实资料或业务状态。P01-02/P01-03 仍待执行，不能把 skeleton 写成可运行销售系统。
+
 ## 2026-08-06｜P00-03 dry-safe 回归扫描与主工作区基线阻断
 
 - **目标**：建立不联网、不读取 `.env*` 内容、不调用模型或真实渲染的敏感/路径/legacy 回归入口，并验证其 fail-closed 行为。

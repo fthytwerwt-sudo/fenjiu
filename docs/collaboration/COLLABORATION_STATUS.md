@@ -55,6 +55,7 @@
 - **部分成立**：P00-01 工程资产审计与 P00-02 架构冻结已在 `main` 远端回读。
 - **CONFIRMED（隔离执行）**：P00-03 dry-safe 扫描器与 12 项回归测试已在控制器审查后集成并推送 `main`；干净 P00-03 task worktree 的两种扫描均通过，Phase 0 可写为工程完成。
 - **PARTIAL（本地环境）**：外置盘根目录仍发现既有 ignored 禁入路径（AppleDouble、`.env*` 等）；该目录不得执行回归。Phase 1 及以后必须每张任务卡新建干净 task worktree，扫描失败即停止该任务分支。
+- **CONFIRMED（P01-01）**：`main` 已远端回读模块化单体空 skeleton 与 metadata-safe architecture guard；外部 adapter、网络、数据库、模型、环境变量与真实业务资料均未接入。导入护栏覆盖 core/domain 与 modules 到 application/security 的直接及相对反向导入，跳过 AppleDouble 等文件系统元数据但不跳过普通源码，fixtures 默认仅放行 synthetic metadata。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口
