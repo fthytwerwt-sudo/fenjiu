@@ -466,9 +466,14 @@ class SourceRegistrationAndExtractionTests(unittest.TestCase):
             "urllib",
         }
         banned_calls = {"open", "read_bytes", "read_text", "urlopen"}
-        source_paths = (
-            *(ROOT / "modules/ingestion").glob("*.py"),
-            *(ROOT / "adapters/storage").glob("*.py"),
+        source_paths = tuple(
+            path
+            for directory in (
+                ROOT / "modules/ingestion",
+                ROOT / "adapters/storage",
+            )
+            for path in directory.glob("*.py")
+            if not path.name.startswith("._")
         )
 
         for path in source_paths:
