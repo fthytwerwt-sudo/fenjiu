@@ -13,6 +13,7 @@ from uuid import UUID
 
 from adapters.storage import fake_extractor_registry
 from core.contracts import ContractValidationError, DataState, ScopeRef
+import modules.ingestion as ingestion_api
 from modules.ingestion import (
     ExtractionResultRecord,
     FieldLocator,
@@ -205,8 +206,63 @@ class SourceRegistrationAndExtractionTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
             self.store.get_source(other_scope, first.source_file.id)
         forged = replace(first.extraction_results[0], scope=other_scope)
+        forged_candidate = replace(first.staging_candidates[0], scope=other_scope)
         with self.assertRaisesRegex(ContractValidationError, "cross_scope_forbidden"):
-            self.store.append_result(forged)
+            self.store.append_staging_batch((forged,), (forged_candidate,))
+
+    def test_runtime_store_exposes_only_atomic_staging_write(self) -> None:
+        self.assertIn("InMemoryIngestionStore", ingestion_api.__all__)
+        self.assertFalse(hasattr(InMemoryIngestionStore, "append_result"))
+        self.assertFalse(hasattr(InMemoryIngestionStore, "append_candidate"))
+        self.assertTrue(hasattr(InMemoryIngestionStore, "append_staging_batch"))
+        self.assertFalse(hasattr(ingestion_api, "append_result"))
+        self.assertFalse(hasattr(ingestion_api, "append_candidate"))
+
+        profile = self.fixture["profiles"][0]
+        outcome = self.pipeline.ingest(
+            command_for(profile),
+            bytes([16]) * 16,
+            (field_for(profile, 116),),
+        )
+        results_before = self.store.extraction_results
+        candidates_before = self.store.staging_candidates
+
+        pending_result = replace(
+            outcome.extraction_results[0],
+            id=UUID(int=71_301),
+        )
+        mismatched_candidate = replace(
+            outcome.staging_candidates[0],
+            id=UUID(int=71_302),
+            extraction_result_id=pending_result.id,
+            field_name="mismatched_field",
+        )
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "staging_result_mismatch",
+        ):
+            self.store.append_staging_batch(
+                (pending_result,),
+                (mismatched_candidate,),
+            )
+        self.assertEqual(self.store.extraction_results, results_before)
+        self.assertEqual(self.store.staging_candidates, candidates_before)
+
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "staging_batch_atomicity_required",
+        ):
+            self.store.append_staging_batch(outcome.extraction_results, ())
+        self.assertEqual(self.store.extraction_results, results_before)
+        self.assertEqual(self.store.staging_candidates, candidates_before)
+
+        with self.assertRaisesRegex(
+            ContractValidationError,
+            "staging_batch_atomicity_required",
+        ):
+            self.store.append_staging_batch((), outcome.staging_candidates)
+        self.assertEqual(self.store.extraction_results, results_before)
+        self.assertEqual(self.store.staging_candidates, candidates_before)
 
     def test_unknown_mime_oversize_and_unsafe_locator_quarantine_fail_closed(self) -> None:
         profile = self.fixture["profiles"][2]
