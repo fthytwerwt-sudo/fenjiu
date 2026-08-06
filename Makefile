@@ -64,3 +64,4 @@ regression:
 	$(PYTHON) -m unittest discover -s tests/local_runtime
 	$(PYTHON) -m unittest discover -s tests/control_plane
 	$(PYTHON) -m unittest discover -s tests/contracts
+	$(PYTHON) -m unittest discover -s tests/ingestion

@@ -1,0 +1,57 @@
+{
+  "is_synthetic": true,
+  "data_state": "fixture",
+  "external_execution_allowed": false,
+  "business_external_ready": false,
+  "profiles": [
+    {
+      "source_kind": "xlsx",
+      "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "storage_locator": "private/fixture/source-01.xlsx",
+      "field_name": "field_alpha",
+      "locator": {"sheet": "Sheet_1", "row": 2, "cell": "A2"}
+    },
+    {
+      "source_kind": "csv",
+      "mime": "text/csv",
+      "storage_locator": "private/fixture/source-02.csv",
+      "field_name": "field_beta",
+      "locator": {"row": 2, "cell": "column_1"}
+    },
+    {
+      "source_kind": "docx",
+      "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "storage_locator": "private/fixture/source-03.docx",
+      "field_name": "field_gamma",
+      "locator": {"page": 1, "bbox": [10, 20, 30, 40]}
+    },
+    {
+      "source_kind": "pdf",
+      "mime": "application/pdf",
+      "storage_locator": "private/fixture/source-04.pdf",
+      "field_name": "field_delta",
+      "locator": {"page": 1, "bbox": [11, 21, 31, 41]}
+    },
+    {
+      "source_kind": "image",
+      "mime": "image/png",
+      "storage_locator": "private/fixture/source-05.png",
+      "field_name": "field_epsilon",
+      "locator": {"page": 1, "bbox": [12, 22, 32, 42]}
+    },
+    {
+      "source_kind": "folder",
+      "mime": "application/x.synthetic-folder-manifest",
+      "storage_locator": "ref:private:fixture-folder-06",
+      "field_name": "field_zeta",
+      "locator": {"member_relative_path": "member/source-06.json", "export_record": "record_1"}
+    },
+    {
+      "source_kind": "json_export",
+      "mime": "application/json",
+      "storage_locator": "private/fixture/source-07.json",
+      "field_name": "field_eta",
+      "locator": {"export_record": "record_1"}
+    }
+  ]
+}
