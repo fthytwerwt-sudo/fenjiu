@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P00-01 工程资产与禁区基线审计
+
+- **目标**：只执行 `P00-01`，以当前仓库证据建立工程资产、legacy hash/CLI、禁区和 Phase 1 输入基线；不创建运行时代码，不调用模型/API，不读取密钥值，不改变业务事实。
+- **实际读取**：AGENTS、PROJECT_ENTRY、业务/当前/事实源/范围/协作状态、GPT Project 机制包核心文件、AI Native Sales OS 总蓝图、架构与模块边界、P00-01 task card、受控 Git 文件清单和根目录脚本入口。
+- **实际改动**：新增 `docs/implementation/P00-01_ENGINEERING_ASSET_BASELINE_REPORT.md`，追加本执行历史记录。
+- **审计结果**：当前受控仓库主要为治理/状态/实施规划文档、GPT Project 机制包、同步包快照和两个根 Python 脚本；未发现 runtime 目录、migration、Docker/Make 入口或可运行服务。两个根脚本已记录 SHA-256 和安全 `--help` 入口；规划中 HappyHorse/DashScope/FFmpeg legacy 实体未在当前受控 Git 清单中定位，保持 `BLOCKED`，后续不得假设可运行。
+- **禁区结果**：本轮未修改原始研究、DOCX/XLSX/PDF、媒体、`outputs/`、`.env*`、`research_channels.json` 或 `project_sync/latest/`；AppleDouble 和超过 10MB 文件检查无命中。
+- **状态边界**：本条只表示 P00-01 在任务分支形成工程审计证据；不表示 Phase 0 已合入 main，不表示运行时系统、供应链资料、平台合规、账号权限、外部发布、报价、收款、订单、履约或销售成立。
+
 ## 2026-08-06｜AI Native Sales OS Phase 0–8 工程实施蓝图落库
 
 - **目标**：把已有 GPT Project / GitHub / Codex 治理机制与运行时工程规划分层，形成从工程基线到真实供应链资料导入、fixture 替换、全链回归和受控运行的可下发路径；本轮不开发业务代码。
