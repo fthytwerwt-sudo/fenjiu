@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-06｜P02-03 业务线隔离、fixture 防护与合同测试
+
+- **目标**：只把 tenant/project/business-line、fixture production separation、sensitivity/flags、approved/fresh/no-conflict truth consumer 与 denial audit 锁进 local repository/command contracts；不实现真实资料、production connection 或外部 adapter。
+- **实际改动**：新增 sealed policy-issued repository grant、fixed local internal sensitivity、完整 disabled feature snapshot、scoped `TruthConsumerCommand`、exact current read 与 payload-free immutable audit；移除 public repository history/by-id consumer read surface。adversarial tests 覆盖 cross tenant/project/business-line、unscoped/wildcard、fixture external、全部 external actions、candidate/expired/conflict/superseded/stale truth、sensitivity/flags、grant tamper/reuse/forgery、metadata spoof、fake verifier 与 audit mutation。
+- **审查与验证**：自审先移除 caller-controlled sensitivity escalation；独立 review 第一轮发现 direct grant forgery 和 mutable audit 两项 HIGH，第二轮发现 structural fake verifier 一项 HIGH，全部修复并补回归后第三轮 0 findings / `APPROVE`。最终 `make regression` 通过 90 项 Python tests、两次 migration replay 和 16 类 SQL 负例；P00 default/all-files、mechanism validation、compile/shell/diff 与 Docker cleanup 通过。
+- **Git 证据**：从远端 main `6d247b0613b517ff4474095abece2f64331a40a8` 新建干净 worktree；代码提交 `2375a209d2376dc186942cbf48b990ea6d55655b` 已 push 并从远端 task branch 回读三份 core/test SHA。`main` 未修改，仍为上述基线；default branch 仍为旧协作分支，visibility 因 API 连接失败保持 `UNKNOWN/BLOCKED`。
+- **状态边界**：仅 task branch engineering evidence；尚未集成 main，Phase 2/main completion 与 P03-01 仍阻断。业务状态、业务闸门和所有 external flags 不变化。
+
 ## 2026-08-06｜P02-02 真值实体、版本与状态机
 
 - **目标**：只以 value-free contract probes 建立 product/SKU/price/inventory/delivery/compliance/asset/approved_fact/forbidden expression 的 candidate/version/expiry/conflict/supersede 与 current-read 防护；不实现真实资料、parser、UI、adapter 或外部连接。
