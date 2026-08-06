@@ -143,3 +143,14 @@
 - **影响**：P02-03 可针对同一 read/lineage contract 做 adversarial isolation；Phase 3 future ingestion 只能创建 candidate，不能直接写 current truth。
 - **替代方案**：按时间戳或 version number取最新记录；未采用，因为 conflict/expired/superseded 可能被静默读出。只在 application 层检查；未采用，因为直接 SQL 会绕过状态与 append-only 防护。
 - **状态边界**：本决定不表示真实 approval actor/RBAC、production repository/RLS、业务资料、供应链、合规或外部执行成立。
+
+### ADR-0011：P02-03 以 sealed policy grant 和 append-only denial audit 锁定 consumer read
+
+- **日期**：2026-08-06
+- **状态**：Accepted / PARTIAL（task branch engineering；待 main integration）
+- **来源**：P02-03 任务卡、adversarial regression、自审与三轮独立 code review。
+- **背景**：仅靠 scope 参数和 UI/prompt filter 不能阻止 downstream 直接读 repository；caller-controlled sensitivity、可伪造 grant/verifier 或可清空 denial log 均会让 fixture/cross-line/non-current truth 绕过预期边界。
+- **决定**：current truth consumer 必须走 command → fixed local policy → sealed nominal policy registry grant → exact repository current read → immutable audit result。external flags 必须完整且全 false；local sensitivity 固定 internal，调用者不能自行扩大；repository 不暴露 public history/by-id consumer reads。
+- **影响**：P03-01 及以后只能在完整 scope 与 approved/fresh/no-conflict truth 合同内工作；synthetic staging 可写入候选，但不能成为 current truth 或任何 external fallback。
+- **替代方案**：caller-supplied sensitivity allowlist；未采用，因为调用者可自我提权。自洽 dataclass grant 或 structural verifier protocol；未采用，因为 direct issuer/fake verifier 可绕过。mutable list audit；未采用，因为 denial evidence 可被普通 clear。
+- **状态边界**：本决定当前只在远端 task branch 有代码证据，尚未集成 main；不表示 production auth/RBAC/RLS、真实 data classification、业务资料、合规或外部执行成立。
