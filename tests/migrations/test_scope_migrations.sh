@@ -49,12 +49,12 @@ for replay_pass in 1 2; do
 done
 
 schema_table_count=$(psql_database "$TEST_DATABASE" -Atc \
-    "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'fenjiu_contract'")
-test "$schema_table_count" -eq 7
+    "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'fenjiu_contract' AND table_type = 'BASE TABLE'")
+test "$schema_table_count" -eq 8
 
 migration_row_count=$(psql_database "$TEST_DATABASE" -Atc \
-    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version = '0001'")
-test "$migration_row_count" -eq 1
+    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002')")
+test "$migration_row_count" -eq 2
 
 psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
 INSERT INTO fenjiu_contract.tenants (
@@ -115,6 +115,14 @@ INSERT INTO fenjiu_contract.source_refs (
     '00000000-0000-4000-8000-000000000201', 'synthetic_fixture', 'v2',
     'fixture', 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
     'synthetic_test', 'synthetic_correlation'
+),
+(
+    '00000000-0000-4000-8000-000000000303',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000202', 'synthetic_fixture', 'v3',
+    'fixture', 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
 );
 
 INSERT INTO fenjiu_contract.data_versions (
@@ -139,6 +147,15 @@ INSERT INTO fenjiu_contract.data_versions (
     '00000000-0000-4000-8000-000000000302', 1,
     'fixture', 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
     'synthetic_test', 'synthetic_correlation'
+),
+(
+    '00000000-0000-4000-8000-000000000403',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000202',
+    '00000000-0000-4000-8000-000000000303', 1,
+    'fixture', 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
 );
 
 INSERT INTO fenjiu_contract.entity_metadata (
@@ -155,7 +172,31 @@ INSERT INTO fenjiu_contract.entity_metadata (
     'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
     'synthetic_test', 'synthetic_correlation'
 );
+
+INSERT INTO fenjiu_contract.truth_versions (
+    id, tenant_id, project_id, business_line_id, entity_kind, subject_ref,
+    version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash,
+    changed_fields, sensitivity, is_synthetic, external_execution_allowed,
+    created_at, updated_at, created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000000701',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201', 'product',
+    'synthetic_subject', 1, 'fixture',
+    '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401',
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    '1111111111111111111111111111111111111111111111111111111111111111',
+    ARRAY['contract_field'], 'internal', true, false,
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test',
+    'synthetic_correlation'
+);
 SQL
+
+current_truth_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM fenjiu_contract.current_approved_truth")
+test "$current_truth_count" -eq 0
 
 expect_sql_failure "missing mandatory metadata" \
     "INSERT INTO fenjiu_contract.entity_metadata (id) VALUES ('00000000-0000-4000-8000-000000000601')"
@@ -172,4 +213,22 @@ expect_sql_failure "fixture cannot enable external execution" \
 expect_sql_failure "source and version must match" \
     "INSERT INTO fenjiu_contract.entity_metadata (id, tenant_id, project_id, business_line_id, data_state, source_ref_id, data_version_id, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000605', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'fixture', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000402', 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
 
-printf 'P02-01 migration replay and negative constraints passed.\n'
+expect_sql_failure "approved truth requires complete approval evidence" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, parent_version_id, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, effective_from, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000702', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'price', 'synthetic_subject', 2, '00000000-0000-4000-8000-000000000401', 'approved', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '2222222222222222222222222222222222222222222222222222222222222222', ARRAY['contract_field'], CURRENT_TIMESTAMP, 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "truth version number is unique within scope and subject" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000703', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'product', 'synthetic_subject', 1, 'fixture', '00000000-0000-4000-8000-000000000302', '00000000-0000-4000-8000-000000000402', 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', '3333333333333333333333333333333333333333333333333333333333333333', ARRAY['contract_field'], 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "truth parent cannot cross business line" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, parent_version_id, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000704', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000202', 'product', 'synthetic_subject', 2, '00000000-0000-4000-8000-000000000401', 'fixture', '00000000-0000-4000-8000-000000000303', '00000000-0000-4000-8000-000000000403', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', '4444444444444444444444444444444444444444444444444444444444444444', ARRAY['contract_field'], 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "fixture truth state transition is forbidden" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, parent_version_id, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000705', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'product', 'synthetic_subject', 2, '00000000-0000-4000-8000-000000000401', 'fixture', '00000000-0000-4000-8000-000000000302', '00000000-0000-4000-8000-000000000402', 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '5555555555555555555555555555555555555555555555555555555555555555', ARRAY['contract_field'], 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "truth history cannot be updated" \
+    "UPDATE fenjiu_contract.truth_versions SET payload_hash = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' WHERE id = '00000000-0000-4000-8000-000000000701'"
+
+expect_sql_failure "truth history cannot be deleted" \
+    "DELETE FROM fenjiu_contract.truth_versions WHERE id = '00000000-0000-4000-8000-000000000701'"
+
+printf 'P02-01/P02-02 migration replay and negative constraints passed.\n'

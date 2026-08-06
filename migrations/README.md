@@ -1,8 +1,9 @@
 # migrations
 
-P02-01 provides replay-safe pure SQL schema migrations for the isolated local
-PostgreSQL service. Migrations contain schema metadata and constraints only:
-no tenant rows, SKU, price, inventory, credentials, or real data.
+P02-01 provides replay-safe scope/source/version metadata constraints. P02-02
+adds value-free truth entity/version/state contracts and a guarded current view.
+Migrations contain schema metadata and constraints only: no tenant rows, SKU,
+price, inventory, credentials, or real data.
 
 `make migrate` streams numbered SQL files to `psql` inside the pinned local
 PostgreSQL container. It does not read `.env`, accept a database URL, or expose
