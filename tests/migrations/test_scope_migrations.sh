@@ -173,6 +173,133 @@ INSERT INTO fenjiu_contract.entity_metadata (
     'synthetic_test', 'synthetic_correlation'
 );
 
+INSERT INTO fenjiu_contract.tenants (
+    id, slug, sensitivity, is_synthetic, external_execution_allowed,
+    created_at, updated_at, created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000000901', 'contract_tenant',
+    'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+);
+
+INSERT INTO fenjiu_contract.projects (
+    id, tenant_id, slug, sensitivity, is_synthetic,
+    external_execution_allowed, created_at, updated_at, created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000901', 'contract_project',
+    'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+);
+
+INSERT INTO fenjiu_contract.business_lines (
+    id, tenant_id, project_id, slug, sensitivity, is_synthetic,
+    external_execution_allowed, created_at, updated_at, created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911', 'contract_line',
+    'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+);
+
+INSERT INTO fenjiu_contract.source_refs (
+    id, tenant_id, project_id, business_line_id, source_kind, source_version,
+    data_state, sensitivity, is_synthetic, external_execution_allowed,
+    created_at, updated_at, created_by, correlation_id
+) VALUES
+(
+    '00000000-0000-4000-8000-000000000310',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921', 'contract_probe', 'v1',
+    'staging', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000320',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921', 'contract_probe', 'v2',
+    'staging', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000330',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921', 'contract_probe', 'v3',
+    'staging', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000340',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921', 'contract_probe', 'v4',
+    'staging', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000350',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921', 'contract_probe', 'v5',
+    'staging', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+);
+
+INSERT INTO fenjiu_contract.data_versions (
+    id, tenant_id, project_id, business_line_id, source_ref_id, version_no,
+    data_state, sensitivity, is_synthetic, external_execution_allowed,
+    created_at, updated_at, created_by, correlation_id
+) VALUES
+(
+    '00000000-0000-4000-8000-000000000410',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000310', 1,
+    'conflict', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000420',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000320', 1,
+    'blocked', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000430',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000330', 1,
+    'expired', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000440',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000340', 1,
+    'superseded', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+),
+(
+    '00000000-0000-4000-8000-000000000450',
+    '00000000-0000-4000-8000-000000000901',
+    '00000000-0000-4000-8000-000000000911',
+    '00000000-0000-4000-8000-000000000921',
+    '00000000-0000-4000-8000-000000000350', 2,
+    'approved', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'contract_probe'
+);
+
 INSERT INTO fenjiu_contract.truth_versions (
     id, tenant_id, project_id, business_line_id, entity_kind, subject_ref,
     version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash,
@@ -215,6 +342,25 @@ expect_sql_failure "source and version must match" \
 
 expect_sql_failure "approved truth requires complete approval evidence" \
     "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, parent_version_id, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, effective_from, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000702', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'price', 'synthetic_subject', 2, '00000000-0000-4000-8000-000000000401', 'approved', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '2222222222222222222222222222222222222222222222222222222222222222', ARRAY['contract_field'], CURRENT_TIMESTAMP, 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "conflict truth root is forbidden" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000710', '00000000-0000-4000-8000-000000000901', '00000000-0000-4000-8000-000000000911', '00000000-0000-4000-8000-000000000921', 'product', 'conflict_root', 1, 'conflict', '00000000-0000-4000-8000-000000000310', '00000000-0000-4000-8000-000000000410', '1010101010101010101010101010101010101010101010101010101010101010', '1111111111111111111111111111111111111111111111111111111111111111', ARRAY['contract_field'], 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'contract_probe')"
+
+expect_sql_failure "blocked truth root is forbidden" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000720', '00000000-0000-4000-8000-000000000901', '00000000-0000-4000-8000-000000000911', '00000000-0000-4000-8000-000000000921', 'product', 'blocked_root', 1, 'blocked', '00000000-0000-4000-8000-000000000320', '00000000-0000-4000-8000-000000000420', '2020202020202020202020202020202020202020202020202020202020202020', '2222222222222222222222222222222222222222222222222222222222222222', ARRAY['contract_field'], 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'contract_probe')"
+
+expect_sql_failure "expired truth root is forbidden" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, effective_from, effective_until, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000730', '00000000-0000-4000-8000-000000000901', '00000000-0000-4000-8000-000000000911', '00000000-0000-4000-8000-000000000921', 'product', 'expired_root', 1, 'expired', '00000000-0000-4000-8000-000000000330', '00000000-0000-4000-8000-000000000430', '3030303030303030303030303030303030303030303030303030303030303030', '3333333333333333333333333333333333333333333333333333333333333333', ARRAY['contract_field'], CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 day', 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'contract_probe')"
+
+expect_sql_failure "superseded truth root is forbidden" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000740', '00000000-0000-4000-8000-000000000901', '00000000-0000-4000-8000-000000000911', '00000000-0000-4000-8000-000000000921', 'product', 'superseded_root', 1, 'superseded', '00000000-0000-4000-8000-000000000340', '00000000-0000-4000-8000-000000000440', '4040404040404040404040404040404040404040404040404040404040404040', '4444444444444444444444444444444444444444444444444444444444444444', ARRAY['contract_field'], 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'contract_probe')"
+
+expect_sql_failure "approved child cannot follow rejected conflict root" \
+    "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, parent_version_id, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, effective_from, approval_evidence_id, approval_actor_ref, approval_decision_ref, approval_evidence_ref, approval_policy_version, approved_at, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000750', '00000000-0000-4000-8000-000000000901', '00000000-0000-4000-8000-000000000911', '00000000-0000-4000-8000-000000000921', 'product', 'conflict_root', 2, '00000000-0000-4000-8000-000000000410', 'approved', '00000000-0000-4000-8000-000000000350', '00000000-0000-4000-8000-000000000450', '5050505050505050505050505050505050505050505050505050505050505050', '5555555555555555555555555555555555555555555555555555555555555555', ARRAY['contract_field'], CURRENT_TIMESTAMP, '00000000-0000-4000-8000-000000000850', 'synthetic_reviewer', 'decision_750', 'evidence_750', 'policy_v1', CURRENT_TIMESTAMP, 'internal', NOT TRUE, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'contract_probe')"
+
+current_truth_after_rejected_root=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM fenjiu_contract.current_approved_truth")
+test "$current_truth_after_rejected_root" -eq 0
 
 expect_sql_failure "truth version number is unique within scope and subject" \
     "INSERT INTO fenjiu_contract.truth_versions (id, tenant_id, project_id, business_line_id, entity_kind, subject_ref, version_no, data_state, source_ref_id, data_version_id, payload_hash, diff_hash, changed_fields, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000000703', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'product', 'synthetic_subject', 1, 'fixture', '00000000-0000-4000-8000-000000000302', '00000000-0000-4000-8000-000000000402', 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', '3333333333333333333333333333333333333333333333333333333333333333', ARRAY['contract_field'], 'internal', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
