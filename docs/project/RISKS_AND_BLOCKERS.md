@@ -9,6 +9,6 @@
 | R-05 | **INFERRED** | 历史 B2B、多平台和 90 天研究可能被误用为当前指令 | 范围漂移或错误投入 | 以 BUSINESS_STATUS、DECISIONS 和 SOURCE_OF_TRUTH 为准；旧研究仅作历史背景 |
 | R-06 | **BLOCKED** | V2 的干净 main、远端默认分支、visibility 与同步包最终验证尚待最终远端回读 | 不能把仓库安全收口或远端状态写为已完成 | 以 COLLABORATION_STATUS 的最终远端回读更新为准 |
 | R-07 | **CONFIRMED** | 本地存在私有配置、联系资料和大体积派生产物 | 可能泄露秘密/隐私或污染 Git/同步包 | 保持忽略、allowlist、敏感扫描和最小披露；发现真实凭据须评估轮换 |
-| R-08 | **BLOCKED / engineering** | P00-03 在授权主工作区发现既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项 | Phase 0 安全基线不为绿，Phase 1 不得按依赖图启动 | 不读取 `.env*` 内容、不删除 `._*`；由用户决定隔离/清理这些既有本地文件，或提供经审计的替代工作区基线 |
+| R-08 | **PARTIAL / local-workspace risk** | 外置盘根目录含既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项；干净 P00-03 task worktree 的 12 项测试和两种扫描均通过 | 禁止把外置盘根目录用作回归入口；不阻断在新建、干净 task worktree 中继续工程任务 | 不读取 `.env*` 内容、不删除 `._*`；后续一任务一 worktree，扫描失败立即停止该任务分支 |
 
 R-01 至 R-04 不阻断内部资料、清单、核验和草稿准备；它们阻断的是公开传播、广告、真实销售、收款和履约。机制完成不得被描述为业务上线。

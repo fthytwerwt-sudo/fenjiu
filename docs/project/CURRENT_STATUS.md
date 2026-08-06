@@ -23,7 +23,7 @@
 
 - **CONFIRMED（规划层）**：`docs/implementation/` 已形成 AI Native Sales OS 的 Phase 0–8 分阶段蓝图、机器可读依赖图和每阶段 3 张 Codex 任务卡；该规划承接 GPT Project / GitHub / Codex 治理机制，不替代它。
 - **未实施**：本摘要不表示已创建运行时工程、数据库、队列、CRM、客服、视频服务或真实资料导入；技术实施须按 `docs/implementation/CODEX_EXECUTION_INDEX.md` 一次一张任务卡推进。
-- **部分成立（工程 Phase 0）**：P00-01、P00-02 已完成远端回读；P00-03 已实现 dry-safe 扫描器并通过其自身回归，但授权主工作区发现既有 ignored 禁入路径，工程基线闸门为 `BLOCKED`，故 Phase 1 尚未进入。
+- **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行回归；Phase 1 只可在新建、干净的独立 task worktree 中启动。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
 详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)

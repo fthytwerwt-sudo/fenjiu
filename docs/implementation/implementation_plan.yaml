@@ -64,7 +64,7 @@ phases:
 tasks:
   P00-01: {phase: phase_00, status: remote_readback_verified, depends_on: [], risk: low}
   P00-02: {phase: phase_00, status: remote_readback_verified, depends_on: [P00-01], can_run_in_parallel_with: [P00-03], risk: low}
-  P00-03: {phase: phase_00, status: blocked_existing_ignored_forbidden_paths, depends_on: [P00-01], can_run_in_parallel_with: [P00-02], risk: medium}
+  P00-03: {phase: phase_00, status: remote_readback_verified_clean_worktree_required, depends_on: [P00-01], can_run_in_parallel_with: [P00-02], risk: medium}
   P01-01: {phase: phase_01, status: planned, depends_on: [P00-02, P00-03], risk: medium}
   P01-02: {phase: phase_01, status: planned, depends_on: [P01-01], risk: medium}
   P01-03: {phase: phase_01, status: planned, depends_on: [P01-02], risk: medium}

@@ -1,6 +1,6 @@
 # P00-03｜验证、敏感扫描与 legacy 回归基线报告
 
-> **状态：PARTIAL — 扫描器已实现；授权主工作区基线闸门为 BLOCKED**
+> **状态：CONFIRMED（仅限干净独立 task worktree）；外置盘根目录扫描入口为 BLOCKED**
 > **执行日期：2026-08-06**
 > **任务卡：** `docs/implementation/codex_tasks/phase_00/P00-03_validation_and_sensitive_scan_baseline.md`
 > **基线提交：** `4349aa221435ca2586c34ae5c727855faa0d0bfd`
@@ -17,7 +17,8 @@
 | symlink 安全 | 已确认 | `--all-files` 不收集 symlink entries；内容读取前拒绝 symlink，且 resolved path 必须仍在 root 内。 |
 | path metadata fail-closed | 已确认 | 不可访问、畸形或过长路径会输出 `path_scan_failed` 和泛化路径标签，不抛 traceback，不读取候选内容。 |
 | Git fail-closed | 已确认 | 指定 `--base-sha` 时，必需的 `git status` / `git diff` / `git ls-files` 失败会输出 `git_scan_failed` 并非零退出。 |
-| 授权主工作区基线 | **BLOCKED** | 控制器在授权主工作区复验时，带基线默认模式命中 202 项、`--all-files` 命中 1,262 项既有 ignored 禁入路径，类别为 `appledouble` 和 `forbidden_ignored_path`；无 traceback，且未读取 `.env*` 内容。按任务约束不得删除 `._*` 或放宽规则。 |
+| 外置盘根目录扫描入口 | **BLOCKED（局部）** | 控制器在该根目录复验时，带基线默认模式命中 202 项、`--all-files` 命中 1,262 项既有 ignored 禁入路径，类别为 `appledouble` 和 `forbidden_ignored_path`；无 traceback，且未读取 `.env*` 内容。按任务约束不得删除 `._*` 或放宽规则。 |
+| 干净 task worktree 基线 | **CONFIRMED** | 控制器在 P00-03 独立 worktree 复验 12 项测试、带基线默认扫描和 `--all-files` 均通过；后续任务必须沿用该隔离模式。 |
 | legacy hash/CLI baseline | 已确认 | 仅覆盖 P00-01 定位到的两个根同步/验证脚本；HappyHorse / DashScope / FFmpeg / research legacy 实体继续 `DEFER/BLOCKED`。 |
 | 外部行为 | 已确认关闭 | 未联网、未调用模型、未运行真实视频/DOCX/XLSX 渲染、未读取 `.env*`、未改 legacy 业务脚本。 |
 | 业务状态 | 未改变 | 仍为汾酒尼泊尔 TikTok 销售准备；外部发布、报价、收款、订单和履约保持 `BLOCKED`。 |
@@ -39,7 +40,7 @@ python3 scripts/validate_regression_baseline.py --base-sha 4349aa221435ca2586c34
 
 命中时退出码为 `1`；通过时退出码为 `0`。
 
-> 控制器复验说明：任务 worktree 中的自身回归测试和干净路径验证通过；授权主工作区含既有 ignored AppleDouble、`.env*` 与其他禁入路径，因此上述入口在该工作区正确返回非零。这是待人工处理的环境基线闸门，不是可忽略的“通过”结果，也不允许由本任务删除或读取这些文件。
+> 控制器复验说明：任务 worktree 中的自身回归测试和干净路径验证通过；外置盘根目录含既有 ignored AppleDouble、`.env*` 与其他禁入路径，因此上述入口在该根目录正确返回非零。这是待人工处理的环境基线闸门，不是可忽略的“通过”结果，也不允许由本任务删除或读取这些文件。它阻断该根目录作为扫描入口，但不阻断已验证的干净独立 task worktree；后续任务不得在该根目录执行回归。
 
 ## 3. Legacy baseline
 

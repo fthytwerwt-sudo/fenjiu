@@ -7,7 +7,7 @@
 - **目标**：建立不联网、不读取 `.env*` 内容、不调用模型或真实渲染的敏感/路径/legacy 回归入口，并验证其 fail-closed 行为。
 - **实际改动**：新增 `scripts/validate_regression_baseline.py`、12 项 stdlib 回归测试和 P00-03 报告；覆盖 `.env*` 路径级检测、ignored 非 ASCII 路径、AppleDouble、符号链接跳过、绝对路径、secret-like assignment、fixture 泄漏、Git 失败和过长路径的受控失败。
 - **控制器验证**：任务分支测试、静态检查、默认/全量扫描与远端文件回读均完成；控制器在授权主工作区复验时，扫描器无 traceback，但正确发现 202 项默认带基线和 1,262 项全量既有 ignored 禁入路径。
-- **状态边界**：扫描器实现本身为 **CONFIRMED**；主工作区工程基线为 **BLOCKED**，且任务规则禁止删除 AppleDouble、读取 `.env*` 或放宽扫描以伪造通过。因此 Phase 0 与后续依赖的 Phase 1 均未写为完成/启动；业务状态及外部行为没有变化。
+- **状态边界**：扫描器实现本身为 **CONFIRMED**；外置盘根目录的工程基线为 **BLOCKED（局部）**，且任务规则禁止删除 AppleDouble、读取 `.env*` 或放宽扫描以伪造通过。控制器随后在干净 P00-03 task worktree 复验 12 项测试和两种扫描均通过，因此 Phase 0 可作为隔离工程路径完成；Phase 1 必须一任务一新 worktree。业务状态及外部行为没有变化。
 
 ## 2026-08-06｜P00-01 工程资产与禁区基线审计
 
