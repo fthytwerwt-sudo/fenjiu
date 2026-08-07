@@ -165,6 +165,7 @@ def request_command(
     supersedes_version_id: UUID | None = None,
     expires_at: datetime | None = None,
     scope: ScopeRef = SCOPE,
+    correlation_id: str | None = None,
 ) -> ReviewRequestCommand:
     return ReviewRequestCommand(
         scope=scope,
@@ -175,7 +176,7 @@ def request_command(
         creator_actor_ref=creator_actor_ref,
         requested_version_no=requested_version_no,
         risk_level=RiskLevel.HIGH,
-        correlation_id=scope.correlation_id,
+        correlation_id=correlation_id or scope.correlation_id,
         idempotency_key=idempotency_key,
         requested_at=NOW,
         expires_at=expires_at or (NOW + timedelta(days=1)),
@@ -191,6 +192,7 @@ def decision_command(
     idempotency_key: str = "decision_key_1",
     decided_at: datetime = NOW + timedelta(minutes=1),
     revision_ref: str | None = None,
+    correlation_id: str = SCOPE.correlation_id,
 ) -> HumanDecisionCommand:
     return HumanDecisionCommand(
         request_id=request_id,
@@ -199,7 +201,7 @@ def decision_command(
         decided_at=decided_at,
         evidence_ref="approval_evidence_ref",
         policy_version="approval_policy_v1",
-        correlation_id=SCOPE.correlation_id,
+        correlation_id=correlation_id,
         idempotency_key=idempotency_key,
         revision_ref=revision_ref,
     )
@@ -361,7 +363,19 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             self.publisher.decide(
                 decision_command(expired.id, idempotency_key="decision_expired")
             )
-        self.assertEqual(self.publisher.snapshot_counts(), before)
+        after = self.publisher.snapshot_counts()
+        self.assertEqual(self.publisher.request_state(expired.id), ApprovalRequestState.EXPIRED)
+        self.assertEqual(after["requests"], before["requests"])
+        self.assertEqual(after["decisions"], before["decisions"])
+        self.assertEqual(after["versions"], before["versions"])
+        self.assertEqual(after["refresh_events"], before["refresh_events"])
+        self.assertEqual(after["audit_events"], before["audit_events"] + 1)
+        self.assertEqual(self.publisher.audit_events[-1].event_kind, "approval_request_expired")
+        with self.assertRaisesRegex(ApprovalBoundaryError, "approval_request_expired"):
+            self.publisher.decide(
+                decision_command(expired.id, idempotency_key="decision_expired_rerun")
+            )
+        self.assertEqual(self.publisher.snapshot_counts(), after)
 
         other_scope = replace(SCOPE, business_line_id=UUID(int=SCOPE.business_line_id.int + 1), correlation_id="other_scope")
         with self.assertRaisesRegex(ApprovalBoundaryError, "cross_scope_forbidden"):
@@ -410,6 +424,53 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             )
         self.assertEqual(self.publisher.snapshot_counts(), before)
         self.assertIsNotNone(self.publisher.current(SCOPE, "synthetic_fact", "subject_conflict"))
+
+    def test_correlation_mismatches_fail_closed_without_partial_records(self) -> None:
+        before = self.publisher.snapshot_counts()
+        with self.assertRaisesRegex(ApprovalBoundaryError, "correlation_mismatch"):
+            self.publisher.request_review(
+                request_command(
+                    self.report,
+                    idempotency_key="request_bad_correlation",
+                    correlation_id="other_correlation",
+                )
+            )
+        self.assertEqual(self.publisher.snapshot_counts(), before)
+
+        request = self.publisher.request_review(
+            request_command(self.report, idempotency_key="request_correlation")
+        )
+        before = self.publisher.snapshot_counts()
+        with self.assertRaisesRegex(ApprovalBoundaryError, "correlation_mismatch"):
+            self.publisher.decide(
+                decision_command(
+                    request.id,
+                    idempotency_key="decision_bad_correlation",
+                    correlation_id="other_correlation",
+                )
+            )
+        self.assertEqual(self.publisher.snapshot_counts(), before)
+        self.assertEqual(self.publisher.request_state(request.id), ApprovalRequestState.PENDING)
+
+        decision = self.publisher.decide(
+            decision_command(request.id, idempotency_key="decision_correlation")
+        )
+        current = self.publisher.current(SCOPE, "synthetic_fact", "subject_alpha")
+        self.assertEqual(current.id, decision.published_version_id)
+        before = self.publisher.snapshot_counts()
+        with self.assertRaisesRegex(ApprovalBoundaryError, "correlation_mismatch"):
+            self.publisher.revoke(
+                version_id=current.id,
+                actor_ref="reviewer_actor",
+                decided_at=NOW + timedelta(minutes=2),
+                evidence_ref="revoke_evidence_ref",
+                policy_version="approval_policy_v1",
+                correlation_id="other_correlation",
+                idempotency_key="decision_revoke_bad_correlation",
+            )
+        self.assertEqual(self.publisher.snapshot_counts(), before)
+        self.assertEqual(self.publisher.version_status(current.id), SyntheticTruthStatus.APPROVED)
+        self.assertIsNotNone(self.publisher.current(SCOPE, "synthetic_fact", "subject_alpha"))
 
     def test_idempotent_requests_and_decisions_do_not_duplicate_audit_versions_or_refresh(self) -> None:
         command = request_command(self.report)

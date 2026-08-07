@@ -47,6 +47,7 @@ class ApprovalRequestState(str, Enum):
     APPROVED = "approved"
     REJECTED = "rejected"
     REVISED = "revised"
+    EXPIRED = "expired"
 
 
 class RiskLevel(str, Enum):
@@ -157,6 +158,8 @@ class ReviewRequestCommand:
         if not isinstance(self.risk_level, RiskLevel):
             raise ApprovalBoundaryError("risk_level_required")
         _checked_identifier(self.correlation_id, "correlation_id_required")
+        if self.correlation_id != self.scope.correlation_id:
+            raise ApprovalBoundaryError("correlation_mismatch")
         _checked_identifier(self.idempotency_key, "idempotency_key_required")
         requested_at = _checked_time(self.requested_at, "requested_at_required")
         expires_at = _checked_time(self.expires_at, "expires_at_required")
@@ -635,9 +638,19 @@ class SyntheticApprovalPublisher:
         request = self._request_by_id.get(command.request_id)
         if request is None:
             raise ApprovalBoundaryError("approval_request_not_found")
-        if self._request_state.get(request.id) is not ApprovalRequestState.PENDING:
+        if command.correlation_id != request.correlation_id:
+            raise ApprovalBoundaryError("correlation_mismatch")
+        state = self._request_state.get(request.id)
+        if state is ApprovalRequestState.EXPIRED:
+            raise ApprovalBoundaryError("approval_request_expired")
+        if state is not ApprovalRequestState.PENDING:
             raise ApprovalBoundaryError("duplicate_decision")
         if command.decided_at >= request.expires_at:
+            self._expire_request(
+                request=request,
+                actor_ref=command.actor_ref,
+                occurred_at=command.decided_at,
+            )
             raise ApprovalBoundaryError("approval_request_expired")
         if command.action is ApprovalAction.REVOKE:
             raise ApprovalBoundaryError("revoke_uses_version_command")
@@ -680,6 +693,8 @@ class SyntheticApprovalPublisher:
         version = self._version_by_id.get(version_id)
         if version is None:
             raise ApprovalBoundaryError("synthetic_truth_version_not_found")
+        if correlation != version.correlation_id:
+            raise ApprovalBoundaryError("correlation_mismatch")
         if self._status_by_version.get(version_id) is not SyntheticTruthStatus.APPROVED:
             raise ApprovalBoundaryError("synthetic_truth_version_not_current")
 
@@ -991,6 +1006,27 @@ class SyntheticApprovalPublisher:
         )
         self._audit_events.append(audit)
         return decision
+
+    def _expire_request(
+        self,
+        *,
+        request: ApprovalRequest,
+        actor_ref: str,
+        occurred_at: datetime,
+    ) -> None:
+        if self._request_state.get(request.id) is ApprovalRequestState.EXPIRED:
+            return
+        audit = self._audit(
+            scope=request.scope,
+            actor_ref=actor_ref,
+            event_kind="approval_request_expired",
+            target_ref=request.subject_ref,
+            occurred_at=occurred_at,
+            request_id=request.id,
+            correlation_id=request.correlation_id,
+        )
+        self._request_state[request.id] = ApprovalRequestState.EXPIRED
+        self._audit_events.append(audit)
 
     @staticmethod
     def _decision(
