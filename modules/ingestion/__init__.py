@@ -1,5 +1,21 @@
 """Synthetic-only ingestion contracts and staging pipeline."""
 
+from modules.ingestion.approval import (
+    ApprovalAction,
+    ApprovalAuditEvent,
+    ApprovalBoundaryError,
+    ApprovalDecision,
+    ApprovalRequest,
+    ApprovalRequestState,
+    ApprovedSyntheticTruthVersion,
+    HumanDecisionCommand,
+    RefreshConsumer,
+    ReviewRequestCommand,
+    RiskLevel,
+    SyntheticApprovalPublisher,
+    SyntheticTruthStatus,
+    TruthFactsChanged,
+)
 from modules.ingestion.contracts import (
     FailureStage,
     ExtractionResultRecord,
@@ -23,10 +39,18 @@ from modules.ingestion.ports import ExtractorPort
 from modules.ingestion.store import InMemoryIngestionStore
 
 __all__ = [
+    "ApprovalAction",
+    "ApprovalAuditEvent",
+    "ApprovalBoundaryError",
+    "ApprovalDecision",
+    "ApprovalRequest",
+    "ApprovalRequestState",
+    "ApprovedSyntheticTruthVersion",
     "FailureStage",
     "ExtractionResultRecord",
     "ExtractorPort",
     "FieldLocator",
+    "HumanDecisionCommand",
     "InMemoryIngestionStore",
     "IngestionBoundaryError",
     "IngestionFailureRecord",
@@ -37,9 +61,15 @@ __all__ = [
     "IngestionWorkflowState",
     "PrivateStorageLocator",
     "RegisterSourceCommand",
+    "RefreshConsumer",
+    "ReviewRequestCommand",
+    "RiskLevel",
     "SourceDisposition",
     "SourceFileRecord",
     "SourceKind",
     "StagingCandidateRecord",
+    "SyntheticApprovalPublisher",
     "SyntheticFieldDescriptor",
+    "SyntheticTruthStatus",
+    "TruthFactsChanged",
 ]
