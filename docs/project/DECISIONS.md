@@ -176,3 +176,14 @@
 - **影响**：P03-03 只能消费 synthetic candidate/report/replay evidence 建立人工 approval/publish/refresh contract，不能把 fingerprint 当作真实标准化结果、自动批准或 P02 current truth。
 - **替代方案**：接入真实文本解析或以 profile ID/version 代表完整配置；未采用，前者需要未授权真实资料和新能力，后者已被 forged provenance 复现可绕过。
 - **状态边界**：本决定不确认真实 mapping、SKU、价格、库存、资质、人工批准、production storage/auth/RBAC/RLS、合规或任何外部执行。
+
+### ADR-0014：P03-03 将合成审批发布与 P02 当前真值隔离，并以业务范围刷新当前读取
+
+- **日期**：2026-08-08
+- **状态**：Accepted / CONFIRMED（工程代码已由 `main` 远端回读）
+- **来源**：P03-03 task card、P02 fixture/current-truth contracts、test-first、控制器审查与两轮最终只读复核。
+- **背景**：Phase 3 需要证明 source/quality lineage 经人工决定后可以形成不可变的内部发布版本并使下游草稿/缓存失效；但 P03 输入仍是 synthetic fixture，不能绕过 P02 `DataState.APPROVED` 或 P02 current truth。初版还发现 command correlation 可与审批链分离、过期无持久状态，以及 current read 把一次性 correlation 当作业务 series key。
+- **决定**：P03-03 只创建 isolated approved synthetic version，固定 `DataState.FIXTURE` 与所有外部 flags false。approve/reject/revise/supersede/revoke、expiry、idempotency、scope/source/evidence 与 append-only audit 均在本地合同中 fail closed；request/decision/revoke 的 correlation 必须与所属记录一致。current read 仅以 tenant/project/business-line、fact type 和 subject 建立业务范围键，保留 record/refresh/audit 原 correlation 作为追踪信息；刷新只产生内部失效通知合同。
+- **影响**：Phase 4 可以依赖 P03-03 的内部审批/失效合同，但仍必须另行建立真实身份/RBAC、生产存储与 action policy。P05/P06/P07 不得将此合成版本写成真实 approved fact，也不得把刷新合同解释为 CRM、客服或内容模块已实施。
+- **替代方案**：复用 P02 `TruthVersion` 直接发布；未采用，因为会混淆 fixture 与 current truth。以完整 `ScopeRef`（含 correlation）作为 current key；未采用，因为新读取 correlation 会错误漏读同一业务范围当前版本。实现 consumer 模块或外部同步；未采用，因为本卡仅授权内部刷新合同。
+- **状态边界**：本决定不确认真实审批身份、SKU、价格、库存、资质、供应链、合规、账号、收款、履约、外部发布或业务外部就绪。

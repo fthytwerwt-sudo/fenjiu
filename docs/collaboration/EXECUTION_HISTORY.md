@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-08｜P03-03 审批、隔离的合成发布与内部刷新（controller integration）
+
+- **目标与边界**：只完成 stdlib/local-only/synthetic/value-free 的 candidate→review→human decision→isolated approved synthetic version→supersede/revoke→internal invalidation 合同；不得把 P03 synthetic fixture 提升为 P02 `DataState.APPROVED` current truth，不读取真实资料或实现外部动作。
+- **实际改动**：新增 `modules/ingestion/approval.py`、P03-03 专项测试和工程报告；审批请求、人工决定、版本、刷新和审计均保留 source/job/result/staging、profile/report、actor、时间、evidence、policy、version 与 correlation。只允许 current approved synthetic version 被内部读取；candidate、rejected/revised/expired/conflict/superseded/revoked 均不可读。刷新仅为未来 customer_service/content_video/crm 的内部失效通知合同。
+- **控制器审查与修复**：初版先后补齐 correlation mismatch 拒绝与 `EXPIRED` append-only 审计状态；独立规格审查再发现 current read 把一次性 correlation 作为业务 series key，控制器要求改为 tenant/project/business-line 的私有逻辑业务范围键，并补同业务范围新 correlation 可读、跨租户/项目/业务线不可读、revoke 后不可读回归。两轮最终只读审查结论为 `APPROVE` 与无阻断评论。
+- **验证**：任务干净 worktree 的 P00 default/`--all-files`、专项 9 项、ingestion 35 项、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、mechanism validation 与编译/diff 均通过。控制器在外置盘 root 复验专项、ingestion、完整 `make regression`、机制验证、diff 和排除 AppleDouble `._*` 的编译；root 不运行 P00 default/`--all-files`，因为既有用户文件会使该模式失真。
+- **Git 证据**：任务分支三笔提交 `1911808`、`9682483`、`5d2c429` 均已 push；控制器 fast-forward 集成并将 `main` push/readback 至 `5d2c429bd253344ce3c2a3a30a31315f4a81f177`。远端 `approval.py`、专项测试和 P03-03 报告 SHA-256 与本地一致。
+- **状态边界**：仅为 Phase 3/P03-03 工程完成，不代表 Phase 3 整体完成；不改变 BUSINESS_STATUS、真实 SKU/价格/库存/资质/账号/收款/履约、真实 approval actor/RBAC/RLS、P02 current truth、CRM/客服/内容视频实现或任何 external flag。
+
 ## 2026-08-06｜P03-02 profile replay provenance HIGH 与 lifecycle MEDIUM repair（task branch）
 
 - **控制器发现**：初始 P03-02 `MappingProfileRegistry.register_profile_change` 只检查 profile ID/version、run fingerprints 与 diff，未证明 current report 由传入完整 profile 生成；合法 forged v2 可改变 transforms 且仍借用 canonical report/proof 被接受，故 task branch 暂不接受或集成。
