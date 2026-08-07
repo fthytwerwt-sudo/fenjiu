@@ -249,6 +249,63 @@ class ApprovalPublishAndRefreshTests(unittest.TestCase):
             list(range(1, len(self.publisher.audit_events) + 1)),
         )
 
+    def test_current_read_uses_logical_scope_key_without_rewriting_correlation(self) -> None:
+        request = self.publisher.request_review(request_command(self.report))
+        decision = self.publisher.decide(decision_command(request.id))
+        original_current = self.publisher.current(SCOPE, "synthetic_fact", "subject_alpha")
+        alternate_read_scope = replace(SCOPE, correlation_id="synthetic_read_correlation_2")
+
+        current = self.publisher.current(alternate_read_scope, "synthetic_fact", "subject_alpha")
+
+        self.assertIsNotNone(original_current)
+        self.assertIsNotNone(current)
+        self.assertEqual(current.id, original_current.id)
+        self.assertEqual(current.id, decision.published_version_id)
+        self.assertEqual(current.correlation_id, SCOPE.correlation_id)
+        self.assertEqual(self.publisher.refresh_events[0].correlation_id, SCOPE.correlation_id)
+        self.assertTrue(all(event.correlation_id == SCOPE.correlation_id for event in self.publisher.audit_events))
+        self.assertIsNone(
+            self.publisher.current(
+                replace(SCOPE, tenant_id=UUID(int=SCOPE.tenant_id.int + 1)),
+                "synthetic_fact",
+                "subject_alpha",
+            )
+        )
+        self.assertIsNone(
+            self.publisher.current(
+                replace(SCOPE, project_id=UUID(int=SCOPE.project_id.int + 1)),
+                "synthetic_fact",
+                "subject_alpha",
+            )
+        )
+        self.assertIsNone(
+            self.publisher.current(
+                replace(SCOPE, business_line_id=UUID(int=SCOPE.business_line_id.int + 1)),
+                "synthetic_fact",
+                "subject_alpha",
+            )
+        )
+        with self.assertRaisesRegex(ApprovalBoundaryError, "sensitive_metadata_forbidden"):
+            self.publisher.current(
+                replace(SCOPE, correlation_id="synthetic_token_correlation"),
+                "synthetic_fact",
+                "subject_alpha",
+            )
+
+        revoke_decision = self.publisher.revoke(
+            version_id=original_current.id,
+            actor_ref="reviewer_actor",
+            decided_at=NOW + timedelta(minutes=2),
+            evidence_ref="revoke_evidence_ref",
+            policy_version="approval_policy_v1",
+            correlation_id=SCOPE.correlation_id,
+            idempotency_key="decision_revoke_logical_scope",
+        )
+        self.assertEqual(revoke_decision.correlation_id, SCOPE.correlation_id)
+        self.assertEqual(self.publisher.version_status(original_current.id), SyntheticTruthStatus.REVOKED)
+        self.assertIsNone(self.publisher.current(alternate_read_scope, "synthetic_fact", "subject_alpha"))
+        self.assertTrue(all(event.correlation_id == SCOPE.correlation_id for event in self.publisher.audit_events))
+
     def test_reject_and_revise_append_decisions_without_publication_or_refresh(self) -> None:
         rejected = self.publisher.request_review(
             request_command(self.report, idempotency_key="request_reject")

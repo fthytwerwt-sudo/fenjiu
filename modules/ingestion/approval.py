@@ -123,6 +123,21 @@ def _same_scope(expected: ScopeRef, actual: ScopeRef) -> None:
         raise ApprovalBoundaryError("cross_scope_forbidden")
 
 
+@dataclass(frozen=True)
+class _LogicalScopeKey:
+    tenant_id: UUID
+    project_id: UUID
+    business_line_id: UUID
+
+
+def _logical_scope_key(scope: ScopeRef) -> _LogicalScopeKey:
+    return _LogicalScopeKey(
+        tenant_id=scope.tenant_id,
+        project_id=scope.project_id,
+        business_line_id=scope.business_line_id,
+    )
+
+
 def _id(prefix: str, *parts: object) -> UUID:
     return uuid5(NAMESPACE_URL, "|".join((prefix, *(str(part) for part in parts))))
 
@@ -567,7 +582,7 @@ class SyntheticApprovalPublisher:
         self._versions: list[ApprovedSyntheticTruthVersion] = []
         self._version_by_id: dict[UUID, ApprovedSyntheticTruthVersion] = {}
         self._status_by_version: dict[UUID, SyntheticTruthStatus] = {}
-        self._current_by_key: dict[tuple[ScopeRef, str, str], UUID] = {}
+        self._current_by_key: dict[tuple[_LogicalScopeKey, str, str], UUID] = {}
         self._refresh_events: list[TruthFactsChanged] = []
         self._audit_events: list[ApprovalAuditEvent] = []
 
@@ -742,7 +757,10 @@ class SyntheticApprovalPublisher:
         self._decisions.append(decision)
         self._decision_by_idempotency[key] = decision
         self._status_by_version[version.id] = SyntheticTruthStatus.REVOKED
-        self._current_by_key.pop((version.scope, version.fact_type, version.subject_ref), None)
+        self._current_by_key.pop(
+            (_logical_scope_key(version.scope), version.fact_type, version.subject_ref),
+            None,
+        )
         self._refresh_events.append(refresh)
         self._audit_events.append(audit)
         return decision
@@ -756,7 +774,7 @@ class SyntheticApprovalPublisher:
         scoped = _checked_scope(scope)
         fact = _checked_identifier(fact_type, "fact_type_required")
         subject = _checked_identifier(subject_ref, "subject_ref_required")
-        version_id = self._current_by_key.get((scoped, fact, subject))
+        version_id = self._current_by_key.get((_logical_scope_key(scoped), fact, subject))
         if version_id is None:
             return None
         version = self._version_by_id[version_id]
@@ -862,7 +880,7 @@ class SyntheticApprovalPublisher:
     ) -> ApprovalDecision:
         if request.risk_level is RiskLevel.HIGH and command.actor_ref == request.creator_actor_ref:
             raise ApprovalBoundaryError("self_approval_forbidden")
-        key = (request.scope, request.fact_type, request.subject_ref)
+        key = (_logical_scope_key(request.scope), request.fact_type, request.subject_ref)
         current_id = self._current_by_key.get(key)
         parent_version_id = None
         invalidated_version_ids: tuple[UUID, ...] = ()
