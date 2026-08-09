@@ -372,9 +372,28 @@ class AuditRequiredCommandExecutor:
         except Exception:
             staged_effect.rollback()
             raise
-        return staged_effect.commit()
+        try:
+            return staged_effect.commit()
+        except Exception:
+            rollback_succeeded = _rollback_after_commit_failure(staged_effect)
+            self._record(
+                result_code="commit_failed_manual_review",
+                event_kind="command_commit_failed",
+                metadata={
+                    "rollback_requested": True,
+                    "rollback_succeeded": rollback_succeeded,
+                    "manual_required": True,
+                },
+            )
+            raise _boundary("commit_failed_after_success_audit") from None
 
-    def _record(self, *, result_code: str, event_kind: str) -> None:
+    def _record(
+        self,
+        *,
+        result_code: str,
+        event_kind: str,
+        metadata: Mapping[str, object] | None = None,
+    ) -> None:
         record = getattr(self._audit_log, "record", None)
         if not callable(record):
             raise _boundary("audit_persistence_required")
@@ -387,6 +406,7 @@ class AuditRequiredCommandExecutor:
             policy_version=self._policy_version,
             subject_version=self._subject_version,
             result_code=result_code,
+            metadata=metadata,
         )
 
 
@@ -396,3 +416,14 @@ def _require_staged_effect(value: object) -> object:
     if not callable(commit) or not callable(rollback):
         raise _boundary("staged_effect_required")
     return value
+
+
+def _rollback_after_commit_failure(staged_effect: object) -> bool:
+    rollback = getattr(staged_effect, "rollback", None)
+    if not callable(rollback):
+        return False
+    try:
+        rollback()
+    except Exception:
+        return False
+    return True

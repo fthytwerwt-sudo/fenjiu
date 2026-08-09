@@ -191,6 +191,75 @@ class AuditMetricsRetryDeadLetterTests(unittest.TestCase):
         self.assertEqual(prepared, ["prepared", "rolled_back"])
         self.assertEqual(committed, [])
 
+    def test_commit_failure_after_success_audit_appends_failure_event_and_rolls_back(self) -> None:
+        visible_effects: list[str] = []
+        rollback_calls: list[str] = []
+        unsafe_detail = "RuntimeError " + "tok" + "en " + "/" + "Users" + "/example/secret"
+        executor = AuditRequiredCommandExecutor(
+            audit_log=self.audit,
+            actor_ref="system_worker",
+            scope=SCOPE,
+            command_ref="workflow.synthetic.mutate",
+            target_ref="target_ref_1",
+            policy_version="audit_policy_v1",
+            subject_version=1,
+        )
+
+        def stage_effect():
+            return executor.stage_effect(
+                commit=lambda: (visible_effects.append("mutated"), (_ for _ in ()).throw(RuntimeError(unsafe_detail))),
+                rollback=lambda: (visible_effects.clear(), rollback_calls.append("rollback_requested")),
+            )
+
+        with self.assertRaisesRegex(AuditBoundaryError, "commit_failed_after_success_audit"):
+            executor.run(stage_effect, result_code="succeeded")
+
+        self.assertEqual(visible_effects, [])
+        self.assertEqual(rollback_calls, ["rollback_requested"])
+        self.assertTrue(self.audit.verify_chain())
+        self.assertEqual(
+            [event.event_kind for event in self.audit.events],
+            ["command_started", "command_succeeded", "command_commit_failed"],
+        )
+        self.assertEqual(self.audit.events[-1].result_code, "commit_failed_manual_review")
+        self.assertEqual(self.audit.events[-1].metadata["rollback_requested"], True)
+        self.assertEqual(self.audit.events[-1].metadata["rollback_succeeded"], True)
+        self.assertEqual(self.audit.events[-1].metadata["manual_required"], True)
+        rendered = json.dumps([event.safe_summary() for event in self.audit.events], sort_keys=True)
+        self.assertNotIn(unsafe_detail, rendered)
+        self.assertNotIn("RuntimeError", rendered)
+        self.assertNotIn("token", rendered.lower())
+        self.assertNotIn("/" + "Users" + "/", rendered)
+
+    def test_commit_and_rollback_failure_still_appends_manual_failure_event(self) -> None:
+        visible_effects: list[str] = []
+        executor = AuditRequiredCommandExecutor(
+            audit_log=self.audit,
+            actor_ref="system_worker",
+            scope=SCOPE,
+            command_ref="workflow.synthetic.mutate",
+            target_ref="target_ref_1",
+            policy_version="audit_policy_v1",
+            subject_version=1,
+        )
+
+        def stage_effect():
+            return executor.stage_effect(
+                commit=lambda: (visible_effects.append("mutated"), (_ for _ in ()).throw(RuntimeError("commit_failed"))),
+                rollback=lambda: (_ for _ in ()).throw(RuntimeError("rollback_failed")),
+            )
+
+        with self.assertRaisesRegex(AuditBoundaryError, "commit_failed_after_success_audit"):
+            executor.run(stage_effect, result_code="succeeded")
+
+        self.assertEqual(visible_effects, ["mutated"])
+        self.assertTrue(self.audit.verify_chain())
+        self.assertEqual(self.audit.events[-1].event_kind, "command_commit_failed")
+        self.assertEqual(self.audit.events[-1].result_code, "commit_failed_manual_review")
+        self.assertEqual(self.audit.events[-1].metadata["rollback_requested"], True)
+        self.assertEqual(self.audit.events[-1].metadata["rollback_succeeded"], False)
+        self.assertEqual(self.audit.events[-1].metadata["manual_required"], True)
+
     def test_retry_classification_keeps_external_and_unknown_effects_manual(self) -> None:
         classifier = RetryClassifier()
 
