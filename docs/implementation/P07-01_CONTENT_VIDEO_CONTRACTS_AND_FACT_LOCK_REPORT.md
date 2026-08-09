@@ -6,6 +6,8 @@
 >
 > **精确工程基线：** `origin/main` `eda64feb9945e1f9f2eaa688b1152f87b8182bf5`
 >
+> **base preservation fix：** 2026-08-09 质量审查发现 `c713e6d` 基于旧 `eda64fe`，相对当前 `origin/main` 会回退已接受的 P05-01 source-policy/crawl/leads 文件。已在本任务分支非破坏性 merge 当前 `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`，保留 P05-01 全部文件，仅在 `.gitignore` 同时保留 P05 leads fixture allowlist 与 P07 content_video fixture allowlist。
+>
 > **任务分支：** `codex/p07-01-content-video-fact-lock`
 >
 > **范围边界：** 仅建立 stdlib、local-only、synthetic 的 content/video 合同、fact/asset/policy version lock、forbidden expression policy、synthetic brief 与 review/QC state。不调用模型、视频 API、HappyHorse、DashScope、FFmpeg 或 legacy 脚本；不写 P02 `approved_fact`；不导出、不发布、不改变业务状态。
@@ -33,6 +35,8 @@
 - **RED**：新增 `tests/contracts/test_content_video_contracts.py` 后，首次运行 `python3 -m unittest tests.contracts.test_content_video_contracts` 失败于 `ModuleNotFoundError: No module named 'modules.content_video.contracts'`。
 - **GREEN**：新增 content/video 合同实现和导出后，P07-01 专项 8 项通过。
 - **Regression scope**：`tests/contracts` 从 62 项扩展到 70 项，完整合同 suite 通过。
+- **Base preservation RED**：质量审查指出旧基线分支相对当前 `origin/main` 会删除 P05-01 `.gitignore` leads fixture allowlist、architecture guard、`adapters/crawl/fake.py`、`modules/leads/source_policy.py` 与 P05 tests。
+- **Base preservation GREEN**：本分支非破坏性 merge `origin/main` 后，最终 diff relative `origin/main` 只保留 P07-01 允许范围，不再删除或改写 leads/crawl/P05 文件。
 
 ## 4. Validation evidence
 

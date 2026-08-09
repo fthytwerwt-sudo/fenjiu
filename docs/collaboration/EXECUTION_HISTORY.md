@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-09｜P05-01 来源政策与零网络模拟抓取（controller integration）
+
+- **目标与边界**：只建立 local-only/synthetic 的 source policy（来源政策）、snapshot/evidence/hash（快照/证据/哈希）和 fake CrawlPort（模拟抓取端口）；不得访问真实网站、读取研究联系人、建立 lead/contact/CRM 或外联。
+- **实际改动**：新增来源政策、合成快照、证据引用、公开字段候选和内存 fake port，以及 8 项 P05-01 专项测试与合成来源 fixture。任何 real network（真实网络）均不存在，`external_fetch_count=0`；审计只记录安全哈希与稳定代码。
+- **控制器审查与修复**：规格审查发现 `allowed_fields` 可允许 `contact_email` 等联系字段进入候选，虽然值已哈希仍会突破“公开页面不是可联系授权”的边界。执行线程先以 RED/GREEN（先失败/后通过）修复：政策构造拒绝联系词根，fetch 再验证，evidence/candidate 也拒绝，fake port 对 forged policy（伪造政策）二次拒绝并输出脱敏审计。最终规格与质量复审均为 `APPROVE`。
+- **验证**：干净 task worktree 的 P00 default/`--all-files`、8 项来源、9 项审计、7 项策略、11 项 workflow、8 项 architecture、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、机制验证、compile 与 diff 均通过。控制器在外置盘 root 复验来源/审计/策略/工作流/架构、完整 `make regression`、机制验证、diff 和排除 AppleDouble `._*` 的编译；root 不运行 P00 default/`--all-files`，因为既有用户文件会使该模式失真。
+- **Git 证据**：任务提交 `f9189db` 与修复提交 `f034857` 均已 push；控制器 fast-forward 集成并将 `main` push/readback 至 `f034857d5ec5715c2677e06d8add6338f65f50e1`。远端来源政策、fake port、专项测试和 P05-01 报告 blob 已从 `origin/main` 回读。
+- **状态边界**：仅为 Phase 5/P05-01 工程完成，不代表 Phase 5 整体完成；不改变 BUSINESS_STATUS、真实网站访问、线索/联系人/CRM/外联授权、SKU/价格/库存/资质/账号/收款/履约或任何 external flag（外部动作开关）。
+
 ## 2026-08-09｜P04-03 审计、指标、重试与死信队列（controller integration）
 
 - **目标与边界**：只建立 local-only/synthetic/value-free 的追加式 audit（审计）、retry/DLQ/manual（重试/死信/人工）分类和脱敏 metrics/log（指标/日志）合同；不得接数据库、broker、监控 SaaS、真实资料或任何外部动作。

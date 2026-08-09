@@ -1,0 +1,28 @@
+{
+  "is_synthetic": true,
+  "external_execution_allowed": false,
+  "business_external_ready": false,
+  "pages": [
+    {
+      "url": "https://synthetic-public.example.invalid/fenjiu/sources",
+      "html": "<html><body><h1>Synthetic Trade House</h1><p data-field=\"category\">retail_partner_candidate</p><span data-field=\"region\">kathmandu_fixture_zone</span></body></html>",
+      "fields": [
+        {
+          "field_name": "organization_name",
+          "selector": "h1",
+          "value": "Synthetic Trade House"
+        },
+        {
+          "field_name": "category",
+          "selector": "[data-field=category]",
+          "value": "retail_partner_candidate"
+        },
+        {
+          "field_name": "region",
+          "selector": "[data-field=region]",
+          "value": "kathmandu_fixture_zone"
+        }
+      ]
+    }
+  ]
+}

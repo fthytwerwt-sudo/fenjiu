@@ -337,6 +337,36 @@ class ImportBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(ingestion_approved.returncode, 1, ingestion_approved.stdout)
 
+        leads_unapproved = subprocess.run(
+            [
+                "git",
+                "check-ignore",
+                "--no-index",
+                "fixtures/leads/unapproved_fixture.json",
+            ],
+            cwd=ROOT,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(leads_unapproved.returncode, 0, leads_unapproved.stderr)
+
+        leads_approved = subprocess.run(
+            [
+                "git",
+                "check-ignore",
+                "--no-index",
+                "fixtures/leads/synthetic_public_sources.json",
+            ],
+            cwd=ROOT,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(leads_approved.returncode, 1, leads_approved.stdout)
+
         mapping_approved = subprocess.run(
             [
                 "git",
