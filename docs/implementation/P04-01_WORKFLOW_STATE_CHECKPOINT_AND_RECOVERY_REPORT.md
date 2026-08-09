@@ -50,15 +50,18 @@ terminal_result
 | external forbidden effect | `external_forbidden` 直接 `policy_denied`，不调用 provider，不写 effect |
 | unknown effect | `unknown` 进入 `manual_queue`，不调用 provider，不写 effect |
 | audit consistency | workflow run events append-only sequence 从 1 连续增长；这些仅是 run metadata，不替代业务 audit truth |
+| terminal approve guard | `succeeded`、`policy_denied`、`dead_lettered`、`manual_queue` 均不能再 approve；稳定返回 `workflow_not_waiting_for_approval`，snapshot 与 effect count 不变 |
 
 ## 4. Test-first evidence
 
 - **RED**：首次运行 `python3 -m unittest tests.workflows.test_workflow_state_checkpoint_recovery` 因 `ModuleNotFoundError: No module named 'workflows.runner'` 失败。
 - **GREEN**：新增最小 runner / store / checkpoint / probe 后，`python3 -m unittest discover -s tests/workflows` 8 项通过。
+- **Review RED（CHANGES_REQUIRED）**：新增 terminal/manual queue approve guard 回归后，专项测试先失败于 `WorkflowBoundaryError not raised`，覆盖 `succeeded`、`policy_denied`、`dead_lettered`、`manual_queue`。
+- **Review GREEN**：`approve()` 仅允许 `WorkflowRunState.WAITING_FOR_APPROVAL`，其他状态稳定 fail closed 为 `workflow_not_waiting_for_approval`，专项测试 9 项通过。
 
 ## 5. Validation evidence
 
-- `python3 -m unittest discover -s tests/workflows`：8 项通过。
+- `python3 -m unittest discover -s tests/workflows`：9 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `python3 -m compileall -q -x '(^|/)\._' core modules adapters workflows tests`：通过。
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`：通过。

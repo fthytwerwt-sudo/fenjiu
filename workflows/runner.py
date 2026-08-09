@@ -537,6 +537,8 @@ class SimpleWorkflowRunner:
     def approve(self, workflow_run_id: str, *, actor: str, approval_ref: str) -> WorkflowRun:
         run = self.store.run(_require_identifier(workflow_run_id, "workflow_run_id_required"))
         _require_identifier(actor, "actor_required")
+        if run.state is not WorkflowRunState.WAITING_FOR_APPROVAL:
+            raise _boundary("workflow_not_waiting_for_approval")
         self.store.approve(run.workflow_run_id, approval_ref)
         return self._transition(run, WorkflowRunState.PAUSED, TerminalResult.WAITING_FOR_APPROVAL, "approval_recorded")
 

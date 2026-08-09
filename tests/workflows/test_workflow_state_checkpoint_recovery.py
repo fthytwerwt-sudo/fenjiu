@@ -211,6 +211,62 @@ class WorkflowStateCheckpointRecoveryTests(unittest.TestCase):
         self.assertEqual(self.store.manual_queue[-1].workflow_run_id, unknown.workflow_run_id)
         self.assertEqual(self.store.effect_commit_count("unknown_key_1"), 0)
 
+    def test_terminal_and_manual_queue_runs_cannot_be_approved_or_reopened(self) -> None:
+        succeeded = self.runner.start(command(key="terminal_success_key"))
+        self.runner.approve(
+            succeeded.workflow_run_id,
+            actor="data_reviewer",
+            approval_ref="approval_ref_terminal_success",
+        )
+        succeeded = self.runner.resume(succeeded.workflow_run_id)
+        self.assertEqual(succeeded.state, WorkflowRunState.SUCCEEDED)
+        self.assertEqual(self.store.effect_commit_count("terminal_success_key"), 1)
+
+        policy_denied = self.runner.start(
+            command(
+                key="terminal_policy_key",
+                command_type="workflow.synthetic.external_publish",
+                effect=CommandEffect.EXTERNAL_FORBIDDEN,
+            )
+        )
+        dead_lettered = self.runner.start(
+            command(
+                key="terminal_dlq_key",
+                command_type="workflow.synthetic.timeout",
+                effect=CommandEffect.TIMEOUT,
+                max_attempts=1,
+            )
+        )
+        manual_queue = self.runner.start(
+            command(
+                key="terminal_manual_key",
+                command_type="workflow.synthetic.unknown_effect",
+                effect=CommandEffect.UNKNOWN,
+            )
+        )
+
+        for terminal in (succeeded, policy_denied, dead_lettered, manual_queue):
+            with self.subTest(state=terminal.state.value):
+                before = self.store.snapshot_counts()
+                before_run = self.store.run(terminal.workflow_run_id)
+                before_effects = self.store.effect_commit_count(before_run.idempotency_key)
+
+                with self.assertRaisesRegex(WorkflowBoundaryError, "workflow_not_waiting_for_approval"):
+                    self.runner.approve(
+                        terminal.workflow_run_id,
+                        actor="data_reviewer",
+                        approval_ref="approval_ref_forbidden_reopen",
+                    )
+
+                after_run = self.store.run(terminal.workflow_run_id)
+                self.assertEqual(after_run, before_run)
+                self.assertEqual(self.store.snapshot_counts(), before)
+                self.assertEqual(
+                    self.store.effect_commit_count(before_run.idempotency_key),
+                    before_effects,
+                )
+                self.assertEqual(self.runner.resume(terminal.workflow_run_id), before_run)
+
     def test_scope_correlation_mismatch_fails_before_partial_records(self) -> None:
         bad_scope = replace(SCOPE, correlation_id="other_correlation")
         before = self.store.snapshot_counts()
