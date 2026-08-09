@@ -17,7 +17,7 @@
 - **CONFIRMED**：固定入口、事实分级、任务交接、执行记录和同步包机制已建立。
 - **CONFIRMED**：GPT Project 配合机制包已在仓库内生成并通过本地验证；包内 AGENTS 镜像与根 AGENTS SHA-256 一致。
 - **部分成立**：V2 正在将公开历史脱敏、干净 main、远端默认分支、visibility 和新同步包验证收口；这些事项必须以最终远端回读为准。
-- **最近远端验证**：P04-03 工程代码已由 `origin/main` 回读至 `6cf2033b0376add9fabb6487d818d00f8a4805d1`；默认分支仍不是 `main`，visibility 与同步包最终验证仍待单独完成，不能用本文件编辑或本地 commit 替代。
+- **最近远端验证**：P05-01 工程代码已由 `origin/main` 回读至 `f034857d5ec5715c2677e06d8add6338f65f50e1`；默认分支仍不是 `main`，visibility 与同步包最终验证仍待单独完成，不能用本文件编辑或本地 commit 替代。
 
 ## 工程规划状态摘要
 
@@ -34,6 +34,7 @@
 - **CONFIRMED（工程 Phase 4 / P04-01）**：控制器已将三笔已审查任务提交快进集成，并从 `origin/main` 回读至 `d2805b293cbb71f7c5898ad0c611d863fb87e4b7`。P04-01 仅建立 stdlib/local-only 的 simple workflow runner（简易工作流运行器）、安全 checkpoint（检查点）、幂等恢复、暂停/批准/恢复、超时重试/死信队列和人工队列合同；可选 LangGraph probe（探测）因未安装而保持 deferred（暂缓），未新增依赖。审查先后发现 terminal approval replay（终态批准回放）和 public store write bypass（公开存储写入绕过）三项 HIGH，均已以 fail-closed（默认拒绝）状态守卫、受限写面和专项回归修复；11 项工作流专项、8 项架构、完整 `make regression`、机制验证与任务干净 worktree 的两种 P00 检查均通过。它不认证 actor（操作者）、不实现 RBAC（基于角色的权限控制）、不接外部 provider（服务提供方）或生产队列，也不改变任何外部动作开关。
 - **CONFIRMED（工程 Phase 4 / P04-02）**：控制器已将已审查任务提交快进集成，并从 `origin/main` 回读至 `fd727fd0a74068edfa5511a18f878c312c062b6c`。P04-02 仅建立 stdlib/local-only/synthetic 的角色、动作策略与追加式审批合同；高风险复核必须精确绑定已批准请求的 `subject_version`（事实版本），同一幂等键的任一审批语义变化均拒绝，不执行外部动作。两轮审查发现并修复 subject-version 漂移与幂等语义复用；7 项策略专项、11 项工作流、8 项架构、完整 `make regression`、机制验证、排除 AppleDouble 元数据的编译和 diff 均通过。它不认证真实身份、不授予真实权限、不连接生产审计/队列，也不改变任何外部动作开关。
 - **CONFIRMED（工程 Phase 4 / P04-03；Phase 4 工程完成）**：控制器已将三轮审查后的任务提交快进集成，并从 `origin/main` 回读至 `6cf2033b0376add9fabb6487d818d00f8a4805d1`。P04-03 建立 local-only 的追加式审计、重试分类、死信/人工队列可见性与脱敏指标/日志合同；审计成功记录失败会回滚暂存效果，提交失败会追加 `command_commit_failed`（提交失败）并标为人工处理，绝不静默写成成功。9 项专项、P04-02 的 7 项策略、P04-01 的 11 项工作流、8 项架构、完整 `make regression`、机制验证、排除 AppleDouble 元数据的编译和 diff 均通过。Phase 5、Phase 6 与 Phase 7 的首卡已解锁，但这不代表真实身份、生产审计/队列、真实供应链资料或外部动作已就绪。
+- **CONFIRMED（工程 Phase 5 / P05-01）**：控制器已将审查后的任务提交快进集成，并从 `origin/main` 回读至 `f034857d5ec5715c2677e06d8add6338f65f50e1`。P05-01 仅建立 local-only 的来源政策、合成 snapshot（快照）/hash（哈希）/evidence（证据）与 fake CrawlPort（模拟抓取端口）；无 policy/owner/robots/terms、登录/私有来源、跨业务线或任一联系字段都拒绝，`external_fetch_count=0`。审查发现 public contact field（公开联系字段）越界后，已在政策、抓取、evidence 和 candidate 四层 fail closed（默认拒绝）修复；8 项专项、70 项合同、完整 `make regression`、机制验证与干净 worktree 两种 P00 检查均通过。它不抓取真实网站、不建立 lead/contact/CRM、不外联；P05-02 只能消费合成 snapshot/evidence/hash，不能抬升为可联系事实。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
 详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)
