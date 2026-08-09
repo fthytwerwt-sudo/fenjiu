@@ -14,6 +14,7 @@ from modules.customer_service.contracts import (
     InboundMessageCommand,
     RiskLevel,
     ScopeStatus,
+    SupportDisposition,
 )
 from modules.customer_service.drafts import (
     ApprovedFactRef,
@@ -23,12 +24,39 @@ from modules.customer_service.drafts import (
     FakeDraftModel,
     ForbiddenExpressionPolicy,
     InMemoryApprovedFactQuery,
+    SupportPolicySnapshot,
     SupportDraftPipeline,
 )
 
 
 NOW = datetime(2040, 8, 9, tzinfo=timezone.utc)
 SCOPE = synthetic_scope()
+ENABLED_SUPPORT_DRAFT_FLAGS = (
+    ("external_send_enabled", True),
+    ("content_publish_enabled", False),
+    ("price_quote_enabled", False),
+    ("refund_enabled", False),
+    ("order_enabled", False),
+    ("payment_enabled", False),
+    ("inventory_write_enabled", False),
+    ("real_crawl_enabled", False),
+    ("real_video_provider_enabled", False),
+    ("external_execution_allowed", False),
+    ("business_external_ready", False),
+)
+DISABLED_SUPPORT_DRAFT_FLAGS = (
+    ("external_send_enabled", False),
+    ("content_publish_enabled", False),
+    ("price_quote_enabled", False),
+    ("refund_enabled", False),
+    ("order_enabled", False),
+    ("payment_enabled", False),
+    ("inventory_write_enabled", False),
+    ("real_crawl_enabled", False),
+    ("real_video_provider_enabled", False),
+    ("external_execution_allowed", False),
+    ("business_external_ready", False),
+)
 
 
 class Clock:
@@ -51,6 +79,8 @@ def inbound_command(
     risk_level: RiskLevel = RiskLevel.LOW,
     body_text: str = "synthetic general question",
     message_ref_suffix: str = "general",
+    consent_ref: str | None = "consent:synthetic_present",
+    dnc_blocked: bool = False,
 ) -> InboundMessageCommand:
     return InboundMessageCommand(
         scope=SCOPE,
@@ -65,8 +95,8 @@ def inbound_command(
         intent_label=intent_label,
         risk_level=risk_level,
         retention_policy_ref="retention_policy:p06_synthetic",
-        consent_ref="consent:synthetic_present",
-        dnc_blocked=False,
+        consent_ref=consent_ref,
+        dnc_blocked=dnc_blocked,
         personal_data_detected=False,
         policy_version="support_contract_v2",
         idempotency_key=f"message_key_{message_ref_suffix}",
@@ -133,6 +163,49 @@ def forbidden_policy(*, denied_tokens: tuple[str, ...] = ("forbidden_claim",)) -
     )
 
 
+def contact_policy_snapshot(
+    *,
+    source_evidence_ref: str | None = "source_evidence:synthetic_contact",
+    consent_ref: str | None = "consent:synthetic_present",
+    consent_granted: bool = True,
+    dnc_blocked: bool = False,
+    feature_flag_snapshot: tuple[tuple[str, bool], ...] = ENABLED_SUPPORT_DRAFT_FLAGS,
+) -> SupportPolicySnapshot:
+    return SupportPolicySnapshot(
+        scope=SCOPE,
+        subject_hash="c" * 64,
+        source_evidence_ref=source_evidence_ref,
+        consent_ref=consent_ref,
+        consent_granted=consent_granted,
+        dnc_blocked=dnc_blocked,
+        feature_flag_snapshot=feature_flag_snapshot,
+        policy_version="p04_action_policy_snapshot_v1",
+        observed_at=NOW - timedelta(minutes=5),
+        expires_at=NOW + timedelta(hours=1),
+        is_synthetic=True,
+        external_execution_allowed=False,
+    )
+
+
+def policy_gated_pipeline(
+    *,
+    fact_query: InMemoryApprovedFactQuery | None = None,
+    model: FakeDraftModel | None = None,
+) -> tuple[SupportDraftPipeline, InMemoryApprovedFactQuery, FakeDraftModel]:
+    fact_query = fact_query or InMemoryApprovedFactQuery((fact(),))
+    model = model or FakeDraftModel(outputs={"faq_general": "synthetic answer"})
+    return (
+        SupportDraftPipeline(
+            fact_query=fact_query,
+            model=model,
+            forbidden_policy=forbidden_policy(),
+            now=Clock(),
+        ),
+        fact_query,
+        model,
+    )
+
+
 def pipeline(
     *,
     facts: tuple[ApprovedFactRef, ...] = (fact(),),
@@ -150,12 +223,99 @@ def pipeline(
 
 
 class CustomerServiceFactRiskDraftTests(unittest.TestCase):
+    def test_forged_draft_ready_receipt_with_dnc_policy_snapshot_handoffs_before_query_or_model(self) -> None:
+        blocked_receipt = InMemoryConversationStore(now=Clock()).receive(
+            inbound_command(message_ref_suffix="forged_dnc", dnc_blocked=True)
+        )
+        forged_receipt = replace(blocked_receipt, disposition=SupportDisposition.DRAFT_READY)
+        draft_pipeline, fact_query, model = policy_gated_pipeline()
+
+        outcome = draft_pipeline.prepare(
+            forged_receipt,
+            locale="en",
+            policy_snapshot=contact_policy_snapshot(dnc_blocked=True),
+            subject_ref="subject.synthetic.faq",
+            original_text="synthetic dnc bypass attempt",
+            translated_text="synthetic dnc bypass attempt",
+            translation_ref="translation.synthetic.dnc",
+            translation_model_ref="fake_translation_model_v1",
+            template_version="support_template_v1",
+        )
+
+        self.assertEqual(outcome.disposition, DraftDisposition.HANDOFF_REQUIRED)
+        self.assertEqual(outcome.handoff.reason_code, "dnc_blocked")
+        self.assertEqual(fact_query.call_count, 0)
+        self.assertEqual(model.call_count, 0)
+
+    def test_missing_consent_policy_snapshot_handoffs_before_query_or_model(self) -> None:
+        draft_pipeline, fact_query, model = policy_gated_pipeline()
+
+        outcome = draft_pipeline.prepare(
+            receipt_for(message_ref_suffix="missing_consent"),
+            locale="en",
+            policy_snapshot=contact_policy_snapshot(consent_ref=None),
+            subject_ref="subject.synthetic.faq",
+            original_text="synthetic missing consent attempt",
+            translated_text="synthetic missing consent attempt",
+            translation_ref="translation.synthetic.missing_consent",
+            translation_model_ref="fake_translation_model_v1",
+            template_version="support_template_v1",
+        )
+
+        self.assertEqual(outcome.disposition, DraftDisposition.HANDOFF_REQUIRED)
+        self.assertEqual(outcome.handoff.reason_code, "consent_required")
+        self.assertEqual(fact_query.call_count, 0)
+        self.assertEqual(model.call_count, 0)
+
+    def test_rejected_consent_policy_snapshot_handoffs_before_query_or_model(self) -> None:
+        draft_pipeline, fact_query, model = policy_gated_pipeline()
+
+        outcome = draft_pipeline.prepare(
+            receipt_for(message_ref_suffix="rejected_consent"),
+            locale="en",
+            policy_snapshot=contact_policy_snapshot(consent_granted=False),
+            subject_ref="subject.synthetic.faq",
+            original_text="synthetic rejected consent attempt",
+            translated_text="synthetic rejected consent attempt",
+            translation_ref="translation.synthetic.rejected_consent",
+            translation_model_ref="fake_translation_model_v1",
+            template_version="support_template_v1",
+        )
+
+        self.assertEqual(outcome.disposition, DraftDisposition.HANDOFF_REQUIRED)
+        self.assertEqual(outcome.handoff.reason_code, "consent_rejected")
+        self.assertEqual(fact_query.call_count, 0)
+        self.assertEqual(model.call_count, 0)
+
+    def test_disabled_p04_support_draft_feature_flag_handoffs_before_query_or_model(self) -> None:
+        draft_pipeline, fact_query, model = policy_gated_pipeline()
+
+        outcome = draft_pipeline.prepare(
+            receipt_for(message_ref_suffix="disabled_feature_flag"),
+            locale="en",
+            policy_snapshot=contact_policy_snapshot(
+                feature_flag_snapshot=DISABLED_SUPPORT_DRAFT_FLAGS
+            ),
+            subject_ref="subject.synthetic.faq",
+            original_text="synthetic disabled feature flag attempt",
+            translated_text="synthetic disabled feature flag attempt",
+            translation_ref="translation.synthetic.disabled_feature_flag",
+            translation_model_ref="fake_translation_model_v1",
+            template_version="support_template_v1",
+        )
+
+        self.assertEqual(outcome.disposition, DraftDisposition.HANDOFF_REQUIRED)
+        self.assertEqual(outcome.handoff.reason_code, "feature_flag_disabled")
+        self.assertEqual(fact_query.call_count, 0)
+        self.assertEqual(model.call_count, 0)
+
     def test_low_risk_synthetic_faq_generates_reviewable_draft_with_fact_lock_and_hash_only_refs(self) -> None:
         receipt = receipt_for(body_text="synthetic question that should not persist")
 
         outcome = pipeline().prepare(
             receipt,
             locale="en",
+            policy_snapshot=contact_policy_snapshot(),
             subject_ref="subject.synthetic.faq",
             original_text="synthetic question that should not persist",
             translated_text="synthetic translated question",
@@ -221,6 +381,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
                         message_ref_suffix=intent_label,
                     ),
                     locale="en",
+                    policy_snapshot=contact_policy_snapshot(),
                     subject_ref="subject.synthetic.faq",
                     original_text=f"synthetic {intent_label} question",
                     translated_text=f"synthetic {intent_label} question",
@@ -263,6 +424,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
                 ).prepare(
                     receipt_for(message_ref_suffix=reason_code),
                     locale="en",
+                    policy_snapshot=contact_policy_snapshot(),
                     subject_ref="subject.synthetic.faq",
                     original_text="synthetic low risk question",
                     translated_text="synthetic low risk question",
@@ -281,6 +443,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
         ).prepare(
             receipt_for(message_ref_suffix="model_failure"),
             locale="en",
+            policy_snapshot=contact_policy_snapshot(),
             subject_ref="subject.synthetic.faq",
             original_text="synthetic low risk question",
             translated_text="synthetic low risk question",
@@ -297,6 +460,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
         ).prepare(
             receipt_for(message_ref_suffix="forbidden"),
             locale="en",
+            policy_snapshot=contact_policy_snapshot(),
             subject_ref="subject.synthetic.faq",
             original_text="synthetic low risk question",
             translated_text="synthetic low risk question",
@@ -324,6 +488,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
             ).prepare(
                 receipt_for(message_ref_suffix="cross_scope"),
                 locale="en",
+                policy_snapshot=contact_policy_snapshot(),
                 subject_ref="subject.synthetic.faq",
                 original_text="synthetic low risk question",
                 translated_text="synthetic low risk question",
@@ -335,6 +500,7 @@ class CustomerServiceFactRiskDraftTests(unittest.TestCase):
         policy_conflict = pipeline(policy=forbidden_policy(denied_tokens=())).prepare(
             receipt_for(message_ref_suffix="policy_conflict"),
             locale="en",
+            policy_snapshot=contact_policy_snapshot(),
             subject_ref="subject.synthetic.faq",
             original_text="synthetic low risk question",
             translated_text="synthetic low risk question",
