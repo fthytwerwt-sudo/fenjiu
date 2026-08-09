@@ -34,6 +34,9 @@
 /fixtures/ingestion/*
 !/fixtures/ingestion/synthetic_source_profiles.json
 !/fixtures/ingestion/synthetic_mapping_profiles.json
+!/fixtures/content_video/
+/fixtures/content_video/*
+!/fixtures/content_video/synthetic_policy_vectors.json
 !/fixtures/leads/
 /fixtures/leads/*
 !/fixtures/leads/synthetic_public_sources.json

@@ -11,8 +11,9 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P05-01 已完成（工程）**：控制器已将来源政策与 zero-network fake crawl（零网络模拟抓取）合同集成并从 `origin/main` `f034857d5ec5715c2677e06d8add6338f65f50e1` 回读。它只交付合成 snapshot/evidence/hash，不抓取真实网站、不建立 contact/CRM 或外联；联系字段已在多层拒绝。P05-02 已按依赖解锁，仍须在新建干净 task worktree（任务工作目录）单卡执行。
-2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
+1. **P05-02 正在收口（工程）**：合成 leads/CRM（线索/客户管理）领域任务已完成任务分支实现；因其最初与 P06-01 并行，迁移编号须先在最新 `main` 上协调、复验并完成双审，之后才能集成。它始终只消费合成 snapshot/evidence/hash，不能建立真实联系人、外联或外部动作。
+2. **P06-02 与 P07-02 已解锁（工程）**：P06-01/P07-01 已远端回读至 `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4`。下一步可在各自新建干净 task worktree（任务工作目录）并行执行 approved-fact retrieval（已批准事实检索）/draft-handoff（草稿/人工转交）与 fake video adapter（模拟视频适配器）/manifest（清单）合同；不得接真实模型、渠道、生成服务、素材、导出或发布。
+3. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据
 

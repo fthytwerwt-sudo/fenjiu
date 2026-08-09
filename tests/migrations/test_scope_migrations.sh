@@ -50,11 +50,11 @@ done
 
 schema_table_count=$(psql_database "$TEST_DATABASE" -Atc \
     "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'fenjiu_contract' AND table_type = 'BASE TABLE'")
-test "$schema_table_count" -eq 16
+test "$schema_table_count" -eq 22
 
 migration_row_count=$(psql_database "$TEST_DATABASE" -Atc \
-    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002', '0003')")
-test "$migration_row_count" -eq 3
+    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002', '0003', '0004')")
+test "$migration_row_count" -eq 4
 
 psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
 INSERT INTO fenjiu_contract.tenants (
@@ -434,6 +434,187 @@ expect_sql_failure "dnc records cannot be deleted" \
 expect_sql_failure "crm rows cannot enable external execution" \
     "INSERT INTO fenjiu_contract.interactions (interaction_ref, organization_ref, tenant_id, project_id, business_line_id, kind, subject_hash, sent_count, external_sent, data_state, is_synthetic, external_execution_allowed, business_external_ready, created_at, created_by, correlation_id) VALUES ('interaction_external_sql', 'organization_sql_1', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'draft', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 0, false, 'fixture', true, true, false, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
 
+body_column_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'fenjiu_contract' AND table_name IN ('support_conversations', 'support_messages', 'support_intents', 'support_draft_replies', 'support_handoff_cases', 'support_unknown_scope_quarantines') AND column_name ~ '(body|payload|attachment|raw|content_text)'")
+test "$body_column_count" -eq 0
+
+unknown_scope_link_column_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'fenjiu_contract' AND table_name = 'support_unknown_scope_quarantines' AND column_name IN ('conversation_id', 'message_id', 'tenant_id', 'project_id', 'business_line_id')")
+test "$unknown_scope_link_column_count" -eq 0
+
+raw_external_id_column_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'fenjiu_contract' AND table_name IN ('support_conversations', 'support_messages') AND column_name IN ('external_conversation_id', 'external_message_id')")
+test "$raw_external_id_column_count" -eq 0
+
+known_scope_external_ref_column_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'fenjiu_contract' AND table_name IN ('support_conversations', 'support_messages') AND column_name IN ('external_conversation_ref', 'external_message_ref')")
+test "$known_scope_external_ref_column_count" -eq 2
+
+psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
+INSERT INTO fenjiu_contract.support_conversations (
+    id, tenant_id, project_id, business_line_id, channel_ref,
+    external_conversation_ref, status, data_state, source_ref_id,
+    data_version_id, sensitivity, is_synthetic, external_execution_allowed,
+    retention_policy_ref, consent_ref, created_at, updated_at,
+    created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000001001',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'channel:tiktok.synthetic',
+    'ref:external_conversation:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    'active',
+    'fixture', '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401', 'restricted',
+    true, false, 'retention_policy:p06_synthetic',
+    'consent:synthetic_present', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.support_messages (
+    id, conversation_id, tenant_id, project_id, business_line_id,
+    direction, external_message_ref, content_hash, content_ref,
+    received_at, received_by, data_state, source_ref_id, data_version_id,
+    sensitivity, is_synthetic, external_execution_allowed,
+    retention_policy_ref, redaction_ref, consent_ref, created_at,
+    updated_at, created_by, correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000001101',
+    '00000000-0000-4000-8000-000000001001',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'inbound', 'ref:external_message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    'ref:conversation:synthetic_body_1', CURRENT_TIMESTAMP,
+    'synthetic_channel', 'fixture',
+    '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401', 'restricted',
+    true, false, 'retention_policy:p06_synthetic',
+    'redaction:hash_only', 'consent:synthetic_present',
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test',
+    'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.support_intents (
+    id, message_id, tenant_id, project_id, business_line_id,
+    intent_label, risk_level, policy_version, model_ref, data_state,
+    source_ref_id, data_version_id, sensitivity, is_synthetic,
+    external_execution_allowed, created_at, updated_at, created_by,
+    correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000001201',
+    '00000000-0000-4000-8000-000000001101',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'faq_general', 'low', 'support_contract_v1',
+    'synthetic_classifier_v1', 'fixture',
+    '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401', 'restricted',
+    true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.support_draft_replies (
+    id, message_id, tenant_id, project_id, business_line_id,
+    draft_ref, fact_version_set_hash, policy_version, state, data_state,
+    source_ref_id, data_version_id, sensitivity, is_synthetic,
+    external_execution_allowed, created_at, updated_at, created_by,
+    correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000001301',
+    '00000000-0000-4000-8000-000000001101',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'ref:draft:synthetic_1',
+    'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'support_contract_v1', 'draft_only', 'fixture',
+    '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401', 'restricted',
+    true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.support_handoff_cases (
+    id, conversation_id, message_id, tenant_id, project_id,
+    business_line_id, reason, status, policy_version, data_state,
+    source_ref_id, data_version_id, sensitivity, is_synthetic,
+    external_execution_allowed, created_at, updated_at, created_by,
+    correlation_id
+) VALUES (
+    '00000000-0000-4000-8000-000000001401',
+    '00000000-0000-4000-8000-000000001001',
+    '00000000-0000-4000-8000-000000001101',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'privacy_review_required', 'open', 'support_contract_v1',
+    'fixture', '00000000-0000-4000-8000-000000000301',
+    '00000000-0000-4000-8000-000000000401', 'restricted',
+    true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.support_unknown_scope_quarantines (
+    id, channel_ref, external_conversation_ref, external_message_ref,
+    content_hash, content_ref, reason, status, policy_version,
+    correlation_id, retention_policy_ref, redaction_ref, received_at,
+    received_by, is_synthetic, external_execution_allowed, created_at,
+    updated_at, created_by
+) VALUES (
+    '00000000-0000-4000-8000-000000001501',
+    'channel:tiktok.synthetic',
+    'ref:external_conversation:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    'ref:external_message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+    'ref:conversation:synthetic_unknown_body_1',
+    'unknown_scope', 'open', 'support_contract_v1',
+    'unknown_scope', 'retention_policy:p06_synthetic',
+    'redaction:hash_only', CURRENT_TIMESTAMP, 'synthetic_channel',
+    true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test'
+);
+SQL
+
+unknown_quarantine_count=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT count(*) FROM fenjiu_contract.support_unknown_scope_quarantines WHERE reason = 'unknown_scope' AND status = 'open'")
+test "$unknown_quarantine_count" -eq 1
+
+expect_sql_failure "support message replay external ref is unique" \
+    "INSERT INTO fenjiu_contract.support_messages (id, conversation_id, tenant_id, project_id, business_line_id, direction, external_message_ref, content_hash, content_ref, received_at, received_by, data_state, source_ref_id, data_version_id, sensitivity, is_synthetic, external_execution_allowed, retention_policy_ref, redaction_ref, consent_ref, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000001102', '00000000-0000-4000-8000-000000001001', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'inbound', 'ref:external_message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', 'ref:conversation:synthetic_body_2', CURRENT_TIMESTAMP, 'synthetic_channel', 'fixture', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'restricted', true, false, 'retention_policy:p06_synthetic', 'redaction:hash_only', 'consent:synthetic_present', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "support message cannot cross conversation scope" \
+    "INSERT INTO fenjiu_contract.support_messages (id, conversation_id, tenant_id, project_id, business_line_id, direction, external_message_ref, content_hash, content_ref, received_at, received_by, data_state, source_ref_id, data_version_id, sensitivity, is_synthetic, external_execution_allowed, retention_policy_ref, redaction_ref, consent_ref, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000001103', '00000000-0000-4000-8000-000000001001', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000202', 'inbound', 'ref:external_message:cccccccccccccccccccccccccccccccc', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 'ref:conversation:synthetic_body_3', CURRENT_TIMESTAMP, 'synthetic_channel', 'fixture', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'restricted', true, false, 'retention_policy:p06_synthetic', 'redaction:hash_only', 'consent:synthetic_present', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "support content ref must be opaque reference" \
+    "INSERT INTO fenjiu_contract.support_messages (id, conversation_id, tenant_id, project_id, business_line_id, direction, external_message_ref, content_hash, content_ref, received_at, received_by, data_state, source_ref_id, data_version_id, sensitivity, is_synthetic, external_execution_allowed, retention_policy_ref, redaction_ref, consent_ref, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000001104', '00000000-0000-4000-8000-000000001001', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'inbound', 'ref:external_message:dddddddddddddddddddddddddddddddd', 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'not_a_ref', CURRENT_TIMESTAMP, 'synthetic_channel', 'fixture', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'restricted', true, false, 'retention_policy:p06_synthetic', 'redaction:hash_only', 'consent:synthetic_present', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "support draft cannot enable external execution" \
+    "INSERT INTO fenjiu_contract.support_draft_replies (id, message_id, tenant_id, project_id, business_line_id, draft_ref, fact_version_set_hash, policy_version, state, data_state, source_ref_id, data_version_id, sensitivity, is_synthetic, external_execution_allowed, created_at, updated_at, created_by, correlation_id) VALUES ('00000000-0000-4000-8000-000000001302', '00000000-0000-4000-8000-000000001101', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'ref:draft:synthetic_2', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'support_contract_v1', 'draft_only', 'fixture', '00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000401', 'restricted', true, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "support messages are append only" \
+    "UPDATE fenjiu_contract.support_messages SET content_hash = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' WHERE id = '00000000-0000-4000-8000-000000001101'"
+
+expect_sql_failure "support handoff cases are append only" \
+    "DELETE FROM fenjiu_contract.support_handoff_cases WHERE id = '00000000-0000-4000-8000-000000001401'"
+
+expect_sql_failure "unknown scope quarantine external message ref is unique" \
+    "INSERT INTO fenjiu_contract.support_unknown_scope_quarantines (id, channel_ref, external_conversation_ref, external_message_ref, content_hash, content_ref, reason, status, policy_version, correlation_id, retention_policy_ref, redaction_ref, received_at, received_by, is_synthetic, external_execution_allowed, created_at, updated_at, created_by) VALUES ('00000000-0000-4000-8000-000000001502', 'channel:tiktok.synthetic', 'ref:external_conversation:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'ref:external_message:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 'ref:conversation:synthetic_unknown_body_2', 'unknown_scope', 'open', 'support_contract_v1', 'unknown_scope', 'retention_policy:p06_synthetic', 'redaction:hash_only', CURRENT_TIMESTAMP, 'synthetic_channel', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test')"
+
+expect_sql_failure "unknown scope quarantine content ref must be opaque" \
+    "INSERT INTO fenjiu_contract.support_unknown_scope_quarantines (id, channel_ref, external_conversation_ref, external_message_ref, content_hash, content_ref, reason, status, policy_version, correlation_id, retention_policy_ref, redaction_ref, received_at, received_by, is_synthetic, external_execution_allowed, created_at, updated_at, created_by) VALUES ('00000000-0000-4000-8000-000000001503', 'channel:tiktok.synthetic', 'ref:external_conversation:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'ref:external_message:ffffffffffffffffffffffffffffffff', 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'not_a_ref', 'unknown_scope', 'open', 'support_contract_v1', 'unknown_scope', 'retention_policy:p06_synthetic', 'redaction:hash_only', CURRENT_TIMESTAMP, 'synthetic_channel', true, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test')"
+
+expect_sql_failure "unknown scope quarantine cannot enable external execution" \
+    "INSERT INTO fenjiu_contract.support_unknown_scope_quarantines (id, channel_ref, external_conversation_ref, external_message_ref, content_hash, content_ref, reason, status, policy_version, correlation_id, retention_policy_ref, redaction_ref, received_at, received_by, is_synthetic, external_execution_allowed, created_at, updated_at, created_by) VALUES ('00000000-0000-4000-8000-000000001504', 'channel:tiktok.synthetic', 'ref:external_conversation:11111111111111111111111111111111', 'ref:external_message:22222222222222222222222222222222', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'ref:conversation:synthetic_unknown_body_3', 'unknown_scope', 'open', 'support_contract_v1', 'unknown_scope', 'retention_policy:p06_synthetic', 'redaction:hash_only', CURRENT_TIMESTAMP, 'synthetic_channel', true, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'synthetic_test')"
+
+expect_sql_failure "unknown scope quarantine is append only" \
+    "UPDATE fenjiu_contract.support_unknown_scope_quarantines SET content_hash = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' WHERE id = '00000000-0000-4000-8000-000000001501'"
+
+expect_sql_failure "unknown scope quarantine cannot be deleted" \
+    "DELETE FROM fenjiu_contract.support_unknown_scope_quarantines WHERE id = '00000000-0000-4000-8000-000000001501'"
+
 expect_sql_failure "missing mandatory metadata" \
     "INSERT INTO fenjiu_contract.entity_metadata (id) VALUES ('00000000-0000-4000-8000-000000000601')"
 
@@ -486,4 +667,4 @@ expect_sql_failure "truth history cannot be updated" \
 expect_sql_failure "truth history cannot be deleted" \
     "DELETE FROM fenjiu_contract.truth_versions WHERE id = '00000000-0000-4000-8000-000000000701'"
 
-printf 'P02-01/P02-02 migration replay and negative constraints passed.\n'
+printf 'P02/P05/P06 migration replay and negative constraints passed.\n'

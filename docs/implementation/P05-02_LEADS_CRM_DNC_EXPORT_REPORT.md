@@ -4,7 +4,9 @@
 >
 > **执行日期：** 2026-08-09
 >
-> **精确工程基线：** `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`
+> **初版工程基线：** `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`
+>
+> **协调修复基线：** `origin/main` `1033c7ab659df8a677a937b2b9bcb8f9b7141600`
 >
 > **任务分支：** `codex/p05-02-leads-crm-domain`
 >
@@ -14,9 +16,9 @@
 
 - 新增 `core/contracts/leads_crm.py`，把 `SyntheticLeadCandidate`、`LeadReview`、`LeadDedupeResult` 和 `LeadReviewDecision` 放在模块边界之下，避免 `modules/crm` 反向依赖 `modules/leads`。
 - 新增 `modules/crm/domain.py`，实现 `CrmRepository`、`DncRegistry`、`CrmExportService`、organization/contact/opportunity/interaction/stage、retention intent 和可审计 scoped export。
-- 新增 `migrations/0003_leads_crm_dnc_export.sql`，建立 lead/review/organization/contact/DNC/opportunity/interaction/retention 8 张 local contract 表及触发器。
+- 新增 `migrations/0004_leads_crm_dnc_export.sql`，建立 lead/review/organization/contact/DNC/opportunity/interaction/retention 8 张 local contract 表及触发器；`0003` 保留给 P06 `support_conversations_messages_privacy`。
 - 新增 `tests/contracts/test_leads_crm_domain.py`，覆盖 reviewed lead 才能进入 CRM、source/consent/DNC gate、source-aware dedupe、跨业务线拒绝、DNC 冻结/反绕过、export scope 与 deletion/retention intent。
-- 更新 migration regression，要求 `0003` replay 成功、CRM 表计数正确，并验证 contact consent、跨业务线、DNC immutable 和 external execution 禁止等 SQL 负例。
+- 更新 migration regression，要求 P02 `0001/0002`、P06 `0003`、P05-02 `0004` 顺序 replay 成功、合并后表计数正确，并验证 contact consent、跨业务线、DNC immutable 和 external execution 禁止等 SQL 负例。
 
 ## 2. 行为合同
 
@@ -43,18 +45,20 @@
 ## 4. Test-first evidence
 
 - **RED（Python）**：新增 `tests/contracts/test_leads_crm_domain.py` 后，首次运行 `python3 -m unittest tests.contracts.test_leads_crm_domain` 失败于 `ImportError: cannot import name 'CrmBoundaryError' from 'modules.crm'`。
-- **RED（migration）**：更新 migration regression 后，首次运行 `sh tests/migrations/run_scope_migration_regression.sh` 失败在缺少 P05-02 CRM 表与 `0003` migration。
-- **GREEN**：实现 core contract、CRM domain、`0003` migration 与 SQL 负例后，P05-02 专项 7 项通过，migration replay/negative constraints 通过。
+- **RED（migration）**：更新 migration regression 后，首次运行 `sh tests/migrations/run_scope_migration_regression.sh` 失败在缺少 P05-02 CRM 表与 P05-02 migration。
+- **GREEN**：实现 core contract、CRM domain、P05-02 migration 与 SQL 负例后，P05-02 专项 7 项通过，migration replay/negative constraints 通过。
 - **Boundary repair**：首次完整 `make regression` 在 architecture guard 失败，原因是 `modules/crm/domain.py` 直接 import `modules.leads.domain`；已将共享 lead/CRM contract 下沉到 `core/contracts/leads_crm.py` 后，architecture 和完整回归通过。
+- **Coordination RED（2026-08-09）**：合并 `origin/main` `1033c7ab659df8a677a937b2b9bcb8f9b7141600` 后，P05-02 初版 `0003_leads_crm_dnc_export.sql` 与 P06 已接受的 `0003_support_conversations_messages_privacy.sql` 发生编号冲突；新增 migration version 唯一性检查后，`sh tests/migrations/run_scope_migration_regression.sh` 失败于 `duplicate migration version prefix: 0003`。
+- **Coordination GREEN（2026-08-09）**：P05-02 migration 顺延为 `0004_leads_crm_dnc_export.sql`，内部 `schema_migrations.version` 改为 `0004`；P06 `0003_support_conversations_messages_privacy.sql` 保留其语义。
 
 ## 5. Validation evidence
 
-- `python3 -m unittest tests.contracts.test_leads_crm_domain`：7 项通过。
-- `sh tests/migrations/run_scope_migration_regression.sh`：通过；两轮 migration replay、P05-02 新增 SQL 负例和既有 P02 负例均通过。
-- `python3 -m unittest tests.contracts.test_leads_crm_domain tests.contracts.test_source_policy_and_crawl_port tests.contracts.test_action_policy_rbac_approvals tests.contracts.test_audit_metrics_retry_dead_letter`：31 项通过。
+- `python3 -m unittest tests.contracts.test_leads_crm_domain tests.contracts.test_source_policy_and_crawl_port`：15 项通过。
+- `python3 -m unittest tests.contracts.test_customer_service_conversation_contracts tests.contracts.test_content_video_contracts`：14 项通过；P06/P07 合同在本任务分支合并后保留。
+- `sh tests/migrations/run_scope_migration_regression.sh`：通过；两轮 migration replay、P02/P05/P06 SQL 负例均通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `python3 -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests`：通过。
-- `make regression`：通过；两轮 migration replay、8 architecture、14 regression、8 local-runtime、16 control-plane、77 contracts、35 ingestion tests 全部通过。
+- `make regression`：通过；两轮 migration replay、8 architecture、14 regression、8 local-runtime、16 control-plane、91 contracts、35 ingestion tests 全部通过。
 
 ## 6. 工程治理检查
 
@@ -66,7 +70,7 @@
 
 ## 7. 事实分级与剩余阻断
 
-- **CONFIRMED（工程）**：P05-02 synthetic lead review、CRM domain、DNC/withdrawal、retention intent、scoped export 和 `0003` migration 已在任务分支通过验证。
+- **CONFIRMED（工程）**：P05-02 synthetic lead review、CRM domain、DNC/withdrawal、retention intent、scoped export 和 `0004` migration 已在任务分支通过验证。
 - **CONFIRMED（工程边界）**：CRM 真值仍在本系统合同；Twenty、UI、provider adapter、真实 CRM 同步和外部发送均保持 `DEFER`。
 - **BLOCKED（业务）**：真实 SKU、价格、库存、主体/资质、账号、收款、履约、TikTok 酒类边界、真实联系人合法性、真实外部执行授权仍未建立或未获当前书面证据。
 - **不成立**：本任务不代表 Phase 5 完成、CRM 可用于真实业务、找客完成、联系人可联系、外联授权、上线、销售、收款、订单或履约能力。

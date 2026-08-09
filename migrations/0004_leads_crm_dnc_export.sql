@@ -401,7 +401,7 @@ BEFORE UPDATE OR DELETE ON fenjiu_contract.retention_intents
 FOR EACH ROW EXECUTE FUNCTION fenjiu_contract.prevent_crm_immutable_update();
 
 INSERT INTO fenjiu_contract.schema_migrations (version, description)
-VALUES ('0003', 'synthetic leads crm dnc retention and scoped export contracts')
+VALUES ('0004', 'synthetic leads crm dnc retention and scoped export contracts')
 ON CONFLICT (version) DO NOTHING;
 
 COMMIT;

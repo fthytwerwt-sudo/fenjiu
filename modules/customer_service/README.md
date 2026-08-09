@@ -2,4 +2,13 @@
 
 Owns future conversation, draft, risk, and handoff contracts.
 
-Phase 1 does not receive messages, send replies, or integrate support channels.
+P06-01 adds local-only synthetic contracts for inbound conversation records,
+message replay idempotency, intent classification references, draft-only reply
+references, privacy minimization, scoped human handoff cases, and separate
+unknown-scope quarantine records.
+
+It still does not integrate WhatsApp, TikTok, Meta, email, webhooks, channel
+adapters, production storage, or outbound delivery. Records keep hashes and
+opaque references instead of raw external channel IDs, raw chat bodies, or
+attachments.
+Inbound commands accept opaque external references, not raw channel message IDs.

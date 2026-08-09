@@ -1,1 +1,45 @@
-"""Customer-service ownership shell."""
+"""Customer-service local synthetic contract surface."""
+
+from modules.customer_service.contracts import (
+    ConversationBoundaryError,
+    ConversationReceipt,
+    ConversationRecord,
+    ConversationStatus,
+    DraftReplyRecord,
+    DraftState,
+    HandoffCase,
+    HandoffReason,
+    HandoffStatus,
+    InMemoryConversationStore,
+    InboundMessageCommand,
+    IntentRecord,
+    MessageDirection,
+    MessageRecord,
+    RiskLevel,
+    ScopeStatus,
+    SupportAuditEvent,
+    SupportDisposition,
+    UnknownScopeQuarantineRecord,
+)
+
+__all__ = [
+    "ConversationBoundaryError",
+    "ConversationReceipt",
+    "ConversationRecord",
+    "ConversationStatus",
+    "DraftReplyRecord",
+    "DraftState",
+    "HandoffCase",
+    "HandoffReason",
+    "HandoffStatus",
+    "InMemoryConversationStore",
+    "InboundMessageCommand",
+    "IntentRecord",
+    "MessageDirection",
+    "MessageRecord",
+    "RiskLevel",
+    "ScopeStatus",
+    "SupportAuditEvent",
+    "SupportDisposition",
+    "UnknownScopeQuarantineRecord",
+]
