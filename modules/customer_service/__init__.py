@@ -37,6 +37,16 @@ from modules.customer_service.drafts import (
     SupportDraftPipeline,
     SupportPolicySnapshot,
 )
+from modules.customer_service.takeover import (
+    HumanDecision,
+    SupportCaseQueue,
+    SupportCaseReceipt,
+    SupportCaseState,
+    SupportHumanDecisionRecord,
+    SupportReviewCase,
+    SupportTakeoverBoundaryError,
+    SupportZeroSendProof,
+)
 
 __all__ = [
     "ApprovedFactRef",
@@ -58,6 +68,7 @@ __all__ = [
     "HandoffCase",
     "HandoffReason",
     "HandoffStatus",
+    "HumanDecision",
     "InMemoryConversationStore",
     "InMemoryApprovedFactQuery",
     "InboundMessageCommand",
@@ -68,8 +79,15 @@ __all__ = [
     "RiskLevel",
     "ScopeStatus",
     "SupportAuditEvent",
+    "SupportCaseQueue",
+    "SupportCaseReceipt",
+    "SupportCaseState",
     "SupportDraftPipeline",
+    "SupportHumanDecisionRecord",
     "SupportDisposition",
     "SupportPolicySnapshot",
+    "SupportReviewCase",
+    "SupportTakeoverBoundaryError",
+    "SupportZeroSendProof",
     "UnknownScopeQuarantineRecord",
 ]
