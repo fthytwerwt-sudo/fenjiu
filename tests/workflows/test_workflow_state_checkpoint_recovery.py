@@ -63,6 +63,57 @@ class WorkflowStateCheckpointRecoveryTests(unittest.TestCase):
         self.store = InMemoryWorkflowStore()
         self.runner = SimpleWorkflowRunner(store=self.store, now=self.clock)
 
+    def terminal_run_case(self, state: WorkflowRunState) -> tuple[InMemoryWorkflowStore, SimpleWorkflowRunner, object]:
+        clock = Clock()
+        store = InMemoryWorkflowStore()
+        runner = SimpleWorkflowRunner(store=store, now=clock)
+        if state is WorkflowRunState.SUCCEEDED:
+            run = runner.start(command(key="terminal_store_success_key"))
+            runner.approve(
+                run.workflow_run_id,
+                actor="data_reviewer",
+                approval_ref="approval_ref_terminal_store_success",
+            )
+            return store, runner, runner.resume(run.workflow_run_id)
+        if state is WorkflowRunState.POLICY_DENIED:
+            return (
+                store,
+                runner,
+                runner.start(
+                    command(
+                        key="terminal_store_policy_key",
+                        command_type="workflow.synthetic.external_publish",
+                        effect=CommandEffect.EXTERNAL_FORBIDDEN,
+                    )
+                ),
+            )
+        if state is WorkflowRunState.DEAD_LETTERED:
+            return (
+                store,
+                runner,
+                runner.start(
+                    command(
+                        key="terminal_store_dlq_key",
+                        command_type="workflow.synthetic.timeout",
+                        effect=CommandEffect.TIMEOUT,
+                        max_attempts=1,
+                    )
+                ),
+            )
+        if state is WorkflowRunState.MANUAL_QUEUE:
+            return (
+                store,
+                runner,
+                runner.start(
+                    command(
+                        key="terminal_store_manual_key",
+                        command_type="workflow.synthetic.unknown_effect",
+                        effect=CommandEffect.UNKNOWN,
+                    )
+                ),
+            )
+        raise AssertionError(f"unsupported terminal state: {state}")
+
     def test_run_records_required_metadata_and_safe_checkpoint_refs_only(self) -> None:
         run = self.runner.start(command(effect=CommandEffect.NONE))
 
@@ -145,6 +196,39 @@ class WorkflowStateCheckpointRecoveryTests(unittest.TestCase):
         self.assertEqual(
             [event.sequence for event in self.store.run_events_for(run.workflow_run_id)],
             list(range(1, len(self.store.run_events_for(run.workflow_run_id)) + 1)),
+        )
+
+    def test_public_store_approve_cannot_bypass_runner_approval_event(self) -> None:
+        run = self.runner.start(command(key="store_approve_bypass_key"))
+        self.assertEqual(run.state, WorkflowRunState.WAITING_FOR_APPROVAL)
+        before = self.store.snapshot_counts()
+        before_events = self.store.run_events_for(run.workflow_run_id)
+
+        with self.assertRaisesRegex(WorkflowBoundaryError, "workflow_store_write_forbidden"):
+            self.store.approve(run.workflow_run_id, "approval_ref_direct_store")
+
+        with self.assertRaisesRegex(WorkflowBoundaryError, "approval_required"):
+            self.runner.resume(run.workflow_run_id)
+        self.assertEqual(self.store.effect_commit_count("store_approve_bypass_key"), 0)
+        self.assertEqual(self.store.snapshot_counts(), before)
+        self.assertEqual(self.store.run_events_for(run.workflow_run_id), before_events)
+        self.assertNotIn(
+            "approval_recorded",
+            [event.event_kind for event in self.store.run_events_for(run.workflow_run_id)],
+        )
+
+        approved = self.runner.approve(
+            run.workflow_run_id,
+            actor="data_reviewer",
+            approval_ref="approval_ref_runner_path",
+        )
+        recovered = self.runner.resume(run.workflow_run_id)
+        self.assertEqual(approved.state, WorkflowRunState.PAUSED)
+        self.assertEqual(recovered.state, WorkflowRunState.SUCCEEDED)
+        self.assertEqual(self.store.effect_commit_count("store_approve_bypass_key"), 1)
+        self.assertIn(
+            "approval_recorded",
+            [event.event_kind for event in self.store.run_events_for(run.workflow_run_id)],
         )
 
     def test_retry_timeout_and_dlq_are_stable_and_atomic(self) -> None:
@@ -266,6 +350,65 @@ class WorkflowStateCheckpointRecoveryTests(unittest.TestCase):
                     before_effects,
                 )
                 self.assertEqual(self.runner.resume(terminal.workflow_run_id), before_run)
+
+    def test_public_store_write_methods_cannot_reopen_terminal_or_manual_runs(self) -> None:
+        states = (
+            WorkflowRunState.SUCCEEDED,
+            WorkflowRunState.POLICY_DENIED,
+            WorkflowRunState.DEAD_LETTERED,
+            WorkflowRunState.MANUAL_QUEUE,
+        )
+        methods = ("save_checkpoint", "save_run", "remember_command")
+
+        for state in states:
+            for method in methods:
+                with self.subTest(state=state.value, method=method):
+                    store, runner, terminal = self.terminal_run_case(state)
+                    self.assertEqual(terminal.state, state)
+                    before = store.snapshot_counts()
+                    before_run = store.run(terminal.workflow_run_id)
+                    before_events = store.run_events_for(terminal.workflow_run_id)
+                    before_effects = store.effect_commit_count(before_run.idempotency_key)
+                    forged_checkpoint = WorkflowCheckpoint.create(
+                        workflow_run_id=terminal.workflow_run_id,
+                        scope=terminal.scope,
+                        correlation_id=terminal.correlation_id,
+                        command_type=terminal.command_type,
+                        payload_hash=terminal.input_hash,
+                        safe_resume_state={
+                            "phase": "forged_reopen",
+                            "run_ref": "ref:workflow_run:" + terminal.workflow_run_id,
+                        },
+                        created_at=self.clock(),
+                    )
+                    forged_running = replace(
+                        terminal,
+                        state=WorkflowRunState.RUNNING,
+                        terminal_result=TerminalResult.NONE,
+                        checkpoint_ref=forged_checkpoint.checkpoint_ref,
+                        updated_at=self.clock(),
+                    )
+
+                    if method == "save_checkpoint":
+                        with self.assertRaisesRegex(WorkflowBoundaryError, "workflow_store_write_forbidden"):
+                            store.save_checkpoint(forged_checkpoint)
+                    elif method == "save_run":
+                        with self.assertRaisesRegex(WorkflowBoundaryError, "workflow_store_write_forbidden"):
+                            store.save_run(forged_running, event_kind="forged_reopen")
+                    elif method == "remember_command":
+                        with self.assertRaisesRegex(WorkflowBoundaryError, "workflow_store_write_forbidden"):
+                            store.remember_command(
+                                terminal.workflow_run_id,
+                                command(key="forged_command_key", effect=CommandEffect.FAKE_INTERNAL),
+                            )
+                    else:
+                        raise AssertionError(method)
+
+                    self.assertEqual(store.snapshot_counts(), before)
+                    self.assertEqual(store.run(terminal.workflow_run_id), before_run)
+                    self.assertEqual(store.run_events_for(terminal.workflow_run_id), before_events)
+                    self.assertEqual(store.effect_commit_count(before_run.idempotency_key), before_effects)
+                    self.assertEqual(runner.resume(terminal.workflow_run_id), before_run)
 
     def test_scope_correlation_mismatch_fails_before_partial_records(self) -> None:
         bad_scope = replace(SCOPE, correlation_id="other_correlation")

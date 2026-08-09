@@ -17,6 +17,7 @@
 - LangGraph 仅做本地 import availability probe；当前环境 probe 结果为 `deferred`，原因是 `langgraph_not_installed_no_dependency_added`。本任务未安装、升级或联网获取任何依赖。
 - workflow 只保存运行元数据、checkpoint reference/hash、idempotency state、manual queue / DLQ metadata 和 run event sequence；不保存业务事实、不拥有 P03 approval truth、不写 P02 current truth。
 - `core/application/interfaces.py` 仅新增 primitive `WorkflowQueuePort` 协议，队列端口只接收 `workflow_run_id` 与 `checkpoint_ref`，不接收 payload 或业务数据。
+- second review repair 收窄 `InMemoryWorkflowStore` 公共写面：`approve()`、`save_run()`、`remember_command()`、`save_checkpoint()` 等 public mutators 稳定返回 `workflow_store_write_forbidden`；runner 只经内部写方法更新状态，并且 store 内部拒绝 terminal reopen。
 
 ## 2. Run state 与 checkpoint 合同
 
@@ -51,6 +52,7 @@ terminal_result
 | unknown effect | `unknown` 进入 `manual_queue`，不调用 provider，不写 effect |
 | audit consistency | workflow run events append-only sequence 从 1 连续增长；这些仅是 run metadata，不替代业务 audit truth |
 | terminal approve guard | `succeeded`、`policy_denied`、`dead_lettered`、`manual_queue` 均不能再 approve；稳定返回 `workflow_not_waiting_for_approval`，snapshot 与 effect count 不变 |
+| public store write guard | public `store.approve()` 不能绕过 `approval_recorded`；public `save_checkpoint()`、`save_run()`、`remember_command()` 不能伪造 `RUNNING` 重开 terminal/manual run |
 
 ## 4. Test-first evidence
 
@@ -58,10 +60,12 @@ terminal_result
 - **GREEN**：新增最小 runner / store / checkpoint / probe 后，`python3 -m unittest discover -s tests/workflows` 8 项通过。
 - **Review RED（CHANGES_REQUIRED）**：新增 terminal/manual queue approve guard 回归后，专项测试先失败于 `WorkflowBoundaryError not raised`，覆盖 `succeeded`、`policy_denied`、`dead_lettered`、`manual_queue`。
 - **Review GREEN**：`approve()` 仅允许 `WorkflowRunState.WAITING_FOR_APPROVAL`，其他状态稳定 fail closed 为 `workflow_not_waiting_for_approval`，专项测试 9 项通过。
+- **Second review RED（CHANGES_REQUIRED）**：新增 public store bypass 回归后，专项测试先失败于 `WorkflowBoundaryError not raised`，覆盖 direct `store.approve()`、`save_checkpoint()`、`save_run()`、`remember_command()` 绕过。
+- **Second review GREEN**：public store mutators 返回 `workflow_store_write_forbidden`；runner 正常 approve/resume 仍通过；terminal/manual run snapshot、event sequence 与 effect count 不变，专项测试 11 项通过。
 
 ## 5. Validation evidence
 
-- `python3 -m unittest discover -s tests/workflows`：9 项通过。
+- `python3 -m unittest discover -s tests/workflows`：11 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `python3 -m compileall -q -x '(^|/)\._' core modules adapters workflows tests`：通过。
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`：通过。

@@ -75,6 +75,14 @@ class CommandEffect(str, Enum):
     UNKNOWN = "unknown"
 
 
+_TERMINAL_RUN_STATES = {
+    WorkflowRunState.SUCCEEDED,
+    WorkflowRunState.POLICY_DENIED,
+    WorkflowRunState.DEAD_LETTERED,
+    WorkflowRunState.MANUAL_QUEUE,
+}
+
+
 def _boundary(code: str) -> WorkflowBoundaryError:
     return WorkflowBoundaryError(code)
 
@@ -406,6 +414,9 @@ class InMemoryWorkflowStore:
         return self._runs[run_id]
 
     def remember_command(self, run_id: str, command: WorkflowCommand) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _remember_command(self, run_id: str, command: WorkflowCommand) -> None:
         self._commands[run_id] = command
         self._idempotency_to_run[command.idempotency_key] = run_id
         self._idempotency_fingerprints[command.idempotency_key] = command.fingerprint()
@@ -417,6 +428,12 @@ class InMemoryWorkflowStore:
         return command
 
     def save_run(self, run: WorkflowRun, *, event_kind: str) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _save_run(self, run: WorkflowRun, *, event_kind: str) -> None:
+        existing = self._runs.get(run.workflow_run_id)
+        if existing is not None and existing.state in _TERMINAL_RUN_STATES and run != existing:
+            raise _boundary("workflow_terminal_reopen_forbidden")
         self._runs[run.workflow_run_id] = run
         events = self._events_by_run.setdefault(run.workflow_run_id, [])
         events.append(
@@ -440,6 +457,9 @@ class InMemoryWorkflowStore:
         return run
 
     def save_checkpoint(self, checkpoint: WorkflowCheckpoint) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _save_checkpoint(self, checkpoint: WorkflowCheckpoint) -> None:
         self._checkpoints[checkpoint.checkpoint_ref] = checkpoint
 
     def checkpoint(self, checkpoint_ref: str) -> WorkflowCheckpoint:
@@ -452,14 +472,23 @@ class InMemoryWorkflowStore:
         return tuple(self._events_by_run.get(run_id, ()))
 
     def enqueue_manual(self, item: ManualQueueItem) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _enqueue_manual(self, item: ManualQueueItem) -> None:
         if not any(existing.workflow_run_id == item.workflow_run_id for existing in self._manual_queue):
             self._manual_queue.append(item)
 
     def enqueue_dead_letter(self, item: DeadLetterItem) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _enqueue_dead_letter(self, item: DeadLetterItem) -> None:
         if not any(existing.workflow_run_id == item.workflow_run_id for existing in self._dead_letter_queue):
             self._dead_letter_queue.append(item)
 
     def commit_effect_once(self, key: str) -> bool:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _commit_effect_once(self, key: str) -> bool:
         _require_identifier(key, "idempotency_key_required")
         if key in self._effect_commits:
             return False
@@ -470,8 +499,13 @@ class InMemoryWorkflowStore:
         return self._effect_commits.get(key, 0)
 
     def approve(self, run_id: str, approval_ref: str) -> None:
+        raise _boundary("workflow_store_write_forbidden")
+
+    def _record_approval(self, run_id: str, approval_ref: str) -> None:
         _require_identifier(run_id, "workflow_run_id_required")
         _require_identifier(approval_ref, "approval_ref_required")
+        if self.run(run_id).state is not WorkflowRunState.WAITING_FOR_APPROVAL:
+            raise _boundary("workflow_not_waiting_for_approval")
         self._approvals[run_id] = approval_ref
 
     def approval_ref_for(self, run_id: str) -> str | None:
@@ -526,9 +560,9 @@ class SimpleWorkflowRunner:
             state=WorkflowRunState.CREATED,
             terminal_result=TerminalResult.NONE,
         )
-        self.store.remember_command(run.workflow_run_id, command)
-        self.store.save_checkpoint(checkpoint)
-        self.store.save_run(run, event_kind="run_created")
+        self.store._remember_command(run.workflow_run_id, command)
+        self.store._save_checkpoint(checkpoint)
+        self.store._save_run(run, event_kind="run_created")
         run = self._transition(run, WorkflowRunState.VALIDATED, TerminalResult.NONE, "validated")
         run = self._transition(run, WorkflowRunState.QUEUED, TerminalResult.NONE, "queued")
         run = self._transition(run, WorkflowRunState.RUNNING, TerminalResult.NONE, "running", attempt=1)
@@ -539,7 +573,7 @@ class SimpleWorkflowRunner:
         _require_identifier(actor, "actor_required")
         if run.state is not WorkflowRunState.WAITING_FOR_APPROVAL:
             raise _boundary("workflow_not_waiting_for_approval")
-        self.store.approve(run.workflow_run_id, approval_ref)
+        self.store._record_approval(run.workflow_run_id, approval_ref)
         return self._transition(run, WorkflowRunState.PAUSED, TerminalResult.WAITING_FOR_APPROVAL, "approval_recorded")
 
     def resume(self, workflow_run_id: str, *, crash_after_effect: bool = False) -> WorkflowRun:
@@ -556,7 +590,7 @@ class SimpleWorkflowRunner:
             return self._execute(run, command)
         if self.store.approval_ref_for(run.workflow_run_id) is None:
             raise _boundary("approval_required")
-        self.store.commit_effect_once(command.idempotency_key)
+        self.store._commit_effect_once(command.idempotency_key)
         if crash_after_effect:
             self._transition(
                 run,
@@ -606,7 +640,7 @@ class SimpleWorkflowRunner:
                 "manual_queue",
                 extra={"reason": "unknown_effect_manual_review"},
             )
-            self.store.enqueue_manual(
+            self.store._enqueue_manual(
                 ManualQueueItem(
                     workflow_run_id=manual.workflow_run_id,
                     reason="unknown_effect_manual_review",
@@ -627,7 +661,7 @@ class SimpleWorkflowRunner:
                 "dead_lettered",
                 extra={"reason": reason},
             )
-            self.store.enqueue_dead_letter(
+            self.store._enqueue_dead_letter(
                 DeadLetterItem(
                     workflow_run_id=dead.workflow_run_id,
                     reason=reason,
@@ -664,7 +698,7 @@ class SimpleWorkflowRunner:
             created_at=updated_at,
             extra=extra,
         )
-        self.store.save_checkpoint(checkpoint)
+        self.store._save_checkpoint(checkpoint)
         next_run = WorkflowRun(
             workflow_run_id=run.workflow_run_id,
             scope=run.scope,
@@ -681,7 +715,7 @@ class SimpleWorkflowRunner:
             state=state,
             terminal_result=terminal_result,
         )
-        self.store.save_run(next_run, event_kind=phase)
+        self.store._save_run(next_run, event_kind=phase)
         return next_run
 
     def _checkpoint(
