@@ -18,6 +18,8 @@
 - `ActionApprovalService` 支持 `approve`、`reject`、`revise`、`expire`；同一 reviewer 不可 approve 自己创建的高风险 request，终态 request 不可再用新 decision 变更。
 - `forbidden` 外部动作统一 hard deny：`external_send`、`content_publish`、`price_quote`、`payment`、`order`、`refund`、`inventory_write` 均返回 `external_action_forbidden`，并标记 `external_execution_attempted=True` 供审计。
 - P04-01 workflow metadata 可作为 `PolicyRequest` 输入来源，但本实现不改 `workflows/runner.py`，不扩大 workflow store 公共写面，也不让 ActionPolicy 成为 approval truth 或 store 绕过。
+- Spec review fix：`pre_execution_recheck()` 现在强制 execution `subject_version` 等于已批准 request 的 `subject_version`；不一致返回 audit-ready denial `approval_subject_version_mismatch`，且 `external_execution_attempted=False`。
+- Spec review fix：`request_approval()` 的 idempotency fingerprint 现在覆盖影响审批语义的 `PolicyRequest` 输入，包括 required evidence、data state、fact freshness/TTL、feature flag snapshot、DNC、consent、environment、actor、phase、approval state 以及原有 scope/correlation/action/target/policy/version/creator/expires_at；同 key 任一差异稳定 `idempotency_conflict`。
 
 ## 2. Roles / Actions 最小矩阵
 
@@ -48,6 +50,8 @@
 | self approval | `self_approval_forbidden` |
 | terminal request 再 decision | `duplicate_decision` |
 | pending request 执行前复核 | `approval_not_approved` |
+| approved request 的 execution subject version 变化 | `approval_subject_version_mismatch` |
+| 同 idempotency key 改审批语义输入 | `idempotency_conflict` |
 
 ## 4. Approval flow
 
@@ -61,14 +65,16 @@
 - **RED**：新增 `tests/contracts/test_action_policy_rbac_approvals.py` 后，首次运行 `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals` 失败于 `ModuleNotFoundError: No module named 'core.security.action_policy'`。
 - **GREEN**：新增最小 ActionPolicy / approval service 后，P04-02 专项 6 项通过。
 - **Refine**：补 `PolicyRequest.phase`、过期测试时钟基准、unknown action 安全返回、decision idempotency 重放与默认 UTC 时钟后，专项保持通过。
+- **Spec review RED**：新增 subject-version recheck 与 request idempotency semantic fingerprint tests 后，专项先失败：version=1 approval 在 execution 传 version=2 仍 allowed；同 key 改 evidence/freshness/flag 等语义字段返回旧 request 或先返回非幂等错误。
+- **Spec review GREEN**：加入 `approval_subject_version_mismatch` denial 与完整 request semantic fingerprint 后，P04-02 专项 7 项通过。
 
 ## 6. Validation evidence
 
-- `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals`：6 项通过。
+- `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals`：7 项通过。
 - `python3 -m unittest discover -s tests/workflows`：11 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
-- `python3 -m unittest discover -s tests/contracts`：52 项通过。
-- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、52 contracts、35 ingestion tests 全部通过。
+- `python3 -m unittest discover -s tests/contracts`：53 项通过。
+- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、53 contracts、35 ingestion tests 全部通过。
 - `python3 -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests`：通过。
 - `git diff --check`：通过。
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`：通过。
@@ -81,7 +87,7 @@
 - `configuration_validation（配置验证）`：未新增配置、环境变量、生产连接、真实账号或外部 provider。
 - `data_safety_check（数据安全检查）`：未读取或提交真实供应链资料、个人信息或海鲜业务事实；业务线 scope 仍由 `ScopeRef` 明确注入。
 - `dependency_compatibility_check（依赖兼容检查）`：`not_applicable`；未新增或修改依赖。
-- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 unknown role、cross scope、role denied、missing evidence、stale fact、approval 后 fact/flag 变化复核、DNC/consent、flag false、non-local env、self approval、terminal duplicate、pending execution 和 forbidden external actions。
+- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 unknown role、cross scope、role denied、missing evidence、stale fact、approval 后 fact/flag/subject version 变化复核、request idempotency semantic drift、DNC/consent、flag false、non-local env、self approval、terminal duplicate、pending execution 和 forbidden external actions。
 
 ## 8. 事实分级与剩余阻断
 

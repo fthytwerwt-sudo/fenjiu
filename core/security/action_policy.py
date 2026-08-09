@@ -634,15 +634,15 @@ class ActionApprovalService:
             raise _boundary("approval_request_expired")
         if policy_request.phase is not PolicyPhase.REQUEST:
             raise _boundary("policy_phase_required")
-        evaluation = self._policy.evaluate(policy_request)
-        if not evaluation.allowed:
-            raise _boundary(evaluation.error_code or "policy_denied")
         fingerprint = self._request_fingerprint(policy_request, creator, expires)
         existing = self._request_by_idempotency.get(key)
         if existing is not None:
             if self._fingerprint_by_idempotency[key] != fingerprint:
                 raise _boundary("idempotency_conflict")
             return existing
+        evaluation = self._policy.evaluate(policy_request)
+        if not evaluation.allowed:
+            raise _boundary(evaluation.error_code or "policy_denied")
         request_id = "approval_request:" + _digest(policy_request.scope, key)[:32]
         request = ActionApprovalRequest(
             id=request_id,
@@ -786,13 +786,18 @@ class ActionApprovalService:
             or policy_request.correlation_id != request.correlation_id
         ):
             raise _boundary("approval_scope_mismatch")
-        return self._policy.evaluate(
-            replace(
-                policy_request,
-                phase=PolicyPhase.EXECUTION,
-                approval_state=ApprovalState.APPROVED,
-            )
+        execution_request = replace(
+            policy_request,
+            phase=PolicyPhase.EXECUTION,
+            approval_state=ApprovalState.APPROVED,
         )
+        if execution_request.subject_version != request.subject_version:
+            return ActionPolicy._decision(
+                execution_request,
+                False,
+                "approval_subject_version_mismatch",
+            )
+        return self._policy.evaluate(execution_request)
 
     def request_state(self, request_id: str) -> ApprovalState:
         request = self._request_by_id.get(_require_identifier(request_id, "approval_request_id_required"))
@@ -921,13 +926,36 @@ class ActionApprovalService:
         creator_actor_ref: str,
         expires_at: datetime,
     ) -> str:
+        action_value = (
+            policy_request.action.value
+            if isinstance(policy_request.action, ActionName)
+            else str(policy_request.action)
+        )
+        actor_role = (
+            policy_request.actor.role.value
+            if isinstance(policy_request.actor.role, ActorRole)
+            else str(policy_request.actor.role)
+        )
         return _digest(
             policy_request.scope.tenant_id,
             policy_request.scope.project_id,
             policy_request.scope.business_line_id,
             policy_request.correlation_id,
-            policy_request.action.value,
+            action_value,
+            policy_request.phase.value,
+            policy_request.actor.actor_ref,
+            actor_role,
+            policy_request.actor.scope,
             policy_request.target_ref,
+            policy_request.data_state.value,
+            policy_request.approval_state.value,
+            policy_request.fact_observed_at.isoformat(),
+            policy_request.fact_ttl.total_seconds(),
+            policy_request.required_evidence_refs,
+            policy_request.feature_flag_snapshot,
+            policy_request.dnc_blocked,
+            policy_request.consent_granted,
+            policy_request.environment.value,
             policy_request.policy_version,
             policy_request.subject_version,
             creator_actor_ref,

@@ -63,6 +63,7 @@ def policy_request(
     data_state: DataState = DataState.APPROVED,
     approval_state: ApprovalState = ApprovalState.APPROVED,
     fact_observed_at: datetime | None = None,
+    fact_ttl: timedelta = timedelta(hours=1),
     required_evidence_refs: tuple[str, ...] = ("evidence_ref_1",),
     feature_flag_snapshot: tuple[tuple[str, bool], ...] | None = None,
     dnc_blocked: bool = False,
@@ -70,6 +71,7 @@ def policy_request(
     environment: Environment = Environment.LOCAL,
     policy_version: str = "action_policy_v1",
     target_ref: str = "target_ref_1",
+    subject_version: int = 1,
 ) -> PolicyRequest:
     return PolicyRequest(
         actor=actor_ref or actor(ActorRole.CONTENT_REVIEWER, actor_ref="content_reviewer_1"),
@@ -80,7 +82,7 @@ def policy_request(
         data_state=data_state,
         approval_state=approval_state,
         fact_observed_at=fact_observed_at or (NOW - timedelta(minutes=5)),
-        fact_ttl=timedelta(hours=1),
+        fact_ttl=fact_ttl,
         required_evidence_refs=required_evidence_refs,
         feature_flag_snapshot=feature_flag_snapshot or disabled_feature_flag_snapshot(),
         dnc_blocked=dnc_blocked,
@@ -89,7 +91,7 @@ def policy_request(
         evaluated_at=NOW,
         policy_version=policy_version,
         correlation_id=scope.correlation_id,
-        subject_version=1,
+        subject_version=subject_version,
     )
 
 
@@ -262,6 +264,18 @@ class ActionPolicyRbacApprovalTests(unittest.TestCase):
         self.assertTrue(allowed.allowed)
         self.assertIsNone(allowed.error_code)
 
+        version_mismatch = self.service.pre_execution_recheck(
+            request.id,
+            policy_request(
+                target_ref="content_task_ref_1",
+                actor_ref=reviewer,
+                approval_state=ApprovalState.APPROVED,
+                subject_version=2,
+            ),
+        )
+        self.assert_denied(version_mismatch, "approval_subject_version_mismatch")
+        self.assertFalse(version_mismatch.external_execution_attempted)
+
         self.assert_denied(
             self.service.pre_execution_recheck(
                 request.id,
@@ -340,6 +354,60 @@ class ActionPolicyRbacApprovalTests(unittest.TestCase):
             ),
             "feature_flag_disabled",
         )
+
+    def test_request_idempotency_fingerprint_covers_policy_semantics(self) -> None:
+        creator = actor(
+            ActorRole.CONTENT_REVIEWER,
+            actor_ref="content_creator_semantic",
+        )
+        expires_at = NOW + timedelta(days=1)
+        base_request = policy_request(
+            phase=PolicyPhase.REQUEST,
+            actor_ref=creator,
+            approval_state=ApprovalState.PENDING,
+            target_ref="content_task_ref_semantic",
+        )
+        first = self.service.request_approval(
+            base_request,
+            idempotency_key="request_semantic_key",
+            creator_actor_ref=creator.actor_ref,
+            expires_at=expires_at,
+        )
+        self.assertEqual(
+            self.service.request_approval(
+                base_request,
+                idempotency_key="request_semantic_key",
+                creator_actor_ref=creator.actor_ref,
+                expires_at=expires_at,
+            ),
+            first,
+        )
+
+        semantic_changes = (
+            {"required_evidence_refs": ("evidence_ref_2",)},
+            {"data_state": DataState.STAGING},
+            {"fact_observed_at": NOW - timedelta(minutes=10)},
+            {"fact_ttl": timedelta(minutes=30)},
+            {"feature_flag_snapshot": flags_with(FeatureFlagName.EXTERNAL_SEND)},
+            {"dnc_blocked": True},
+            {"consent_granted": False},
+            {"environment": Environment.PRODUCTION},
+        )
+        for overrides in semantic_changes:
+            with self.subTest(overrides=overrides):
+                with self.assertRaisesRegex(ActionPolicyError, "idempotency_conflict"):
+                    self.service.request_approval(
+                        policy_request(
+                            phase=PolicyPhase.REQUEST,
+                            actor_ref=creator,
+                            approval_state=ApprovalState.PENDING,
+                            target_ref="content_task_ref_semantic",
+                            **overrides,
+                        ),
+                        idempotency_key="request_semantic_key",
+                        creator_actor_ref=creator.actor_ref,
+                        expires_at=expires_at,
+                    )
 
     def test_reject_revise_expire_duplicate_terminal_and_append_only_records(self) -> None:
         reviewer = actor(ActorRole.DATA_REVIEWER, actor_ref="data_reviewer_2")
