@@ -39,8 +39,17 @@ from core.security.action_policy import (
     PolicyPhase,
     PolicyRequest,
 )
+from core.security.audit import (
+    AuditBoundaryError,
+    AuditEvent,
+    AuditRequiredCommandExecutor,
+    InMemoryAuditLog,
+)
 
 __all__ = [
+    "AuditBoundaryError",
+    "AuditEvent",
+    "AuditRequiredCommandExecutor",
     "ConfigStatus",
     "ControlPlaneSettings",
     "FailClosedFeatureFlags",
@@ -69,6 +78,7 @@ __all__ = [
     "PolicyPhase",
     "PolicyRequest",
     "PolicyEvaluation",
+    "InMemoryAuditLog",
     "default_settings",
     "fail_closed_settings",
     "disabled_feature_flag_snapshot",
