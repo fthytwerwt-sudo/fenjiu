@@ -24,6 +24,19 @@ class PortProbe(Protocol):
         """Return the current fake-only capability status."""
 
 
+class WorkflowQueuePort(Protocol):
+    """Replaceable queue boundary for workflow run scheduling metadata."""
+
+    def enqueue(self, workflow_run_id: str, checkpoint_ref: str) -> str:
+        """Queue a run by reference only; implementations must not receive payloads."""
+
+    def pause(self, workflow_run_id: str, checkpoint_ref: str) -> None:
+        """Pause a run by checkpoint reference without owning workflow state."""
+
+    def resume(self, workflow_run_id: str, checkpoint_ref: str) -> str:
+        """Schedule resume by checkpoint reference without replaying side effects."""
+
+
 class ExternalActionGuard:
     """Fail-closed guard shared by future commands."""
 
