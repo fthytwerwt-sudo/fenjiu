@@ -17,6 +17,7 @@
 - 新增 `fixtures/leads/synthetic_public_sources.json`，只包含 `.invalid` 合成来源、合成 HTML 与 value-free evidence 输入；`.gitignore` 与 architecture 测试只允许该 fixture 入 Git。
 - 所有进入路径必须通过 policy/robots/terms/owner gate：缺 policy、owner、robots review、terms review 或被 robots/terms 拒绝均 fail closed，并写 P04 append-only audit。
 - login、CAPTCHA、authentication required、private source 一律拒绝并写安全审计；公开页面 snapshot/evidence 不等于企业真实性、可联系授权或外联许可。
+- HIGH 修复后，P05-01 policy 与 fake crawl extraction 双层拒绝联系语义字段；`contact`、`email`、`phone`、`whatsapp`、`wechat`、`telegram`、`linkedin`、`outreach` 等字段不得进入 `allowed_fields`、evidence 或 candidate，即使来源是 synthetic、value-hash、zero-network。
 
 ## 2. Source policy 字段
 
@@ -88,6 +89,7 @@ business_external_ready=false
 | CAPTCHA required | `captcha_source_forbidden` |
 | private source | `private_source_forbidden` |
 | authentication required | `authentication_source_forbidden` |
+| contact/email/phone/social/outreach field requested | `public_field_forbidden` |
 | cross business line snapshot reuse | `cross_scope_forbidden` |
 | external export attempt | `external_export_forbidden` |
 
@@ -97,11 +99,13 @@ business_external_ready=false
 
 - **RED**：新增 `tests/contracts/test_source_policy_and_crawl_port.py` 后，首次运行 `python3 -m unittest tests.contracts.test_source_policy_and_crawl_port` 失败于 `ImportError: cannot import name 'FakeCrawlPort' from 'adapters.crawl'`。
 - **GREEN**：新增最小 `SourcePolicy` 与 `FakeCrawlPort` 后，同一 P05-01 专项 5 项通过。
+- **Review HIGH RED**：新增 contact-like field policy / forged policy / extract bypass tests 后，同一 P05-01 专项先失败，`SourcePolicy.allowed_fields` 可接受 `contact_email`，`FakeCrawlPort.fetch_snapshot()` 与 `extract_public_fields()` 未拒绝并可能生成 candidate。
+- **Review HIGH GREEN**：新增 `public_field_forbidden` 双层拒绝后，policy construction、policy validation、extract-time field inspection 均 fail closed；审计只记录安全 hash/result code，不记录原字段名、字段值、CRM/contact/outreach payload。P05-01 专项 8 项通过。
 
 ## 6. Validation evidence
 
-- `python3 -m unittest tests.contracts.test_source_policy_and_crawl_port`：5 项通过。
-- `python3 -m unittest discover -s tests/contracts`：67 项通过。
+- `python3 -m unittest tests.contracts.test_source_policy_and_crawl_port`：8 项通过。
+- `python3 -m unittest discover -s tests/contracts`：70 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `python3 -m unittest discover -s tests/workflows`：11 项通过。
 - `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals tests.contracts.test_audit_metrics_retry_dead_letter`：16 项通过。
@@ -110,7 +114,7 @@ business_external_ready=false
 - `python3 scripts/validate_regression_baseline.py --base-sha eda64feb9945e1f9f2eaa688b1152f87b8182bf5`：通过。
 - `python3 scripts/validate_regression_baseline.py --base-sha eda64feb9945e1f9f2eaa688b1152f87b8182bf5 --all-files`：通过。
 - `git diff --check`：通过。
-- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、67 contracts、35 ingestion tests 全部通过。
+- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、70 contracts、35 ingestion tests 全部通过。
 
 远端 push 和 remote readback 以最终执行回报为准。
 
@@ -118,7 +122,7 @@ business_external_ready=false
 
 - `repository_hygiene_check（仓库卫生检查）`：新增代码、测试、fixture 和报告仅包含 synthetic/value-free 标识符、hash、`.invalid` 合成 URL 与相对路径；不包含 secret、token、cookie、私人联系方式、真实业务资料或本地绝对路径。
 - `configuration_validation（配置验证）`：未新增配置、环境变量、生产连接、真实账号、crawler SDK、browser 或外部 provider。
-- `data_safety_check（数据安全检查）`：未读取 `research_channels.json`、真实供应链、客户、价格、库存、资质、身份或联系人资料；汾酒/海鲜业务线隔离通过 `ScopeRef` 和 snapshot ref 证明。
+- `data_safety_check（数据安全检查）`：未读取 `research_channels.json`、真实供应链、客户、价格、库存、资质、身份或联系人资料；联系语义字段在 P05-01 层 fail closed，汾酒/海鲜业务线隔离通过 `ScopeRef` 和 snapshot ref 证明。
 - `dependency_compatibility_check（依赖兼容检查）`：`not_applicable`；未新增或修改依赖。
 
 ## 8. 事实分级与剩余阻断

@@ -20,6 +20,9 @@ _SENSITIVE = re.compile(
     r"(?i)(?:^|[./_:-])(?:api[-_]?key|authorization|bearer|cookie|password|secret|token)(?:$|[./_:-])"
     r"|^(?:sk[-_]|ghp_|github_pat_|xox[baprs]-|akia|aiza)"
 )
+_CONTACT_FIELD_SEMANTICS = re.compile(
+    r"(?i)(contact|e[-_]?mail|phone|whatsapp|wechat|telegram|linkedin|outreach)"
+)
 
 
 class CrawlBoundaryError(ContractValidationError):
@@ -121,6 +124,18 @@ def _validate_identifier_tuple(value: object, code: str) -> tuple[str, ...]:
     return tuple(_require_identifier(item, code) for item in value)
 
 
+def reject_contact_field_name(value: object) -> str:
+    field_name = _require_identifier(value, "field_name_required")
+    if _CONTACT_FIELD_SEMANTICS.search(field_name) is not None:
+        raise _boundary("public_field_forbidden")
+    return field_name
+
+
+def validate_allowed_public_fields(value: object) -> tuple[str, ...]:
+    allowed_fields = _validate_identifier_tuple(value, "allowed_fields_required")
+    return tuple(reject_contact_field_name(field_name) for field_name in allowed_fields)
+
+
 def _validate_prefix_tuple(value: object) -> tuple[str, ...]:
     if not isinstance(value, tuple) or not value:
         raise _boundary("source_allowlist_required")
@@ -166,7 +181,7 @@ class SourcePolicy:
         _require_optional_identifier(self.terms_review_ref, "terms_review_required")
         if self.terms_allowed is not None:
             _require_bool(self.terms_allowed, "terms_status_required")
-        object.__setattr__(self, "allowed_fields", _validate_identifier_tuple(self.allowed_fields, "allowed_fields_required"))
+        object.__setattr__(self, "allowed_fields", validate_allowed_public_fields(self.allowed_fields))
         _require_positive_int(self.max_frequency_per_day, "source_frequency_required")
         _require_positive_int(self.retention_days, "retention_policy_required")
         _require_bool(self.manual_review_required, "manual_review_required")
@@ -246,7 +261,7 @@ class EvidenceLocator:
     def __post_init__(self) -> None:
         _require_scope(self.scope)
         _require_identifier(self.snapshot_ref, "snapshot_ref_required")
-        _require_identifier(self.field_name, "field_name_required")
+        reject_contact_field_name(self.field_name)
         _require_hash(self.selector_hash, "selector_hash_required")
         _require_hash(self.source_url_hash, "source_url_hash_required")
 
@@ -274,7 +289,7 @@ class PublicFieldCandidate:
     def __post_init__(self) -> None:
         scope = _require_scope(self.scope)
         _require_identifier(self.snapshot_ref, "snapshot_ref_required")
-        _require_identifier(self.field_name, "field_name_required")
+        reject_contact_field_name(self.field_name)
         _require_hash(self.value_hash, "value_hash_required")
         if not isinstance(self.evidence, EvidenceLocator):
             raise _boundary("evidence_locator_required")
@@ -313,6 +328,7 @@ def validate_policy_for_url(policy: SourcePolicy | None, url: str) -> SourcePoli
         raise _boundary("terms_review_required")
     if policy.terms_allowed is not True:
         raise _boundary("terms_denied")
+    validate_allowed_public_fields(policy.allowed_fields)
     if policy.login_required is True:
         raise _boundary("login_required_source_forbidden")
     if policy.captcha_required is True:
@@ -364,7 +380,9 @@ __all__ = [
     "field_payload_hash",
     "require_page_payload",
     "require_synthetic_url",
+    "reject_contact_field_name",
     "selector_hash",
     "source_url_hash",
+    "validate_allowed_public_fields",
     "validate_policy_for_url",
 ]

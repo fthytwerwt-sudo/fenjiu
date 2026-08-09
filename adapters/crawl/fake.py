@@ -21,8 +21,10 @@ from modules.leads.source_policy import (
     field_payload_hash,
     require_page_payload,
     require_synthetic_url,
+    reject_contact_field_name,
     selector_hash,
     source_url_hash,
+    validate_allowed_public_fields,
 )
 
 
@@ -124,6 +126,16 @@ class FakeCrawlPort:
         snapshot_ref: str,
         policy: SourcePolicy,
     ) -> tuple[PublicFieldCandidate, ...]:
+        try:
+            validate_allowed_public_fields(policy.allowed_fields)
+        except CrawlBoundaryError as exc:
+            self._record(
+                event_kind="crawl_field_denied",
+                result_code=exc.code,
+                policy=policy,
+                url_hash=self._snapshot_url_hash(snapshot_ref),
+            )
+            raise
         snapshot, page = self._snapshot_for_policy(snapshot_ref, policy)
         fields = page.get("fields")
         if not isinstance(fields, list):
@@ -134,6 +146,20 @@ class FakeCrawlPort:
             if not isinstance(field, Mapping):
                 raise CrawlBoundaryError("synthetic_field_required")
             field_name = _field_value(field, "field_name")
+            try:
+                reject_contact_field_name(field_name)
+            except CrawlBoundaryError as exc:
+                self._record(
+                    event_kind="crawl_field_denied",
+                    result_code=exc.code,
+                    policy=policy,
+                    url_hash=snapshot.source_url_hash,
+                    extra_metadata={
+                        "snapshot_ref": snapshot.snapshot_ref,
+                        "blocked_public_field_hash": sha256(field_name.encode("utf-8")).hexdigest(),
+                    },
+                )
+                raise
             if field_name not in policy.allowed_fields:
                 continue
             evidence = EvidenceLocator(
@@ -216,6 +242,13 @@ class FakeCrawlPort:
             if source_url_hash(url) == snapshot.source_url_hash:
                 return url
         return "https://missing.invalid/source"
+
+    def _snapshot_url_hash(self, snapshot_ref: str) -> str:
+        item = self._snapshots.get(snapshot_ref)
+        if item is None:
+            return "0" * 64
+        snapshot, _ = item
+        return snapshot.source_url_hash
 
     def _record(
         self,

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import fields as dataclass_fields
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -82,6 +83,30 @@ class SourcePolicyAndCrawlPortTests(unittest.TestCase):
             business_external_ready=False,
         )
 
+    def forged_policy_with_allowed_fields(
+        self,
+        *allowed_fields: str,
+    ) -> SourcePolicy:
+        original = self.approved_policy()
+        forged = object.__new__(SourcePolicy)
+        for field in dataclass_fields(SourcePolicy):
+            object.__setattr__(forged, field.name, getattr(original, field.name))
+        object.__setattr__(forged, "allowed_fields", allowed_fields)
+        return forged
+
+    def contact_page(self) -> dict[str, object]:
+        return {
+            **self.page,
+            "fields": [
+                self.page["fields"][0],
+                {
+                    "field_name": "contact_email",
+                    "selector": "[data-field=contact-email]",
+                    "value": "person@example.invalid",
+                },
+            ],
+        }
+
     def assert_denied_with_audit(
         self,
         policy: SourcePolicy | None,
@@ -118,6 +143,84 @@ class SourcePolicyAndCrawlPortTests(unittest.TestCase):
                 self.assert_denied_with_audit(denied_policy, error_code)
 
         self.assertTrue(self.audit.verify_chain())
+
+    def test_policy_rejects_contact_like_allowed_fields_before_snapshot(self) -> None:
+        policy = self.approved_policy()
+        forbidden_fields = (
+            "contact_email",
+            "phone",
+            "whatsapp",
+            "wechat",
+            "telegram",
+            "linkedin",
+            "outreach_ref",
+        )
+
+        for field_name in forbidden_fields:
+            with self.subTest(field_name=field_name):
+                with self.assertRaisesRegex(CrawlBoundaryError, "public_field_forbidden"):
+                    replace(policy, allowed_fields=("organization_name", field_name))
+
+    def test_policy_bypass_contact_field_is_audited_and_zero_network(self) -> None:
+        contact_page = self.contact_page()
+        audit = InMemoryAuditLog(now=self.clock)
+        port = FakeCrawlPort(
+            pages={contact_page["url"]: contact_page},
+            audit_log=audit,
+            now=self.clock,
+        )
+        bad_policy = self.forged_policy_with_allowed_fields(
+            "organization_name",
+            "contact_email",
+        )
+
+        with self.assertRaisesRegex(CrawlBoundaryError, "public_field_forbidden"):
+            port.fetch_snapshot(contact_page["url"], bad_policy)
+
+        self.assertEqual(port.external_fetch_count, 0)
+        self.assertEqual(len(audit.events), 1)
+        event = audit.events[-1]
+        self.assertEqual(event.event_kind, "crawl_policy_denied")
+        self.assertEqual(event.result_code, "public_field_forbidden")
+        self.assertEqual(event.metadata["external_fetch_count"], 0)
+        rendered = json.dumps(event.safe_summary(), sort_keys=True).lower()
+        self.assertNotIn("contact_email", rendered)
+        self.assertNotIn("person@example.invalid", rendered)
+        self.assertNotIn("crm", rendered)
+        self.assertNotIn("outreach", rendered)
+
+    def test_extract_rejects_contact_field_when_policy_is_bypassed(self) -> None:
+        contact_page = self.contact_page()
+        audit = InMemoryAuditLog(now=self.clock)
+        port = FakeCrawlPort(
+            pages={contact_page["url"]: contact_page},
+            audit_log=audit,
+            now=self.clock,
+        )
+        safe_policy = self.approved_policy()
+        snapshot = port.fetch_snapshot(contact_page["url"], safe_policy)
+        bad_policy = self.forged_policy_with_allowed_fields(
+            "organization_name",
+            "contact_email",
+        )
+
+        with self.assertRaisesRegex(CrawlBoundaryError, "public_field_forbidden"):
+            port.extract_public_fields(snapshot.snapshot_ref, bad_policy)
+
+        self.assertEqual(port.external_fetch_count, 0)
+        event = audit.events[-1]
+        self.assertEqual(event.event_kind, "crawl_field_denied")
+        self.assertEqual(event.result_code, "public_field_forbidden")
+        rendered = json.dumps(
+            {
+                "audit": [item.safe_summary() for item in audit.events],
+            },
+            sort_keys=True,
+        ).lower()
+        self.assertNotIn("contact_email", rendered)
+        self.assertNotIn("person@example.invalid", rendered)
+        self.assertNotIn("crm", rendered)
+        self.assertNotIn("outreach", rendered)
 
     def test_login_and_private_sources_are_blocked_with_zero_network(self) -> None:
         policy = self.approved_policy()
