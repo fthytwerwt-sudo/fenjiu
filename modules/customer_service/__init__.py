@@ -35,6 +35,7 @@ from modules.customer_service.drafts import (
     InMemoryApprovedFactQuery,
     ManualHandoffRecord,
     SupportDraftPipeline,
+    SupportPolicySnapshot,
 )
 
 __all__ = [
@@ -69,5 +70,6 @@ __all__ = [
     "SupportAuditEvent",
     "SupportDraftPipeline",
     "SupportDisposition",
+    "SupportPolicySnapshot",
     "UnknownScopeQuarantineRecord",
 ]

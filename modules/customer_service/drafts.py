@@ -56,6 +56,24 @@ _LOW_RISK_DRAFT_INTENTS = frozenset(
         "greeting",
     }
 )
+_P04_SUPPORT_DRAFT_FLAG = "external_send_enabled"
+_P04_EXTERNAL_EXECUTION_FLAG = "external_execution_allowed"
+_P04_BUSINESS_EXTERNAL_READY_FLAG = "business_external_ready"
+_P04_FEATURE_FLAGS = frozenset(
+    {
+        _P04_SUPPORT_DRAFT_FLAG,
+        "content_publish_enabled",
+        "price_quote_enabled",
+        "refund_enabled",
+        "order_enabled",
+        "payment_enabled",
+        "inventory_write_enabled",
+        "real_crawl_enabled",
+        "real_video_provider_enabled",
+        _P04_EXTERNAL_EXECUTION_FLAG,
+        _P04_BUSINESS_EXTERNAL_READY_FLAG,
+    }
+)
 
 
 class DraftBoundaryError(ContractValidationError):
@@ -289,6 +307,117 @@ class ForbiddenExpressionPolicy:
 
 
 @dataclass(frozen=True)
+class SupportPolicySnapshot:
+    """Immutable P04/contactability policy evidence for a single draft attempt."""
+
+    scope: ScopeRef
+    subject_hash: str
+    source_evidence_ref: str | None
+    consent_ref: str | None
+    consent_granted: bool
+    dnc_blocked: bool
+    feature_flag_snapshot: tuple[tuple[str, bool], ...]
+    policy_version: str
+    observed_at: datetime
+    expires_at: datetime
+    is_synthetic: bool = True
+    external_execution_allowed: bool = False
+
+    def __post_init__(self) -> None:
+        _require_scope(self.scope)
+        _require_hash(self.subject_hash, "subject_hash_required")
+        if self.source_evidence_ref is not None:
+            _require_identifier(self.source_evidence_ref, "source_evidence_ref_required")
+        if self.consent_ref is not None:
+            _require_identifier(self.consent_ref, "consent_ref_required")
+        if not isinstance(self.consent_granted, bool):
+            raise _boundary("consent_state_required")
+        if not isinstance(self.dnc_blocked, bool):
+            raise _boundary("dnc_state_required")
+        _validate_feature_flag_snapshot(self.feature_flag_snapshot)
+        _require_identifier(self.policy_version, "policy_version_required")
+        observed_at = _require_time(self.observed_at, "observed_at_required")
+        expires_at = _require_time(self.expires_at, "expires_at_required")
+        if expires_at <= observed_at:
+            raise _boundary("policy_window_invalid")
+        _require_synthetic_local(self.is_synthetic, self.external_execution_allowed)
+
+    @property
+    def snapshot_hash(self) -> str:
+        return _digest(
+            "support_policy_snapshot",
+            self.scope.tenant_id,
+            self.scope.project_id,
+            self.scope.business_line_id,
+            self.scope.correlation_id,
+            self.subject_hash,
+            self.source_evidence_ref or "",
+            self.consent_ref or "",
+            self.consent_granted,
+            self.dnc_blocked,
+            self.feature_flag_snapshot,
+            self.policy_version,
+            self.observed_at.isoformat(),
+            self.expires_at.isoformat(),
+        )
+
+    def denial_code(self, checked_at: datetime) -> str | None:
+        _require_time(checked_at, "checked_at_required")
+        if self.expires_at <= checked_at:
+            return "policy_snapshot_expired"
+        if self.dnc_blocked:
+            return "dnc_blocked"
+        if self.source_evidence_ref is None:
+            return "contactability_required"
+        if self.consent_ref is None:
+            return "consent_required"
+        if self.consent_granted is not True:
+            return "consent_rejected"
+        flags = dict(self.feature_flag_snapshot)
+        if flags.get(_P04_SUPPORT_DRAFT_FLAG) is not True:
+            return "feature_flag_disabled"
+        return None
+
+    def safe_summary(self) -> dict[str, object]:
+        return {
+            "subject_hash": self.subject_hash,
+            "source_evidence_ref": self.source_evidence_ref,
+            "consent_ref": self.consent_ref,
+            "consent_granted": self.consent_granted,
+            "dnc_blocked": self.dnc_blocked,
+            "feature_flag_snapshot_hash": _digest(
+                "feature_flag_snapshot",
+                self.feature_flag_snapshot,
+            ),
+            "policy_version": self.policy_version,
+            "observed_at": self.observed_at.isoformat(),
+            "expires_at": self.expires_at.isoformat(),
+            "snapshot_hash": self.snapshot_hash,
+            "external_execution_allowed": self.external_execution_allowed,
+        }
+
+
+def _validate_feature_flag_snapshot(feature_flag_snapshot: object) -> None:
+    if not isinstance(feature_flag_snapshot, tuple):
+        raise _boundary("feature_flag_snapshot_required")
+    seen: set[str] = set()
+    for item in feature_flag_snapshot:
+        if not isinstance(item, tuple) or len(item) != 2:
+            raise _boundary("feature_flag_snapshot_required")
+        name, enabled = item
+        name = _require_identifier(name, "feature_flag_required")
+        if name in seen:
+            raise _boundary("feature_flag_snapshot_required")
+        if not isinstance(enabled, bool):
+            raise _boundary("feature_flag_state_required")
+        seen.add(name)
+        if name in {_P04_EXTERNAL_EXECUTION_FLAG, _P04_BUSINESS_EXTERNAL_READY_FLAG} and enabled:
+            raise _boundary("external_execution_forbidden")
+    if seen != _P04_FEATURE_FLAGS:
+        raise _boundary("feature_flag_snapshot_required")
+
+
+@dataclass(frozen=True)
 class FactQueryResult:
     facts: tuple[ApprovedFactRef, ...]
     denial_code: str | None = None
@@ -474,6 +603,7 @@ class DraftReviewRecord:
     translated_text_hash: str
     translation_ref: str
     translation_model_ref: str
+    policy_snapshot_hash: str
     prompt_hash: str
     output_hash: str
     fact_locks: tuple[DraftFactLock, ...]
@@ -500,6 +630,7 @@ class DraftReviewRecord:
         _require_hash(self.translated_text_hash, "translated_text_hash_required")
         _require_identifier(self.translation_ref, "translation_ref_required")
         _require_identifier(self.translation_model_ref, "translation_model_ref_required")
+        _require_hash(self.policy_snapshot_hash, "policy_snapshot_hash_required")
         _require_hash(self.prompt_hash, "prompt_hash_required")
         _require_hash(self.output_hash, "output_hash_required")
         if not self.fact_locks:
@@ -529,6 +660,7 @@ class DraftReviewRecord:
             "translated_text_hash": self.translated_text_hash,
             "translation_ref": self.translation_ref,
             "translation_model_ref": self.translation_model_ref,
+            "policy_snapshot_hash": self.policy_snapshot_hash,
             "prompt_hash": self.prompt_hash,
             "output_hash": self.output_hash,
             "fact_locks": [fact.safe_summary() for fact in self.fact_locks],
@@ -557,6 +689,7 @@ class ManualHandoffRecord:
     policy_version: str
     original_text_hash: str
     translated_text_hash: str
+    policy_snapshot_hash: str
     fact_query_ref: str
     model_ref: str
     created_at: datetime
@@ -579,6 +712,7 @@ class ManualHandoffRecord:
         _require_identifier(self.policy_version, "policy_version_required")
         _require_hash(self.original_text_hash, "original_text_hash_required")
         _require_hash(self.translated_text_hash, "translated_text_hash_required")
+        _require_hash(self.policy_snapshot_hash, "policy_snapshot_hash_required")
         _require_identifier(self.fact_query_ref, "fact_query_ref_required")
         _require_identifier(self.model_ref, "model_ref_required")
         _require_time(self.created_at, "created_at_required")
@@ -598,6 +732,7 @@ class ManualHandoffRecord:
             "policy_version": self.policy_version,
             "original_text_hash": self.original_text_hash,
             "translated_text_hash": self.translated_text_hash,
+            "policy_snapshot_hash": self.policy_snapshot_hash,
             "fact_query_ref": self.fact_query_ref,
             "model_ref": self.model_ref,
             "created_at": self.created_at.isoformat(),
@@ -650,6 +785,7 @@ class SupportDraftPipeline:
         receipt: ConversationReceipt,
         *,
         locale: str,
+        policy_snapshot: SupportPolicySnapshot,
         subject_ref: str,
         original_text: str,
         translated_text: str,
@@ -659,6 +795,8 @@ class SupportDraftPipeline:
     ) -> DraftOutcome:
         if not isinstance(receipt, ConversationReceipt):
             raise _boundary("conversation_receipt_required")
+        if not isinstance(policy_snapshot, SupportPolicySnapshot):
+            raise _boundary("policy_snapshot_required")
         locale = _require_identifier(locale, "locale_required")
         subject_ref = _require_identifier(subject_ref, "subject_ref_required")
         original_text = _require_text_input(original_text, "original_text_required")
@@ -671,6 +809,7 @@ class SupportDraftPipeline:
         template_version = _require_identifier(template_version, "template_version_required")
         original_hash = _digest("original", original_text)
         translated_hash = _digest("translated", translated_text)
+        policy_snapshot_hash = policy_snapshot.snapshot_hash
         checked_at = self._now()
 
         if receipt.disposition is not SupportDisposition.DRAFT_READY:
@@ -681,6 +820,7 @@ class SupportDraftPipeline:
                 policy_version=_receipt_policy(receipt),
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         if receipt.message is None or receipt.intent is None or receipt.conversation is None:
@@ -691,10 +831,25 @@ class SupportDraftPipeline:
                 policy_version=_receipt_policy(receipt),
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         _same_scope(receipt.message.scope, receipt.intent.scope)
         _same_scope(receipt.message.scope, receipt.conversation.scope)
+        _same_scope(receipt.message.scope, policy_snapshot.scope)
+
+        policy_denial = policy_snapshot.denial_code(checked_at)
+        if policy_denial is not None:
+            return self._handoff(
+                receipt,
+                reason_code=policy_denial,
+                locale=locale,
+                policy_version=policy_snapshot.policy_version,
+                original_text_hash=original_hash,
+                translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
+                checked_at=checked_at,
+            )
 
         intent_label = receipt.intent.intent_label
         if _requires_manual_risk(intent_label, receipt.intent.risk_level):
@@ -705,6 +860,7 @@ class SupportDraftPipeline:
                 policy_version=receipt.intent.policy_version,
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         if not self._forbidden_policy.owner_ready(checked_at):
@@ -715,6 +871,7 @@ class SupportDraftPipeline:
                 policy_version=receipt.intent.policy_version,
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         _same_scope(receipt.message.scope, self._forbidden_policy.scope)
@@ -733,6 +890,7 @@ class SupportDraftPipeline:
                 policy_version=receipt.intent.policy_version,
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         fact_locks = tuple(DraftFactLock.from_fact(fact) for fact in fact_result.facts)
@@ -751,6 +909,7 @@ class SupportDraftPipeline:
                 policy_version=receipt.intent.policy_version,
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
         if self._forbidden_policy.contains_forbidden(output_text):
@@ -761,6 +920,7 @@ class SupportDraftPipeline:
                 policy_version=receipt.intent.policy_version,
                 original_text_hash=original_hash,
                 translated_text_hash=translated_hash,
+                policy_snapshot_hash=policy_snapshot_hash,
                 checked_at=checked_at,
             )
 
@@ -774,13 +934,20 @@ class SupportDraftPipeline:
             locale,
             receipt.message.content_hash,
             translated_hash,
+            policy_snapshot_hash,
             fact_version_set_hash,
             self._forbidden_policy.policy_version,
             template_version,
         )
         output_hash = _digest("output", output_text)
         draft = DraftReviewRecord(
-            id=_stable_id("p06_02_draft", receipt.message.id, fact_version_set_hash, output_hash),
+            id=_stable_id(
+                "p06_02_draft",
+                receipt.message.id,
+                policy_snapshot_hash,
+                fact_version_set_hash,
+                output_hash,
+            ),
             scope=receipt.message.scope,
             conversation_id=receipt.conversation.id,
             message_id=receipt.message.id,
@@ -790,6 +957,7 @@ class SupportDraftPipeline:
             translated_text_hash=translated_hash,
             translation_ref=translation_ref,
             translation_model_ref=translation_model_ref,
+            policy_snapshot_hash=policy_snapshot_hash,
             prompt_hash=prompt_hash,
             output_hash=output_hash,
             fact_locks=fact_locks,
@@ -812,6 +980,7 @@ class SupportDraftPipeline:
         policy_version: str,
         original_text_hash: str,
         translated_text_hash: str,
+        policy_snapshot_hash: str,
         checked_at: datetime,
     ) -> DraftOutcome:
         scope = None if receipt.message is None else receipt.message.scope
@@ -824,6 +993,7 @@ class SupportDraftPipeline:
                 conversation_id,
                 message_id,
                 reason_code,
+                policy_snapshot_hash,
                 checked_at.isoformat(),
             ),
             scope=scope,
@@ -834,6 +1004,7 @@ class SupportDraftPipeline:
             policy_version=policy_version,
             original_text_hash=original_text_hash,
             translated_text_hash=translated_text_hash,
+            policy_snapshot_hash=policy_snapshot_hash,
             fact_query_ref="fact_query:p06_02_read_only",
             model_ref=self._model.model_ref,
             created_at=self._now(),
@@ -874,4 +1045,5 @@ __all__ = [
     "InMemoryApprovedFactQuery",
     "ManualHandoffRecord",
     "SupportDraftPipeline",
+    "SupportPolicySnapshot",
 ]
