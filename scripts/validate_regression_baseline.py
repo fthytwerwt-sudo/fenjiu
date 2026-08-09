@@ -44,7 +44,10 @@ CONTENT_SKIP_PREFIXES = {
     "project_sync/latest/",
     "project_sync/PROJECT_SYNC_MANIFEST.json",
 }
-ABSOLUTE_PATH_RE = re.compile(r"(?<![`A-Za-z0-9_])/(Users|Volumes|tmp|private|var)/|[A-Za-z]:\\")
+ABSOLUTE_PATH_RE = re.compile(
+    r"(?<![`A-Za-z0-9_])/(Users|Volumes|tmp|private|var)/"
+    r"|(?<![`A-Za-z0-9_])[A-Za-z]:\\[^\\/:*?\"<>|\s\r\n]+"
+)
 SECRET_RE = re.compile(
     r"(?i)\b(api[_-]?key|secret|token|password|cookie|authorization)\b\s*[:=]\s*['\"]?([A-Za-z0-9_./+=-]{16,})"
 )
