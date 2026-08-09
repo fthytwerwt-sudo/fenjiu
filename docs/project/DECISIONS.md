@@ -187,3 +187,14 @@
 - **影响**：Phase 4 可以依赖 P03-03 的内部审批/失效合同，但仍必须另行建立真实身份/RBAC、生产存储与 action policy。P05/P06/P07 不得将此合成版本写成真实 approved fact，也不得把刷新合同解释为 CRM、客服或内容模块已实施。
 - **替代方案**：复用 P02 `TruthVersion` 直接发布；未采用，因为会混淆 fixture 与 current truth。以完整 `ScopeRef`（含 correlation）作为 current key；未采用，因为新读取 correlation 会错误漏读同一业务范围当前版本。实现 consumer 模块或外部同步；未采用，因为本卡仅授权内部刷新合同。
 - **状态边界**：本决定不确认真实审批身份、SKU、价格、库存、资质、供应链、合规、账号、收款、履约、外部发布或业务外部就绪。
+
+### ADR-0015：P04-01 以受限本地工作流运行器保存恢复元数据，不让存储面成为审批旁路
+
+- **日期**：2026-08-09
+- **状态**：Accepted / CONFIRMED（工程代码已由 `main` 远端回读）
+- **来源**：P04-01 task card、工作流/审批设计、test-first、控制器审查与两轮最终只读复核。
+- **背景**：Phase 4 需要可靠地协调命令恢复，但 workflow 不能拥有 P03 approval truth、业务事实或 audit truth。初版审查发现终态 run 可经 approve 回流，随后发现公开 in-memory store 写入面能绕开 `approval_recorded` 事件或伪造终态重开。
+- **决定**：以 local simple runner（本地简易运行器）作为主路线和回退路线；checkpoint 仅保存安全元数据/引用/哈希。只有 runner 的受控内部写面可记录命令、检查点、run、审批、队列和 fake effect（模拟内部效果）；公开 store 写 mutator 固定拒绝。approval 仅允许 `waiting_for_approval`，终态/人工队列不可重开；外部效果固定策略拒绝，未知效果进入人工队列。LangGraph 只保留无依赖安装的可用性探测，不成为恢复状态唯一来源。
+- **影响**：P04-02 可在此运行元数据合同之上建立真实角色/RBAC 与 action policy（动作策略）合同，但不能把 runner/store 当作身份认证、审批真值、生产队列或 provider adapter（服务提供方适配器）。
+- **替代方案**：让公开 store 提供通用写入 API；未采用，因为会绕过 runner 状态机和审批事件。直接接入 LangGraph；未采用，因为当前未安装、未获依赖准入且需先证明同一合同与退出能力。
+- **状态边界**：本决定不确认真实 actor、RBAC、生产队列、真实 provider、业务真值、SKU、价格、库存、资质、供应链、合规、账号、收款、履约或任何外部动作。

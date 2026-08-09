@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-09｜P04-01 工作流状态、检查点与恢复（controller integration）
+
+- **目标与边界**：只建立 stdlib/local-only/synthetic/value-free 的 workflow run（工作流运行）、checkpoint（检查点）、idempotency（幂等）、pause/resume（暂停/恢复）、retry/DLQ（重试/死信队列）与 manual queue（人工队列）合同；不得让 workflow 拥有业务真值、真实审批、外部 adapter（适配器）或外部动作。
+- **实际改动**：新增 local simple runner（本地简易运行器）、仅接收运行/检查点引用的 `WorkflowQueuePort`（工作流队列端口）、工作流专项测试与 P04-01 工程报告。checkpoint 只允许标识符、哈希、布尔/整数和安全引用；外部效果直接 policy denied（策略拒绝），未知效果进入人工队列，LangGraph 仅做未安装即 deferred（暂缓）的本地探测。
+- **控制器审查与修复**：规格审查发现终态或人工队列 run 可被 `approve()` 回流并再次恢复，已限定仅 `waiting_for_approval` 可批准。质量审查随后发现公开 store 写面可绕过审批事件或伪造终态重开；已关闭公开写 mutator（写入方法），runner 使用受控内部写面，且内部保存拒绝终态回流。两轮修复均先以 RED/ GREEN（先失败/后通过）专项回归复现，最终规格和质量复审均为 `APPROVE`。
+- **验证**：任务干净 worktree 的 P00 default/`--all-files`、11 项 workflow、8 项 architecture、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、mechanism validation、compile 与 diff 均通过。控制器在外置盘 root 复验 11 项 workflow、8 项 architecture、完整 `make regression`、机制验证、diff 和排除 AppleDouble `._*` 的编译；root 不运行 P00 default/`--all-files`，因为既有用户文件会使该模式失真。
+- **Git 证据**：任务分支三笔提交 `d2fbd91`、`618303d`、`d2805b2` 均已 push；控制器 fast-forward 集成并将 `main` push/readback 至 `d2805b293cbb71f7c5898ad0c611d863fb87e4b7`。远端 `runner.py`、工作流专项测试、P04-01 报告和 application port 的 SHA-256 与本地一致。
+- **状态边界**：仅为 Phase 4/P04-01 工程完成，不代表 Phase 4 整体完成；不改变 BUSINESS_STATUS、真实 SKU/价格/库存/资质/账号/收款/履约、真实 actor/RBAC、生产队列/工作流框架、业务真值或任何 external flag（外部动作开关）。
+
 ## 2026-08-08｜P03-03 审批、隔离的合成发布与内部刷新（controller integration）
 
 - **目标与边界**：只完成 stdlib/local-only/synthetic/value-free 的 candidate→review→human decision→isolated approved synthetic version→supersede/revoke→internal invalidation 合同；不得把 P03 synthetic fixture 提升为 P02 `DataState.APPROVED` current truth，不读取真实资料或实现外部动作。

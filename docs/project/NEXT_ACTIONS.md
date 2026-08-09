@@ -11,7 +11,7 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P03-03 已完成（工程）**：控制器已将任务分支集成并从 `origin/main` `5d2c429bd253344ce3c2a3a30a31315f4a81f177` 回读。它只完成 synthetic 的人工 approval/publish/refresh 合同，继续保留 source+locator+rule/profile lineage；不读取真实资料、不写 P02 current truth，也不打开 external action。本轮不自动开始下一张任务卡。
+1. **P04-01 已完成（工程）**：控制器已将任务分支集成并从 `origin/main` `d2805b293cbb71f7c5898ad0c611d863fb87e4b7` 回读。它只完成 local simple workflow runner（本地简易工作流运行器）的 checkpoint（检查点）、审批暂停/恢复、幂等恢复、重试/死信与人工队列合同；不读取真实资料、不认证真实角色、不打开 external action（外部动作）。P04-02 已按依赖解锁，仍必须在新建干净 task worktree（任务工作目录）单卡执行。
 2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据
