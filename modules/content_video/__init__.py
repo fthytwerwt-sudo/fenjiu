@@ -20,6 +20,20 @@ from modules.content_video.contracts import (
     VideoTask,
     VideoTaskState,
 )
+from modules.content_video.qc import (
+    HumanVideoDecision,
+    HumanVideoDecisionAction,
+    HumanVideoDecisionState,
+    InternalExportState,
+    InternalVideoExportRef,
+    ProviderQcEvidence,
+    VideoArtifactEvidence,
+    VideoManifestEvidence,
+    VideoQcApprovalWorkflow,
+    VideoQcReport,
+    VideoQcState,
+    VideoTechnicalCheck,
+)
 
 __all__ = [
     "AssetOrigin",
@@ -38,6 +52,18 @@ __all__ = [
     "PolicyBoundaryState",
     "PolicyVersionLock",
     "SyntheticBrief",
+    "HumanVideoDecision",
+    "HumanVideoDecisionAction",
+    "HumanVideoDecisionState",
+    "InternalExportState",
+    "InternalVideoExportRef",
+    "ProviderQcEvidence",
+    "VideoArtifactEvidence",
+    "VideoManifestEvidence",
+    "VideoQcApprovalWorkflow",
+    "VideoQcReport",
+    "VideoQcState",
+    "VideoTechnicalCheck",
     "VideoTask",
     "VideoTaskState",
 ]
