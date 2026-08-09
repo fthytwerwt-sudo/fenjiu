@@ -15,7 +15,7 @@
 ## 每轮流程
 
 1. **业务路由**：先确认是汾酒 TikTok 主线、海鲜独立线、协作机制或本地工具任务；混合时先拆分。
-2. **读前检查**：按 AGENTS 读取 BUSINESS_STATUS、CURRENT_STATUS、SOURCE_OF_TRUTH、SCOPE_AND_BOUNDARIES、COLLABORATION_STATUS，检查 Git 状态和原始事实源。
+2. **读前检查**：先处理用户本轮 P0，再按 AGENTS 读取 GPT Project 配合机制包、PROJECT_ENTRY、BUSINESS_STATUS、CURRENT_STATUS、SOURCE_OF_TRUTH、SCOPE_AND_BOUNDARIES、COLLABORATION_STATUS，检查 Git 状态和原始事实源。
 3. **任务单**：用 TASK_HANDOFF_TEMPLATE 固定目标、边界、输入、验收和阻断。
 4. **执行**：Codex/Work 只在已确认边界内写入；内部资料准备可继续，不能因文件可用而越过合规、授权、产品或履约闸门。
 5. **验证与回写**：报告实际命令、产物、差异、失败/未测项；按影响更新业务状态或协作状态，及决策、风险、下一步和执行历史。
@@ -29,5 +29,6 @@
 - 发现秘密、私人联系方式或不应上传的材料；
 - 需要删除/批量移动原始业务资料；
 - 远端 visibility、默认分支、历史清理或同步包验证与本地记录不一致。
+- GPT Project 配合机制包缺失、Manifest 缺失、AGENTS 镜像与根 AGENTS 不一致，或 `project_sync/latest` 与 GPT Project 机制包被混用。
 
 这不是失败；应标记为 BLOCKED，说明已有证据、缺失证据、影响和最小解锁动作。

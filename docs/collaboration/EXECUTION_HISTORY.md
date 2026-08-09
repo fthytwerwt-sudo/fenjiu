@@ -2,6 +2,14 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-10｜Phase 5–7 合成工程合同完成与 Phase 8 资料闸门（controller integration）
+
+- **目标与边界**：清理已实现但未集成的 P07-02、P05-03，并按依赖推进 P06-03、P07-03；全程只处理 synthetic（合成）数据与本地合同。未读取真实供应链资料、未创建真实联系人或客户、未连接生产服务，`external_execution_allowed = false（外部执行允许 = 否）`。
+- **集成结果**：P07-02 经规格与质量复审后集成至 `73b1a01`；P05-03 经规格检查与独立质量复审后集成至 `37b19ed`；P06-03 经规格与质量复审后集成至 `bbc742d`；P07-03 在包含 P06-03 的最新 `main` 上完成控制器规格/质量检查后集成至 `ae84e18`。P05-03 保持 zero-send（零发送）草稿；P06-03 保持 receive-only fake inbox（只接收模拟收件箱）和审计式人工接管；P07-03 保持 QC（质量检查）/人审/internal export reference（内部导出引用），`external_publish_attempts=0`。
+- **验证与卫生检查**：各任务均在干净 task worktree（任务工作目录）完成 repository hygiene check（仓库卫生检查）、configuration validation（配置验证）、data safety check（数据安全检查）、机制验证与任务回归；无依赖变化。最终 `main` 的 `make regression` 通过两次 migration replay（迁移重放）、P02/P05/P06 负向约束、8 项 architecture（架构）、16 项 regression（回归）、8 项 local-runtime（本地运行）、16 项 control-plane（控制面）、120 项 contracts（合同）和 35 项 ingestion（导入）测试。同步包重新生成后，`--verify` 通过解压、SHA-256、路径和敏感内容检查。
+- **Git 证据**：`origin/main` 已逐次回读 `73b1a01cad82e01077b452a8486dc8211b567229`、`37b19ed4bffff3b9d7a0341c6e756f71ce6ff6e4`、`bbc742d22bc0f19f6b2cbe8b7be7abc058b7f197` 和 `ae84e183be38da62d17c8567569f75206ddb35f1`；本条状态回填将作为其后的独立提交推送并再次回读。未使用 force push（强制推送），未使用 `git add .`。
+- **状态边界**：Phase 5、Phase 6、Phase 7 的工程任务已完成，但不表示 business_external_ready（外部业务就绪）。P08-01 虽已满足工程依赖，仍因未提供当前、获授权的真实 SKU、价格、库存、授权、资质和履约资料而为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`。GitHub visibility（可见性）尚未认证回读且默认分支仍非 `main`，为独立仓库治理待办。
+
 ## 2026-08-09｜P05-02 合成线索、CRM、DNC 与迁移序列协调（controller integration）
 
 - **目标与边界**：只建立 local-only/synthetic 的已审查线索→CRM、DNC、同意/来源、去重/人工合并与受控导出合同；不得建立真实联系人、外联、发送、生产 CRM 或任何外部动作。

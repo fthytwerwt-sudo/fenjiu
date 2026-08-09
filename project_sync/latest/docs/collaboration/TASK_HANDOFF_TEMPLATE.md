@@ -13,6 +13,7 @@
 - 可修改文件：
 - 禁止修改/禁止外发：
 - 隐私、合规与 Git 约束：
+- Prompt 表达约束：使用 `repository hygiene check（仓库卫生检查）`、`configuration validation（配置验证）`、`data safety check（数据安全检查）`；新增依赖时使用 `dependency compatibility check（依赖兼容检查）`。不把网络探测、端口探测、渗透或漏洞利用写为执行步骤。
 
 ## Impact check｜影响面检查
 - 是否影响当前状态、决定、风险、下一步、同步包或生成物：
@@ -20,6 +21,15 @@
 
 ## Execution steps｜执行步骤
 1.
+
+## Validation commands｜验证命令
+-
+
+## Engineering governance checks｜工程治理检查
+- `repository_hygiene_check`（仓库卫生检查）：
+- `configuration_boundary_status`（配置边界状态）：
+- `data_safety_check`（数据安全检查）：
+- `dependency_compatibility_check`（依赖兼容检查；无依赖变更时写 not_applicable（不适用））：
 
 ## Done when｜完成标准
 - [ ]
@@ -35,3 +45,5 @@
 ```
 
 交接方应先填写空项。执行方不得用推测补全空项。
+
+涉及机制修改、Codex 下发或用户反馈“不对”时，交接方必须补齐六层需求确认：目标层、机制层、实现设计层、流程层、判断标准层、反馈层。缺实现设计层时，执行方应标 `blocked_need_implementation_design_layer`。

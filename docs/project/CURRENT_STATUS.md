@@ -1,6 +1,6 @@
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-09
+- **最近更新**：2026-08-10
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -16,8 +16,8 @@
 
 - **CONFIRMED**：固定入口、事实分级、任务交接、执行记录和同步包机制已建立。
 - **CONFIRMED**：GPT Project 配合机制包已在仓库内生成并通过本地验证；包内 AGENTS 镜像与根 AGENTS SHA-256 一致。
-- **部分成立**：V2 正在将公开历史脱敏、干净 main、远端默认分支、visibility 和新同步包验证收口；这些事项必须以最终远端回读为准。
-- **最近远端验证**：P05-02 工程代码已由 `origin/main` 回读至 `35d6e1f12ad6ed2e4bfa86a2c9f70463f9dcacb9`；默认分支仍不是 `main`，visibility 与同步包最终验证仍待单独完成，不能用本文件编辑或本地 commit 替代。
+- **部分成立**：远端 `main`、任务集成和同步包验证已持续回读；远端默认分支仍不是 `main`，GitHub API 的 visibility（可见性）仍未获认证回读。二者均不能由本文件编辑或本地 commit（提交）替代。
+- **最近远端验证**：Phase 5–7 的最后五张任务卡已由 `origin/main` 回读至 `ae84e183be38da62d17c8567569f75206ddb35f1`；同步包将在本次状态回填后重新生成并验证。
 
 ## 工程规划状态摘要
 
@@ -38,6 +38,10 @@
 - **CONFIRMED（工程 Phase 5 / P05-02）**：控制器已在保留 P06/P07 合同的前提下集成并从 `origin/main` 回读至 `35d6e1f12ad6ed2e4bfa86a2c9f70463f9dcacb9`。P05-02 只建立 local synthetic 的 lead（线索）、CRM（客户管理）、DNC（拒绝联系）与受控导出合同：未审查来源、缺少同意、跨范围、模糊重复或任意外部开关都停止，导出只保留内部哈希与引用。并行任务导致的迁移碰撞已改为 P02 `0001/0002`、P06 `0003`、P05 `0004`；双次 migration replay（迁移重放）已精确断言四项均按序且只登记一次。91 项合同、35 项导入、完整 `make regression`、机制验证、编译和 diff 均通过。它不建立真实联系人、外联、发送、真实 CRM 或任何外部动作；P05-03 只能在新干净 task worktree（任务工作目录）继续。
 - **CONFIRMED（工程 Phase 6 / P06-01）**：控制器已在保留 P05-01 的前提下集成并从 `origin/main` 回读至 `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4`。P06-01 只建立 local-only 的会话、消息、意图、答复草稿、人工转交与 unknown scope（未知范围）隔离合同；已知范围的外部标识只保存 opaque reference（不透明引用），未知范围不生成可见会话或转交。6 项客服专项、84 项合同、35 项导入、完整 `make regression`、双次 migration replay（迁移重放）与负向约束、机制验证、编译和 diff（差异）均通过。它不接入渠道、模型、发送器、真实客户数据或外部动作；P06-02 只能生成合成、可审查的草稿或人工转交。
 - **CONFIRMED（工程 Phase 7 / P07-01）**：控制器已在保留 P06 隐私合同的前提下集成并从 `origin/main` 回读至 `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4`。P07-01 只建立合成 content brief（内容简报）、asset（素材）与 policy lock（政策锁）合同；事实、素材和策略任一缺失、过期、撤销、跨范围或带外部开关时均停止。8 项内容视频专项、84 项合同、35 项导入、完整 `make regression`、迁移重放、机制验证、编译和 diff 均通过。它不调用生成服务、不输出媒体、不导出或发布内容；P07-02 仅可接入模拟适配器与 manifest（清单）合同。
+- **CONFIRMED（工程 Phase 5 complete）**：P05-03 已审查、集成并由远端 `main` 回读至 `37b19ed4bffff3b9d7a0341c6e756f71ce6ff6e4`。它只增加 synthetic（合成）outreach draft（外联草稿）/review（复核）/internal export（内部导出）合同；DNC（拒绝联系）、同意、来源、范围、事实锁和外部开关任一不满足均转人工，`external_send_attempts=0`。Phase 5 的 P05-01 至 P05-03 工程合同已完成，不建立真实联系人、外联或发送。
+- **CONFIRMED（工程 Phase 6 complete）**：P06-02 已随 `aa5f2b6a4233dee70a3611b15d3593053319d98b` 集成，P06-03 已审查、集成并回读至 `bbc742d22bc0f19f6b2cbe8b7be7abc058b7f197`。P06-03 仅建立 receive-only fake inbox（只接收模拟收件箱）、合成 case（案例）与审计式人工接管/恢复；不含发送端、真实客户、渠道或模型。Phase 6 的 P06-01 至 P06-03 工程合同已完成。
+- **CONFIRMED（工程 Phase 7 complete）**：P07-02 已随 `73b1a01cad82e01077b452a8486dc8211b567229` 集成，P07-03 已审查、集成并回读至 `ae84e183be38da62d17c8567569f75206ddb35f1`。它只允许基于 synthetic（合成）素材引用的 QC（质量检查）、人工决定和 internal export reference（内部导出引用）；`external_publish_attempts=0`，不调用视频服务、不写媒体、不发布。Phase 7 的 P07-01 至 P07-03 工程合同已完成。
+- **BLOCKED（工程 Phase 8）**：P08-01 的依赖已经解锁，但任务卡要求当前、获授权的真实供应链资料包及其来源/范围/版本证据。当前仍缺 SKU（商品编号）、价格、库存、资质、授权及履约资料，故状态为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`；不得以合成 fixture（测试模拟数据）替代，也不得启动外部动作。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
 详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)

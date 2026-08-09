@@ -1,6 +1,6 @@
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-09
+- **最近更新**：2026-08-10
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -25,8 +25,8 @@
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
 - **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
 - **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
-- **最近本地 bundle 验证日期**：2026-08-05；V2 build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过。
-- **CONFIRMED**：V2 脱敏脚本已完成重新生成与验证；最终包仍须在本文件本次回填提交后再次生成，确保新会话读到同一状态。
+- **最近本地 bundle 验证日期**：2026-08-10；V2 build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过。
+- **CONFIRMED**：本文件本次回填后已重新生成并验证同步包；Manifest（清单）记录的 `source_commit` 是生成基线，不是随后提交同步包目录的 commit（提交）。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。
 
@@ -43,10 +43,10 @@
 | 字段 | 当前状态 |
 |---|---|
 | Repository | fthytwerwt-sudo/fenjiu |
-| Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
+| Visibility | **UNKNOWN / 未认证回读**：GitHub CLI 认证读取超时；匿名 Git 引用读取可用，但不能据此推断 Private（私有）或 Public（公开）状态 |
 | Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P05-02 工程代码为 `35d6e1f12ad6ed2e4bfa86a2c9f70463f9dcacb9` |
+| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 Phase 5–7 工程代码为 `ae84e183be38da62d17c8567569f75206ddb35f1` |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -71,13 +71,17 @@
 - **CONFIRMED（P05-02 / Phase 5 engineering）**：控制器已将 `codex/p05-02-leads-crm-domain` 经一次修复与最终规格/质量复审后快进集成，并从远端 `main` `35d6e1f12ad6ed2e4bfa86a2c9f70463f9dcacb9` 回读。P05-02 固定 synthetic lead/CRM/DNC/export（合成线索/客户管理/拒绝联系/导出）合同：来源/同意不足、未审查、跨范围、DNC、模糊重复和外部开关均拒绝；导出不含 provider identifier（服务提供方标识）。并行 P06 的迁移冲突已以 P05 `0004` 修正，并在双次重放中精确核对 `0001/0002/0003/0004` 各一次且有序。控制器复验 91 项合同、35 项导入、完整 `make regression`、机制验证、编译和 diff；P05-03 可在新干净 worktree 中继续。
 - **CONFIRMED（P06-01 / Phase 6 engineering）**：控制器已将 `codex/p06-01-conversation-contracts` 经规格与质量复审后集成，并从远端 `main` `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4` 回读。P06-01 固定 local-only 的会话、消息、意图、草稿、人工转交与 unknown scope（未知范围）隔离；known scope（已知范围）的外部标识均转换为 opaque reference（不透明引用），未知范围不会创建 scoped conversation/message/handoff（范围会话/消息/转交）。控制器复验 6 项客服专项、8 项内容视频、84 项合同、35 项导入、完整 `make regression`、双次迁移重放与负向约束、机制验证、编译和 diff。未接入真实客户/渠道/模型/发送或外部动作；P06-02 可在新干净 worktree 中继续。
 - **CONFIRMED（P07-01 / Phase 7 engineering）**：控制器已将 `codex/p07-01-content-video-fact-lock` 经规格与质量复审后以保留 P06 隐私合同的合并方式集成，并从远端 `main` `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4` 回读。P07-01 固定 local synthetic 的内容简报、素材与政策事实锁，缺失/过期/撤销/跨范围/外部开关均停止；不调用生成服务、不写媒体、不导出或发布。控制器复验 8 项内容视频、6 项客服、84 项合同、35 项导入、完整 `make regression`、迁移重放、机制验证、编译和 diff；P07-02 可在新干净 worktree 中继续。
+- **CONFIRMED（P05-03 / Phase 5 complete）**：`codex/p05-03-draft-zero-send` 已经最终审查、快进集成并从 `origin/main` 回读至 `37b19ed4bffff3b9d7a0341c6e756f71ce6ff6e4`。P05-03 只提供 synthetic（合成）草稿、人工决定与内部导出证明；无发送器、无端点、无收件人，`external_send_attempts=0`。来源/同意、DNC（拒绝联系）、范围、冲突、过期和高风险均 fail closed（默认拒绝）至人工处理。Phase 5 三张任务卡工程完成。
+- **CONFIRMED（P06-02/P06-03 / Phase 6 complete）**：P06-02 已在 `aa5f2b6a4233dee70a3611b15d3593053319d98b` 集成；`codex/p06-03-support-adapter-takeover` 已审查、快进集成并回读至 `bbc742d22bc0f19f6b2cbe8b7be7abc058b7f197`。P06-03 仅增加 receive-only fake inbox（只接收模拟收件箱）、合成 case（案例）、审计式人工接管与显式恢复；无 provider（服务提供方）发送面，`external_send_attempts=0`。Phase 6 三张任务卡工程完成。
+- **CONFIRMED（P07-02/P07-03 / Phase 7 complete）**：P07-02 已在 `73b1a01cad82e01077b452a8486dc8211b567229` 集成；`codex/p07-03-qc-approval-internal-export` 已审查、快进集成并由 `origin/main` 回读至 `ae84e183be38da62d17c8567569f75206ddb35f1`。P07-03 只处理 synthetic（合成）素材引用的 QC（质量检查）、人审决定和 internal export reference（内部导出引用）；无视频服务、媒体写入或公开发布，`external_publish_attempts=0`。Phase 7 三张任务卡工程完成。
+- **BLOCKED（P08-01）**：Phase 8 的工程依赖已解锁，但 task card（任务卡）要求当前、获授权的真实供应链资料包及来源/范围/版本证据。当前仍缺真实商品、价格、库存、授权、资质和履约资料，故为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`；不得以 synthetic fixture（合成测试数据）替代。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口
 
-1. **高优先待办**：完成 GitHub CLI 登录，读取并将仓库 visibility 改为 Private。
-2. 将 GitHub 默认分支切换为 main，随后删除旧临时远端分支，并回读全部远端状态。
-3. 在包含本次状态回填的 main 上重新生成同步包，并完成解压、哈希和新会话接手验证。
+1. **业务闸门**：等待供应链提供 P08-01 所需的当前、获授权真实资料包；在此之前不启动真实导入或外部动作。
+2. **仓库治理**：具备管理权限的责任人应认证回读 visibility（可见性）、决定是否将默认分支切换为 `main`，再按决定回读和清理旧临时远端分支。
+3. **远端 CI**：具备 `workflow` scope 的授权凭据可单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 4. 用户按需将 `GPT项目资料同步包_gpt_project_mechanism_sync/` 上传到 ChatGPT GPT Project，并用上传后验证清单测试新聊天框。
 
 ## 更新规则

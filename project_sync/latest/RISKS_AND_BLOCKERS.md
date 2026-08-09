@@ -7,7 +7,10 @@
 | R-03 | **BLOCKED / P0** | 当地销售主体、产品合法可售、品牌授权和资质未确认 | 不得建立真实销售或对外承诺 | 取得当地实体、品牌方和持牌专业人士的当前书面文件 |
 | R-04 | **BLOCKED / P0** | 账号权限、收款、仓储配送、售后和结算责任未确认 | 不得收款、下单、发货或处理真实售后 | 明确主体、负责人、SOP、SLA 和退出/交接规则 |
 | R-05 | **INFERRED** | 历史 B2B、多平台和 90 天研究可能被误用为当前指令 | 范围漂移或错误投入 | 以 BUSINESS_STATUS、DECISIONS 和 SOURCE_OF_TRUTH 为准；旧研究仅作历史背景 |
-| R-06 | **BLOCKED** | V2 的干净 main、远端默认分支、visibility 与同步包最终验证尚待最终远端回读 | 不能把仓库安全收口或远端状态写为已完成 | 以 COLLABORATION_STATUS 的最终远端回读更新为准 |
+| R-06 | **PARTIAL / repository governance（仓库治理）** | `main` 已由远端回读至 `ae84e183be38da62d17c8567569f75206ddb35f1`，但 default branch（默认分支）仍为 `chore/project-collaboration-system`；匿名 `git ls-remote` 可读取引用，而 GitHub API 的 visibility（可见性）认证回读仍未成功 | 不得把默认分支、Private（私有）状态或仓库治理收口写为已完成；不阻断 synthetic（合成）工程合同，但需在真实资料/业务接入前单独处理 | 由具备仓库管理权限的责任人核验可见性、决定是否切换默认分支并回读；不得凭匿名读取推断可见性 |
 | R-07 | **CONFIRMED** | 本地存在私有配置、联系资料和大体积派生产物 | 可能泄露秘密/隐私或污染 Git/同步包 | 保持忽略、allowlist、敏感扫描和最小披露；发现真实凭据须评估轮换 |
+| R-08 | **PARTIAL / local-workspace risk** | 外置盘根目录含既有 ignored AppleDouble、`.env*` 和其他禁入路径：带基线默认扫描 202 项、`--all-files` 1,262 项；干净 P00-03 task worktree 的 12 项测试和两种扫描均通过 | 不得在外置盘根目录运行 P00 default/`--all-files` 扫描；不阻断已跳过 AppleDouble 编译元数据的本地 `make regression`，也不阻断在新建、干净 task worktree 中继续工程任务 | 不读取 `.env*` 内容、不删除 `._*`；后续一任务一 worktree，扫描失败立即停止该任务分支 |
+| R-09 | **PARTIAL / engineering governance** | 当前推送凭据缺少 GitHub `workflow` scope，P01-02 的静态 GitHub Actions workflow 被远端拒绝 | 远端 CI 尚未启用；本地 `make regression` 与 Compose render 不能写成远端 CI 通过 | 由具备 `workflow` scope 的授权凭据单独提交 workflow；提交后单独回读 workflow、Actions run 与分支保护状态 |
+| R-10 | **PARTIAL / production boundary（生产边界）** | Phase 0–7 的工程合同均已在 `main` 远端回读；P05-03、P06-03 与 P07-03 仍分别是 zero-send（零发送）草稿、fake inbox（模拟收件箱）人工接管和 internal export（内部导出）引用。仍缺 RLS、加密、retention（保留策略）、法域、真实 scope、authenticated identity/authorization（认证身份/授权）、database adapter/driver（数据库适配器/驱动）、真实 parser/OCR/storage（解析/文字识别/存储）、生产渠道/模型/视频服务、真实审计/队列与 production connection（生产连接） | 不得把 local migration、in-memory policy/read/audit、fake extraction、synthetic approval、CRM/DNC、草稿/人工接管或内部导出引用写成真实数据隔离、真实审批、真实客户服务、真实网站访问、可联系 lead/contact、视频生成/发布、数据合规或真实资料可导入 | P08 只可在真实资料、范围、合规、连接与用户授权到位后，由新的干净 task worktree（任务工作目录）执行；此前保持所有 external flags（外部开关）为 false |
 
 R-01 至 R-04 不阻断内部资料、清单、核验和草稿准备；它们阻断的是公开传播、广告、真实销售、收款和履约。机制完成不得被描述为业务上线。

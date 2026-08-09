@@ -4,7 +4,7 @@
 
 ## 先读什么
 
-新会话先读 [PROJECT_ENTRY.md](PROJECT_ENTRY.md)，执行型 Agent 同时必须读 [AGENTS.md](AGENTS.md)。业务现状见 [BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)，仓库与交接机制现状见 [COLLABORATION_STATUS.md](docs/collaboration/COLLABORATION_STATUS.md)。
+新会话先读用户本轮输入和 [AGENTS.md](AGENTS.md)，再读 [GPT Project 配合机制包](GPT项目资料同步包_gpt_project_mechanism_sync/00_GPT_Project上传说明_readme.md) 与 [PROJECT_ENTRY.md](PROJECT_ENTRY.md)。业务现状见 [BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)，仓库与交接机制现状见 [COLLABORATION_STATUS.md](docs/collaboration/COLLABORATION_STATUS.md)。
 
 ## 当前边界
 
@@ -20,6 +20,7 @@
 |---|---|---|
 | docs/project | 业务目标、状态、事实源、边界、决策与下一步 | 是 |
 | docs/collaboration | 协作规则、交接模板、执行与机制状态 | 是 |
+| GPT项目资料同步包_gpt_project_mechanism_sync | 给 GPT Project 手动上传的长期配合机制包 | 是 |
 | scripts | 文档与同步包生成脚本 | 仅同步包构建脚本 |
 | project_sync/latest | 当前可交接的轻量同步包 | 是 |
 | research_*.json | 历史研究源数据，按事实源地图定向使用 | 否 |
@@ -31,3 +32,7 @@
     python3 scripts/build_project_sync_pack.py
 
 ZIP 仅留在本地 dist。完整约束、验证规则和状态回读要求见 [AGENTS.md](AGENTS.md)。
+
+## GPT Project 机制包
+
+GPT Project 上传包位于 `GPT项目资料同步包_gpt_project_mechanism_sync/`。`01_汾酒项目系统提示词_fenjiu_project_system_prompt.md` 复制到 Project Instructions，其余 Markdown 上传为 Project Knowledge。当前状态必须保持：`package_ready_for_manual_upload = true`、`user_uploaded_to_gpt_project_ui = false`，直到用户在 ChatGPT UI 手动上传并验证。

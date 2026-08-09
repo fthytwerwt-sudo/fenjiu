@@ -79,13 +79,13 @@ tasks:
   P04-03: {phase: phase_04, status: remote_readback_verified_clean_worktree_required, depends_on: [P04-02], risk: high}
   P05-01: {phase: phase_05, status: remote_readback_verified_clean_worktree_required, depends_on: [P04-03], can_run_in_parallel_with: [P06-01, P07-01], risk: medium}
   P05-02: {phase: phase_05, status: remote_readback_verified_clean_worktree_required, depends_on: [P05-01], can_run_in_parallel_with: [P06-02, P07-02], risk: medium}
-  P05-03: {phase: phase_05, status: planned, depends_on: [P05-02], can_run_in_parallel_with: [P06-03, P07-03], risk: high}
+  P05-03: {phase: phase_05, status: remote_readback_verified_clean_worktree_required, depends_on: [P05-02], can_run_in_parallel_with: [P06-03, P07-03], risk: high}
   P06-01: {phase: phase_06, status: remote_readback_verified_clean_worktree_required, depends_on: [P04-03], can_run_in_parallel_with: [P05-01, P07-01], risk: high}
-  P06-02: {phase: phase_06, status: planned, depends_on: [P06-01], can_run_in_parallel_with: [P05-02, P07-02], risk: high}
-  P06-03: {phase: phase_06, status: planned, depends_on: [P06-02], can_run_in_parallel_with: [P05-03, P07-03], risk: high}
+  P06-02: {phase: phase_06, status: remote_readback_verified_clean_worktree_required, depends_on: [P06-01], can_run_in_parallel_with: [P05-02, P07-02], risk: high}
+  P06-03: {phase: phase_06, status: remote_readback_verified_clean_worktree_required, depends_on: [P06-02], can_run_in_parallel_with: [P05-03, P07-03], risk: high}
   P07-01: {phase: phase_07, status: remote_readback_verified_clean_worktree_required, depends_on: [P04-03], can_run_in_parallel_with: [P05-01, P06-01], risk: medium}
-  P07-02: {phase: phase_07, status: planned, depends_on: [P07-01], can_run_in_parallel_with: [P05-02, P06-02], risk: high}
-  P07-03: {phase: phase_07, status: planned, depends_on: [P07-02], can_run_in_parallel_with: [P05-03, P06-03], risk: high}
+  P07-02: {phase: phase_07, status: remote_readback_verified_clean_worktree_required, depends_on: [P07-01], can_run_in_parallel_with: [P05-02, P06-02], risk: high}
+  P07-03: {phase: phase_07, status: remote_readback_verified_clean_worktree_required, depends_on: [P07-02], can_run_in_parallel_with: [P05-03, P06-03], risk: high}
   P08-01: {phase: phase_08, status: planned, depends_on: [P03-03, P04-03, P05-03, P06-03, P07-03], risk: high}
   P08-02: {phase: phase_08, status: planned, depends_on: [P08-01], risk: high}
   P08-03: {phase: phase_08, status: planned, depends_on: [P08-02], risk: high}

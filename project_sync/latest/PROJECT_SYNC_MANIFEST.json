@@ -1,22 +1,22 @@
 {
   "schema_version": 2,
   "project": "fenjiu_nepal",
-  "generated_at": "2026-08-05T18:30:21+08:00",
+  "generated_at": "2026-08-10T02:10:37+08:00",
   "source_git": {
     "branch": "main",
-    "source_commit": "642d6380b0c15612882a397c36b3675b84d3d3f3",
-    "short_source_commit": "642d638",
-    "worktree_status": "clean",
+    "source_commit": "ae84e183be38da62d17c8567569f75206ddb35f1",
+    "short_source_commit": "ae84e18",
+    "worktree_status": "dirty",
     "remote_origin": "unavailable"
   },
   "sync_strategy": "strict_allowlist",
   "max_file_bytes": 1048576,
-  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260805_183021.zip",
+  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260810_021037.zip",
   "files": [
     {
       "path": "AGENTS.md",
-      "bytes": 4709,
-      "sha256": "bb1ff8d631cf8d9ad1216469132f366dd6954800bce5c6a47c54f0218e6d9c62"
+      "bytes": 9912,
+      "sha256": "99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893"
     },
     {
       "path": "BUSINESS_STATUS.md",
@@ -25,18 +25,18 @@
     },
     {
       "path": "COLLABORATION_STATUS.md",
-      "bytes": 4070,
-      "sha256": "4dfd9e23761b2e7e4fbaa28dbda5720993c129f7f88ce66e30db93cba521eb47"
+      "bytes": 20860,
+      "sha256": "d2b89c69ed89875956ad9d0b131029ae65b4614c45b7d28870657115f90ede73"
     },
     {
       "path": "CURRENT_STATUS.md",
-      "bytes": 1783,
-      "sha256": "4926bf6c8043911efa05f46a32df56dd8fa002f44ac002b78453f16255f068d0"
+      "bytes": 16498,
+      "sha256": "dcf5d302bab5ec03e1a973a2d7ded2adbfe6c3286b25aec2505df3f3f31334a2"
     },
     {
       "path": "DECISIONS.md",
-      "bytes": 5129,
-      "sha256": "5fdc05473c7fd9dbb65fb423584a3e3ebe1a87a2ac2a4351421225d6bc0f7b44"
+      "bytes": 32759,
+      "sha256": "8a3be35ba9393b1623885ccf001b6d2e994842e735fcd126a6eb339fab5f7239"
     },
     {
       "path": "FILE_INDEX.md",
@@ -46,12 +46,12 @@
     {
       "path": "GIT_STATE.md",
       "bytes": 425,
-      "sha256": "38a9c78712b30964ffc698397d92018fde27e3a3dc815e86ca1cfb9a8cd16e14"
+      "sha256": "6c84bfd884d818a838c7a5dabd14e6f4b95c56ccbcff0bbb81959bcf3b10e21b"
     },
     {
       "path": "NEXT_ACTIONS.md",
-      "bytes": 1535,
-      "sha256": "0f7925ca6439c4c6f9216403821d14c4027885f91ee186994ea00100d2c66ee9"
+      "bytes": 2705,
+      "sha256": "d894b6b571743a7913071b9556cfbb5db4eadcd230299944f2397dcf6d6ec374"
     },
     {
       "path": "OPEN_QUESTIONS.md",
@@ -60,48 +60,48 @@
     },
     {
       "path": "PROJECT_CONTEXT.md",
-      "bytes": 17826,
-      "sha256": "c48c44c41ab7f30eaf2de7dc3cbf60894a3d20f0103a1195d8e689819454d714"
+      "bytes": 59577,
+      "sha256": "735ce51b6e3feaffb492c78daaa4260ae6844804f499f19eaef9646aa94a597a"
     },
     {
       "path": "PROJECT_ENTRY.md",
-      "bytes": 3065,
-      "sha256": "f2ef17f31356165cc3bde41c7ebd3ae6178e28d9b3b54033dc953b645912a7d7"
+      "bytes": 3653,
+      "sha256": "8a0955cf62b93ca88049c47dc40be0894b2455ce973d7e40bbcb7b2e398fce99"
     },
     {
       "path": "PROJECT_SYNC_README.md",
       "bytes": 1282,
-      "sha256": "90525b12dcb134350a7913b277153614288dc36f6caaa93d491265addd5c5f63"
+      "sha256": "cda5ddfa04d98a6c3d2ea8aa55b5c21aa269a8b3c4b8fae5bb6f47de8f34ada9"
     },
     {
       "path": "README.md",
-      "bytes": 1850,
-      "sha256": "eafba23e94e124dff6bf41a6e693558b9e2afed6f789d5c00ee5d1866a729f1c"
+      "bytes": 2509,
+      "sha256": "bb43c3144f5c265d276546d38c19ab13300b04f68f9f40c8da73467e419ea816"
     },
     {
       "path": "RISKS_AND_BLOCKERS.md",
-      "bytes": 1911,
-      "sha256": "58c3847e1c297c23ad2c0a96c40477be8dde8617c6867f4e14b710028e3c1826"
+      "bytes": 4464,
+      "sha256": "c52a2f5bab6c29c0107466a65d74ee50d4dee43399d3d7cecfb142fa8c05a2d5"
     },
     {
       "path": "SOURCE_OF_TRUTH.md",
-      "bytes": 2694,
-      "sha256": "82da26a603fd3cdd87736175242adaa9610eaf66ab5a41e6bc35f5b552daed08"
+      "bytes": 12352,
+      "sha256": "6d293083dc13522aa78b3a6106b15ce7d0ae3086d2a272fed198a60ebec05bf9"
     },
     {
       "path": "docs/collaboration/CHATGPT_CODEX_WORKFLOW.md",
-      "bytes": 1954,
-      "sha256": "3050cc0f14cd38f23e0d1c6bdd5423d524c411701ce53bc3c243a533f5abe963"
+      "bytes": 2189,
+      "sha256": "eadb23adefe0e6d87114898a8c801156d847ab8bfb1a36402229018490c270db"
     },
     {
       "path": "docs/collaboration/EXECUTION_HISTORY.md",
-      "bytes": 2139,
-      "sha256": "56e359e589ea3938006256cc24ebd55042758a3bc03fe65358fdbc4c7407c212"
+      "bytes": 45311,
+      "sha256": "ac2dfc05f1ef3274d927f4cdf4c884ad01d09bca5f009b2a6e3bb1b7a16a2644"
     },
     {
       "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
-      "bytes": 737,
-      "sha256": "46267d1cdf18f8e47b9058dae90f0b1ed019bb4d868e35b69f37ef3e34df5f20"
+      "bytes": 1600,
+      "sha256": "cf455d38242860ea9b77b55d5092a45bf6dac2006fabfff03a11db8ca2ce9188"
     },
     {
       "path": "docs/collaboration/SESSION_HANDOFF_TEMPLATE.md",
@@ -110,8 +110,8 @@
     },
     {
       "path": "docs/collaboration/TASK_HANDOFF_TEMPLATE.md",
-      "bytes": 908,
-      "sha256": "716bda88cdbb143b87b70acf6f56ea745af7fc4dfe6d294da78df3a5b4e56e4b"
+      "bytes": 1902,
+      "sha256": "091ef529c7fb7ff548baf33f9c24698716bb5483a60fbf29e9a47c2ea8a3c9ce"
     },
     {
       "path": "docs/collaboration/collaboration_mechanism_adoption.md",
@@ -150,23 +150,23 @@
       "reason": "可能含凭据或账号恢复信息的文件不进入同步包",
       "count": 3,
       "file_size_range_bytes": {
-        "min": 108,
+        "min": 287,
         "max": 542
       }
     },
     {
       "category": "git_internal",
       "reason": "Git 内部数据不属于可交接项目上下文",
-      "count": 325,
+      "count": 4672,
       "file_size_range_bytes": {
-        "min": 21,
+        "min": 6,
         "max": 282455
       }
     },
     {
       "category": "local_runtime_or_cache",
       "reason": "本地运行、缓存或派生产物不进入同步包",
-      "count": 906,
+      "count": 927,
       "file_size_range_bytes": {
         "min": 82,
         "max": 25982812
@@ -175,7 +175,7 @@
     {
       "category": "media_binary_or_archive",
       "reason": "媒体、二进制或压缩产物不进入同步包",
-      "count": 94,
+      "count": 95,
       "file_size_range_bytes": {
         "min": 45825,
         "max": 6532770
@@ -202,7 +202,7 @@
     {
       "category": "qa_or_rendered_output",
       "reason": "QA、渲染或联系表派生产物不进入同步包",
-      "count": 874,
+      "count": 871,
       "file_size_range_bytes": {
         "min": 324,
         "max": 6540521
@@ -211,7 +211,7 @@
     {
       "category": "system_metadata",
       "reason": "系统元数据会破坏跨机器可移植性",
-      "count": 105,
+      "count": 279,
       "file_size_range_bytes": {
         "min": 4096,
         "max": 4096
