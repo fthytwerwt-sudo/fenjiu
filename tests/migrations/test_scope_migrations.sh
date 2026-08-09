@@ -50,11 +50,11 @@ done
 
 schema_table_count=$(psql_database "$TEST_DATABASE" -Atc \
     "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'fenjiu_contract' AND table_type = 'BASE TABLE'")
-test "$schema_table_count" -eq 8
+test "$schema_table_count" -eq 16
 
 migration_row_count=$(psql_database "$TEST_DATABASE" -Atc \
-    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002')")
-test "$migration_row_count" -eq 2
+    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002', '0003')")
+test "$migration_row_count" -eq 3
 
 psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
 INSERT INTO fenjiu_contract.tenants (
@@ -324,6 +324,115 @@ SQL
 current_truth_count=$(psql_database "$TEST_DATABASE" -Atc \
     "SELECT count(*) FROM fenjiu_contract.current_approved_truth")
 test "$current_truth_count" -eq 0
+
+psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
+INSERT INTO fenjiu_contract.lead_candidates (
+    lead_ref, tenant_id, project_id, business_line_id, source_policy_id,
+    snapshot_ref, source_url_hash, organization_fingerprint,
+    field_fingerprint_hash, data_state, is_synthetic,
+    external_execution_allowed, business_external_ready,
+    created_at, created_by, correlation_id
+) VALUES (
+    'lead_candidate_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'source_policy_v1', 'snapshot_ref_sql_1',
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+    'fixture', true, false, false, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.lead_reviews (
+    review_ref, lead_ref, tenant_id, project_id, business_line_id,
+    decision, review_evidence_ref, reviewer_ref, dedupe_result,
+    created_at, correlation_id
+) VALUES (
+    'lead_review_sql_1', 'lead_candidate_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'approved', 'review_evidence_ref_sql', 'reviewer.synthetic',
+    'new', CURRENT_TIMESTAMP, 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.organizations (
+    organization_ref, review_ref, tenant_id, project_id, business_line_id,
+    organization_fingerprint, source_policy_id, source_url_hash,
+    dnc_subject_hash, data_state, is_synthetic,
+    external_execution_allowed, business_external_ready,
+    created_at, created_by, correlation_id
+) VALUES (
+    'organization_sql_1', 'lead_review_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'source_policy_v1',
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+    'fixture', true, false, false, CURRENT_TIMESTAMP,
+    'synthetic_test', 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.contacts (
+    contact_ref, organization_ref, tenant_id, project_id, business_line_id,
+    subject_hash, source_evidence_ref, consent_granted, dnc_blocked,
+    data_state, is_synthetic, external_execution_allowed,
+    business_external_ready, created_at, created_by, correlation_id
+) VALUES (
+    'party_sql_1', 'organization_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+    'party_source_evidence_ref', true, false, 'fixture', true,
+    false, false, CURRENT_TIMESTAMP, 'synthetic_test',
+    'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.dnc_records (
+    dnc_ref, tenant_id, project_id, business_line_id, subject_hash,
+    evidence_ref, actor_ref, reason_code, created_at, correlation_id
+) VALUES (
+    'dnc_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+    'withdrawal_evidence_ref', 'support_agent.synthetic',
+    'withdrawal', CURRENT_TIMESTAMP, 'synthetic_correlation'
+);
+
+INSERT INTO fenjiu_contract.retention_intents (
+    retention_ref, tenant_id, project_id, business_line_id, subject_ref,
+    intent, evidence_ref, actor_ref, created_at, correlation_id
+) VALUES (
+    'retention_sql_1',
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000201',
+    'party_sql_1', 'delete_requested', 'retention_evidence_ref',
+    'support_agent.synthetic', CURRENT_TIMESTAMP, 'synthetic_correlation'
+);
+SQL
+
+expect_sql_failure "contact requires source and consent" \
+    "INSERT INTO fenjiu_contract.contacts (contact_ref, organization_ref, tenant_id, project_id, business_line_id, subject_hash, source_evidence_ref, consent_granted, dnc_blocked, data_state, is_synthetic, external_execution_allowed, business_external_ready, created_at, created_by, correlation_id) VALUES ('party_sql_no_consent', 'organization_sql_1', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'party_source_evidence_ref', false, false, 'fixture', true, false, false, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "crm organization cannot cross business line review" \
+    "INSERT INTO fenjiu_contract.organizations (organization_ref, review_ref, tenant_id, project_id, business_line_id, organization_fingerprint, source_policy_id, source_url_hash, dnc_subject_hash, data_state, is_synthetic, external_execution_allowed, business_external_ready, created_at, created_by, correlation_id) VALUES ('organization_cross_line_sql', 'lead_review_sql_1', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000202', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'source_policy_v1', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 'fixture', true, false, false, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
+
+expect_sql_failure "dnc records are immutable" \
+    "UPDATE fenjiu_contract.dnc_records SET reason_code = 'changed' WHERE dnc_ref = 'dnc_sql_1'"
+
+expect_sql_failure "dnc records cannot be deleted" \
+    "DELETE FROM fenjiu_contract.dnc_records WHERE dnc_ref = 'dnc_sql_1'"
+
+expect_sql_failure "crm rows cannot enable external execution" \
+    "INSERT INTO fenjiu_contract.interactions (interaction_ref, organization_ref, tenant_id, project_id, business_line_id, kind, subject_hash, sent_count, external_sent, data_state, is_synthetic, external_execution_allowed, business_external_ready, created_at, created_by, correlation_id) VALUES ('interaction_external_sql', 'organization_sql_1', '00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000101', '00000000-0000-4000-8000-000000000201', 'draft', 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 0, false, 'fixture', true, true, false, CURRENT_TIMESTAMP, 'synthetic_test', 'synthetic_correlation')"
 
 expect_sql_failure "missing mandatory metadata" \
     "INSERT INTO fenjiu_contract.entity_metadata (id) VALUES ('00000000-0000-4000-8000-000000000601')"
