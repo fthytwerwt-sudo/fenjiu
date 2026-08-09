@@ -1,10 +1,10 @@
 # P06-01｜Conversation contracts、idempotency 与 privacy minimization 报告
 
-> **状态：task_branch_local_validated_with_spec_review_high_fix；最终 commit / push / remote readback 以执行回报为准。**
+> **状态：task_branch_local_validated_with_quality_review_high_fixes；最终 commit / push / remote readback 以执行回报为准。**
 >
 > **执行日期：** 2026-08-09
 >
-> **精确工程基线：** `origin/main` `eda64feb9945e1f9f2eaa688b1152f87b8182bf5`
+> **精确工程基线：** `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`
 >
 > **任务分支：** `codex/p06-01-conversation-contracts`
 >
@@ -13,12 +13,14 @@
 ## 1. 结论
 
 - 新增 `modules/customer_service/contracts.py`：定义 scoped `ConversationRecord`、`MessageRecord`、`IntentRecord`、`DraftReplyRecord`、`HandoffCase`、`InboundMessageCommand` 与 `InMemoryConversationStore`。
-- inbound message body 仅作为输入计算 `content_hash`；持久记录只保存 hash、opaque `content_ref`、retention/consent/redaction refs、scope、policy version 和安全状态，不保存 raw body、attachment 或真实客户资料。
-- external message replay 以 scope/channel/external message ID 和完整输入 fingerprint 幂等；相同 replay 返回旧 receipt，不新增 message、draft 或 audit event；同 ID 改 payload / scope 稳定拒绝。
+- inbound message body 仅作为输入计算 `content_hash`；`InboundMessageCommand` 只接收已最小化的 opaque `external_*_ref`，持久记录只保存 hash、opaque `content_ref` / `external_*_ref`、retention/consent/redaction refs、scope、policy version 和安全状态，不保存 raw body、attachment、raw external IDs 或真实客户资料。
+- external message replay 以 scope/channel/opaque external message ref 和完整输入 fingerprint 幂等；相同 replay 返回旧 receipt，不新增 message、draft 或 audit event；同 ref 改 payload / scope 稳定拒绝。
 - Spec review HIGH 修复：unknown scope 不再创建 `HandoffCase(scope=None)`；改为 `UnknownScopeQuarantineRecord` 与 SQL 专用 `support_unknown_scope_quarantines`，只保存 channel/external safe refs、content hash/ref、policy/correlation/reason 和 retention/redaction refs，不创建 scoped conversation/message。
+- Quality review HIGH 修复：known-scope `InboundMessageCommand`、conversation/message records、audit target 和 SQL 均不再保存或输出 `external_conversation_id` / `external_message_id`；进入 P06 合同、records、audit target 和 support tables 前统一转换为 deterministic opaque `external_conversation_ref` / `external_message_ref`。
+- Quality review HIGH 修复：本任务分支已非破坏性 merge `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`，保留已接受 P05-01 source-policy、fixtures allowlist、zero-network crawl port、tests 和状态 docs，不 rebase、不 force push。
 - scoped handoff 仍只写 `support_handoff_cases`，并保持 conversation/message/scope `NOT NULL` 与强 FK；unknown 与 scoped 两条路径清楚分离，互不降级。
 - DNC、personal data、high-risk intent 都进入 handoff，不生成 draft；absolute path、secret-like payload 和未标记 personal data 在写入前 fail closed。
-- 新增 `migrations/0003_support_conversations_messages_privacy.sql`：建立 `support_conversations`、`support_messages`、`support_intents`、`support_draft_replies`、`support_handoff_cases` 与 `support_unknown_scope_quarantines` 六张 synthetic-only append-only 表。
+- 新增 `migrations/0003_support_conversations_messages_privacy.sql`：建立 `support_conversations`、`support_messages`、`support_intents`、`support_draft_replies`、`support_handoff_cases` 与 `support_unknown_scope_quarantines` 六张 synthetic-only append-only 表；known/unknown external identifiers 均只以 ref 列持久化。
 - `modules/customer_service` 仍无 webhook、channel adapter 或 outbound delivery surface。
 
 ## 2. RED → GREEN 证据
@@ -30,22 +32,26 @@
 - **Safety repair**：P00 `--all-files` 发现测试中的合成本地路径片段；已拆分测试字符串，保留负向语义后扫描通过。
 - **Spec review HIGH RED**：新增 unknown-scope quarantine Python/SQL contract tests 后，P06 专项失败于 `HandoffCase(scope=None)` 仍被返回，`make migration-test` 失败于缺少 `support_unknown_scope_quarantines`。
 - **Spec review HIGH GREEN**：新增 `UnknownScopeQuarantineRecord`、专用 SQL table、append-only trigger 和负向约束后，unknown scope 可持久化为安全隔离记录；scoped handoff FK 未放松，P06 专项与 migration-test 通过。
+- **Quality review HIGH 1 RED**：新增 known-scope raw external ID minimization tests 后，P06 专项失败于 receipt summary 暴露 `external_conversation_1` / `external_message_1`；新增 migration schema 断言后，`make migration-test` 失败于 `support_conversations` / `support_messages` 仍有 raw external ID columns。
+- **Quality review HIGH 1 GREEN**：known-scope records、safe summaries、audit target 和 SQL schema 改为 deterministic opaque external refs；P06 专项与 `make migration-test` 均通过，replay counts 仍证明无新增 draft/audit side effect。
+- **Quality review HIGH 2 GREEN**：执行非破坏性 merge `origin/main` `914a76146f47734d2989b4d4ce71c5fdaeedd988`，无冲突；P05-01 source-policy/crawl files、fixture allowlist、tests 与状态 docs 保留在当前任务分支。
 
 ## 3. Validation evidence
 
 - `python3 -m unittest tests.contracts.test_customer_service_conversation_contracts`：6 项通过。
+- `python3 -m unittest tests.contracts.test_source_policy_and_crawl_port`：8 项通过，确认 merge 后 P05-01 source-policy / zero-network crawl 合同未回退。
 - `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals`：7 项通过。
 - `python3 -m unittest tests.contracts.test_audit_metrics_retry_dead_letter`：9 项通过。
 - `python3 -m unittest discover -s tests/workflows`：11 项通过。
-- `python3 -m unittest discover -s tests/contracts`：68 项通过。
+- `python3 -m unittest discover -s tests/contracts`：76 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `make migration-test`：通过；P02/P06 migrations replay 两次，scoped support、unknown-scope quarantine 与 truth/scope negative constraints 通过并清理 Docker resources。
-- `make regression`：通过；migration replay、compileall、8 architecture、14 regression、8 local-runtime、16 control-plane、68 contracts、35 ingestion tests 全部通过。
+- `make regression`：通过；migration replay、compileall、8 architecture、14 regression、8 local-runtime、16 control-plane、76 contracts、35 ingestion tests 全部通过。
 - `python3 -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests`：通过。
 - `git diff --check`：通过。
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`：通过。
-- `python3 scripts/validate_regression_baseline.py --base-sha eda64feb9945e1f9f2eaa688b1152f87b8182bf5`：通过。
-- `python3 scripts/validate_regression_baseline.py --base-sha eda64feb9945e1f9f2eaa688b1152f87b8182bf5 --all-files`：通过。
+- `python3 scripts/validate_regression_baseline.py --base-sha 914a76146f47734d2989b4d4ce71c5fdaeedd988`：通过。
+- `python3 scripts/validate_regression_baseline.py --base-sha 914a76146f47734d2989b4d4ce71c5fdaeedd988 --all-files`：通过。
 
 ## 4. 工程治理检查
 
@@ -53,7 +59,7 @@
 - `configuration_validation（配置验证）`：未新增配置、环境变量、生产连接、真实账号、channel adapter、webhook、send endpoint 或外部 service。
 - `data_safety_check（数据安全检查）`：未读取、复制、提交真实供应链资料、客户资料、价格、库存、资质、联系方式、raw chats、attachments 或海鲜业务事实；对 absolute path、secret-like payload、未标记 PII 均 fail closed。
 - `dependency_compatibility_check（依赖兼容检查）`：`not_applicable`；未新增或修改依赖。
-- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 replay no side effect、idempotency drift、scope missing、cross-line reuse、unknown scope quarantine、DNC handoff、privacy handoff、unsafe payload rejection、no adapter/send surface、SQL duplicate external ID、cross-scope FK、unknown quarantine table shape、opaque ref、external execution disabled 与 append-only triggers。
+- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 replay no side effect、idempotency drift、scope missing、cross-line reuse、known-scope raw external ID minimization、unknown scope quarantine、DNC handoff、privacy handoff、unsafe payload rejection、no adapter/send surface、SQL duplicate external ref、cross-scope FK、unknown quarantine table shape、opaque ref、external execution disabled 与 append-only triggers。
 
 ## 5. 事实分级与剩余阻断
 

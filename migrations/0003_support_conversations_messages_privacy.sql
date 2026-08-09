@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.support_conversations (
     project_id uuid NOT NULL,
     business_line_id uuid NOT NULL,
     channel_ref text NOT NULL CHECK (channel_ref ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
-    external_conversation_id text NOT NULL
-        CHECK (external_conversation_id ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    external_conversation_ref text NOT NULL
+        CHECK (external_conversation_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
     status text NOT NULL CHECK (status IN ('active', 'held', 'handoff_required')),
     data_state fenjiu_contract.data_state NOT NULL,
     source_ref_id uuid NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.support_conversations (
     CONSTRAINT support_conversations_scope_key UNIQUE (id, tenant_id, project_id, business_line_id),
     CONSTRAINT support_conversations_external_unique UNIQUE (
         tenant_id, project_id, business_line_id, channel_ref,
-        external_conversation_id
+        external_conversation_ref
     ),
     CONSTRAINT support_conversations_source_fk FOREIGN KEY (
         tenant_id, project_id, business_line_id, source_ref_id, is_synthetic
@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.support_messages (
     project_id uuid NOT NULL,
     business_line_id uuid NOT NULL,
     direction text NOT NULL CHECK (direction = 'inbound'),
-    external_message_id text NOT NULL
-        CHECK (external_message_id ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    external_message_ref text NOT NULL
+        CHECK (external_message_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
     content_hash text NOT NULL CHECK (content_hash ~ '^[0-9a-f]{64}$'),
     content_ref text NOT NULL CHECK (content_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
     received_at timestamptz NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.support_messages (
     ),
     CONSTRAINT support_messages_timestamp_order CHECK (updated_at >= created_at),
     CONSTRAINT support_messages_external_unique UNIQUE (
-        conversation_id, external_message_id
+        conversation_id, external_message_ref
     ),
     CONSTRAINT support_messages_conversation_fk FOREIGN KEY (
         conversation_id, tenant_id, project_id, business_line_id

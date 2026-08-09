@@ -9,4 +9,6 @@ unknown-scope quarantine records.
 
 It still does not integrate WhatsApp, TikTok, Meta, email, webhooks, channel
 adapters, production storage, or outbound delivery. Records keep hashes and
-opaque references instead of raw chat bodies or attachments.
+opaque references instead of raw external channel IDs, raw chat bodies, or
+attachments.
+Inbound commands accept opaque external references, not raw channel message IDs.

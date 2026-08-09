@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import FrozenInstanceError, replace
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 import json
 import unittest
 from uuid import UUID
@@ -23,6 +24,8 @@ from modules.customer_service.contracts import (
 
 NOW = datetime(2040, 7, 8, tzinfo=timezone.utc)
 SCOPE = synthetic_scope()
+RAW_EXTERNAL_CONVERSATION_ID = "external_conversation_1"
+RAW_EXTERNAL_MESSAGE_ID = "external_message_1"
 
 
 class Clock:
@@ -39,8 +42,8 @@ def inbound_command(
     *,
     scope=SCOPE,
     scope_status: ScopeStatus = ScopeStatus.KNOWN,
-    external_conversation_id: str = "external_conversation_1",
-    external_message_id: str = "external_message_1",
+    raw_external_conversation_id: str = RAW_EXTERNAL_CONVERSATION_ID,
+    raw_external_message_id: str = RAW_EXTERNAL_MESSAGE_ID,
     body_text: str = "synthetic product question",
     content_ref: str = "ref:conversation:synthetic_body_1",
     intent_label: str = "faq_general",
@@ -53,8 +56,11 @@ def inbound_command(
         scope=scope,
         scope_status=scope_status,
         channel_ref="channel:tiktok.synthetic",
-        external_conversation_id=external_conversation_id,
-        external_message_id=external_message_id,
+        external_conversation_ref=external_ref(
+            "external_conversation",
+            raw_external_conversation_id,
+        ),
+        external_message_ref=external_ref("external_message", raw_external_message_id),
         received_at=NOW,
         received_by="synthetic_channel",
         body_text=body_text,
@@ -68,6 +74,11 @@ def inbound_command(
         policy_version="support_contract_v1",
         idempotency_key=idempotency_key,
     )
+
+
+def external_ref(kind: str, value: str) -> str:
+    digest = sha256(f"{kind}\x1f{value}".encode("utf-8")).hexdigest()[:32]
+    return f"ref:{kind}:{digest}"
 
 
 class CustomerServiceConversationContractTests(unittest.TestCase):
@@ -104,6 +115,21 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
         rendered = json.dumps(first.safe_summary(), sort_keys=True)
         self.assertNotIn("synthetic product question", rendered)
         self.assertNotIn("body_text", rendered)
+        self.assertNotIn(RAW_EXTERNAL_CONVERSATION_ID, rendered)
+        self.assertNotIn(RAW_EXTERNAL_MESSAGE_ID, rendered)
+        self.assertTrue(
+            first.conversation.safe_summary()["external_conversation_ref"].startswith(
+                "ref:external_conversation:"
+            )
+        )
+        self.assertTrue(
+            first.message.safe_summary()["external_message_ref"].startswith(
+                "ref:external_message:"
+            )
+        )
+        audit_rendered = json.dumps(first.audit_event.safe_summary(), sort_keys=True)
+        self.assertNotIn(RAW_EXTERNAL_MESSAGE_ID, audit_rendered)
+        self.assertTrue(first.audit_event.target_ref.startswith("ref:external_message:"))
 
     def test_replay_with_changed_payload_or_scope_fails_closed_before_side_effects(self) -> None:
         self.store.receive(inbound_command())
@@ -125,7 +151,7 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
             self.store.receive(
                 inbound_command(
                     scope=other_scope,
-                    external_message_id="external_message_2",
+                    raw_external_message_id="external_message_2",
                     idempotency_key="message_replay_key_2",
                 )
             )
@@ -140,8 +166,8 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
             inbound_command(
                 scope=None,
                 scope_status=ScopeStatus.UNKNOWN,
-                external_conversation_id="unknown_scope_conversation",
-                external_message_id="unknown_scope_message",
+                raw_external_conversation_id="unknown_scope_conversation",
+                raw_external_message_id="unknown_scope_message",
                 idempotency_key="unknown_scope_key",
             )
         )
@@ -176,8 +202,8 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
     def test_dnc_and_personal_data_minimize_content_and_force_handoff_without_draft(self) -> None:
         dnc_receipt = self.store.receive(
             inbound_command(
-                external_conversation_id="conversation_dnc",
-                external_message_id="message_dnc",
+                raw_external_conversation_id="conversation_dnc",
+                raw_external_message_id="message_dnc",
                 dnc_blocked=True,
                 idempotency_key="dnc_key",
             )
@@ -189,8 +215,8 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
         private_contact = "person" + "@" + "example.invalid"
         privacy_receipt = self.store.receive(
             inbound_command(
-                external_conversation_id="conversation_privacy",
-                external_message_id="message_privacy",
+                raw_external_conversation_id="conversation_privacy",
+                raw_external_message_id="message_privacy",
                 body_text=f"synthetic contact {private_contact}",
                 personal_data_detected=True,
                 idempotency_key="privacy_key",
@@ -227,8 +253,8 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
                 ):
                     self.store.receive(
                         inbound_command(
-                            external_conversation_id=f"conversation_{suffix}",
-                            external_message_id=f"message_{suffix}",
+                            raw_external_conversation_id=f"conversation_{suffix}",
+                            raw_external_message_id=f"message_{suffix}",
                             body_text=body_text,
                             idempotency_key=f"unsafe_key_{suffix}",
                         )

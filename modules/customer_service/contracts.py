@@ -136,11 +136,6 @@ def _stable_id(kind: str, *parts: object) -> UUID:
     return uuid5(NAMESPACE_URL, "|".join((kind, *(str(part) for part in parts))))
 
 
-def _external_ref(kind: str, value: str) -> str:
-    _require_identifier(value, f"{kind}_required")
-    return f"ref:{kind}:{_digest(kind, value)[:32]}"
-
-
 def _scope_key(scope: ScopeRef) -> tuple[UUID, UUID, UUID]:
     return (scope.tenant_id, scope.project_id, scope.business_line_id)
 
@@ -156,8 +151,8 @@ class InboundMessageCommand:
     scope: ScopeRef | None
     scope_status: ScopeStatus
     channel_ref: str
-    external_conversation_id: str
-    external_message_id: str
+    external_conversation_ref: str
+    external_message_ref: str
     received_at: datetime
     received_by: str
     body_text: str
@@ -179,11 +174,8 @@ class InboundMessageCommand:
         elif self.scope is not None:
             raise _boundary("unknown_scope_must_not_bind_scope")
         _require_identifier(self.channel_ref, "channel_ref_required")
-        _require_identifier(
-            self.external_conversation_id,
-            "external_conversation_id_required",
-        )
-        _require_identifier(self.external_message_id, "external_message_id_required")
+        _require_ref(self.external_conversation_ref, "external_conversation_ref_required")
+        _require_ref(self.external_message_ref, "external_message_ref_required")
         _require_time(self.received_at, "received_at_required")
         _require_identifier(self.received_by, "received_by_required")
         if not isinstance(self.personal_data_detected, bool):
@@ -214,8 +206,8 @@ class InboundMessageCommand:
             scope_key,
             self.scope_status.value,
             self.channel_ref,
-            self.external_conversation_id,
-            self.external_message_id,
+            self.external_conversation_ref,
+            self.external_message_ref,
             self.content_hash,
             self.content_ref,
             self.intent_label,
@@ -234,7 +226,7 @@ class ConversationRecord:
     id: UUID
     scope: ScopeRef
     channel_ref: str
-    external_conversation_id: str
+    external_conversation_ref: str
     status: ConversationStatus
     retention_policy_ref: str
     consent_ref: str
@@ -247,10 +239,7 @@ class ConversationRecord:
     def __post_init__(self) -> None:
         _require_scope(self.scope)
         _require_identifier(self.channel_ref, "channel_ref_required")
-        _require_identifier(
-            self.external_conversation_id,
-            "external_conversation_id_required",
-        )
+        _require_ref(self.external_conversation_ref, "external_conversation_ref_required")
         if not isinstance(self.status, ConversationStatus):
             raise _boundary("conversation_status_required")
         _require_identifier(self.retention_policy_ref, "retention_policy_ref_required")
@@ -266,7 +255,7 @@ class ConversationRecord:
         return {
             "id": str(self.id),
             "channel_ref": self.channel_ref,
-            "external_conversation_id": self.external_conversation_id,
+            "external_conversation_ref": self.external_conversation_ref,
             "status": self.status.value,
             "retention_policy_ref": self.retention_policy_ref,
             "consent_ref": self.consent_ref,
@@ -282,7 +271,7 @@ class MessageRecord:
     conversation_id: UUID
     scope: ScopeRef
     direction: MessageDirection
-    external_message_id: str
+    external_message_ref: str
     content_hash: str
     content_ref: str
     received_at: datetime
@@ -298,7 +287,7 @@ class MessageRecord:
         _require_scope(self.scope)
         if self.direction is not MessageDirection.INBOUND:
             raise _boundary("message_direction_required")
-        _require_identifier(self.external_message_id, "external_message_id_required")
+        _require_ref(self.external_message_ref, "external_message_ref_required")
         _require_hash(self.content_hash, "content_hash_required")
         _require_ref(self.content_ref, "content_ref_required")
         _require_time(self.received_at, "received_at_required")
@@ -316,7 +305,7 @@ class MessageRecord:
             "id": str(self.id),
             "conversation_id": str(self.conversation_id),
             "direction": self.direction.value,
-            "external_message_id": self.external_message_id,
+            "external_message_ref": self.external_message_ref,
             "content_hash": self.content_hash,
             "content_ref": self.content_ref,
             "retention_policy_ref": self.retention_policy_ref,
@@ -571,8 +560,8 @@ class InMemoryConversationStore:
         self._handoffs: tuple[HandoffCase, ...] = ()
         self._unknown_quarantines: tuple[UnknownScopeQuarantineRecord, ...] = ()
         self._audit_events: tuple[SupportAuditEvent, ...] = ()
-        self._conversation_scope_by_external: dict[tuple[str, str], tuple[UUID, UUID, UUID]] = {}
-        self._conversation_by_external: dict[tuple[tuple[UUID, UUID, UUID], str, str], ConversationRecord] = {}
+        self._conversation_scope_by_external_ref: dict[tuple[str, str], tuple[UUID, UUID, UUID]] = {}
+        self._conversation_by_external_ref: dict[tuple[tuple[UUID, UUID, UUID], str, str], ConversationRecord] = {}
         self._fingerprint_by_message: dict[tuple[tuple[UUID, UUID, UUID], str, str], str] = {}
         self._receipt_by_message: dict[tuple[tuple[UUID, UUID, UUID], str, str], ConversationReceipt] = {}
         self._fingerprint_by_unknown: dict[tuple[str, str], str] = {}
@@ -625,7 +614,8 @@ class InMemoryConversationStore:
         }
 
     def _receive_unknown_scope(self, command: InboundMessageCommand) -> ConversationReceipt:
-        key = (command.channel_ref, command.external_message_id)
+        external_message_ref = command.external_message_ref
+        key = (command.channel_ref, external_message_ref)
         existing_fingerprint = self._fingerprint_by_unknown.get(key)
         if existing_fingerprint is not None:
             if existing_fingerprint != command.input_fingerprint:
@@ -636,19 +626,13 @@ class InMemoryConversationStore:
             id=_stable_id(
                 "unknown_quarantine",
                 command.channel_ref,
-                command.external_conversation_id,
-                command.external_message_id,
+                command.external_conversation_ref,
+                command.external_message_ref,
                 command.content_hash,
             ),
             channel_ref=command.channel_ref,
-            external_conversation_ref=_external_ref(
-                "external_conversation",
-                command.external_conversation_id,
-            ),
-            external_message_ref=_external_ref(
-                "external_message",
-                command.external_message_id,
-            ),
+            external_conversation_ref=command.external_conversation_ref,
+            external_message_ref=command.external_message_ref,
             content_hash=command.content_hash,
             content_ref=command.content_ref,
             reason=HandoffReason.UNKNOWN_SCOPE,
@@ -689,47 +673,49 @@ class InMemoryConversationStore:
             raise _boundary("scope_required")
         scope = _require_scope(command.scope)
         scope_key = _scope_key(scope)
+        external_conversation_ref = command.external_conversation_ref
+        external_message_ref = command.external_message_ref
         external_conversation_key = (
             command.channel_ref,
-            command.external_conversation_id,
+            external_conversation_ref,
         )
-        existing_scope = self._conversation_scope_by_external.get(external_conversation_key)
+        existing_scope = self._conversation_scope_by_external_ref.get(external_conversation_key)
         if existing_scope is not None and existing_scope != scope_key:
             raise _boundary("cross_scope_forbidden")
 
-        message_key = (scope_key, command.channel_ref, command.external_message_id)
+        message_key = (scope_key, command.channel_ref, external_message_ref)
         existing_fingerprint = self._fingerprint_by_message.get(message_key)
         if existing_fingerprint is not None:
             if existing_fingerprint != command.input_fingerprint:
                 raise _boundary("idempotency_conflict")
             return _replayed(self._receipt_by_message[message_key])
 
-        conversation = self._conversation_by_external.get(
+        conversation = self._conversation_by_external_ref.get(
             (
                 scope_key,
                 command.channel_ref,
-                command.external_conversation_id,
+                external_conversation_ref,
             )
         )
         if conversation is None:
-            conversation = self._create_conversation(command, scope)
+            conversation = self._create_conversation(command, scope, external_conversation_ref)
             self._conversations = (*self._conversations, conversation)
-            self._conversation_scope_by_external[external_conversation_key] = scope_key
-            self._conversation_by_external[
+            self._conversation_scope_by_external_ref[external_conversation_key] = scope_key
+            self._conversation_by_external_ref[
                 (
                     scope_key,
                     command.channel_ref,
-                    command.external_conversation_id,
+                    external_conversation_ref,
                 )
             ] = conversation
 
-        message = self._create_message(command, scope, conversation)
+        message = self._create_message(command, scope, conversation, external_message_ref)
         intent = self._create_intent(command, scope, message)
         disposition, draft, handoff = self._draft_or_handoff(command, scope, conversation, message)
         event = self._append_event(
             event_kind="support_message_recorded",
             scope=scope,
-            target_ref=command.external_message_id,
+            target_ref=external_message_ref,
             result_code=disposition.value,
             correlation_id=scope.correlation_id,
         )
@@ -757,6 +743,7 @@ class InMemoryConversationStore:
         self,
         command: InboundMessageCommand,
         scope: ScopeRef,
+        external_conversation_ref: str,
     ) -> ConversationRecord:
         status = (
             ConversationStatus.HANDOFF_REQUIRED
@@ -768,11 +755,11 @@ class InMemoryConversationStore:
                 "conversation",
                 _scope_key(scope),
                 command.channel_ref,
-                command.external_conversation_id,
+                external_conversation_ref,
             ),
             scope=scope,
             channel_ref=command.channel_ref,
-            external_conversation_id=command.external_conversation_id,
+            external_conversation_ref=external_conversation_ref,
             status=status,
             retention_policy_ref=command.retention_policy_ref,
             consent_ref=command.consent_ref,
@@ -786,18 +773,19 @@ class InMemoryConversationStore:
         command: InboundMessageCommand,
         scope: ScopeRef,
         conversation: ConversationRecord,
+        external_message_ref: str,
     ) -> MessageRecord:
         return MessageRecord(
             id=_stable_id(
                 "message",
                 conversation.id,
-                command.external_message_id,
+                external_message_ref,
                 command.content_hash,
             ),
             conversation_id=conversation.id,
             scope=scope,
             direction=MessageDirection.INBOUND,
-            external_message_id=command.external_message_id,
+            external_message_ref=external_message_ref,
             content_hash=command.content_hash,
             content_ref=command.content_ref,
             received_at=command.received_at,
