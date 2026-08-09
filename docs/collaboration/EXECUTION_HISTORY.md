@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-09｜P04-02 角色、审批与动作策略（controller integration）
+
+- **目标与边界**：只建立 stdlib/local-only/synthetic 的最小角色/动作矩阵、追加式审批与执行前复核合同；不得认证真实身份、读取真实业务资料、授权外部执行或将审批合同写成真实业务权限。
+- **实际改动**：新增 `core/security/action_policy.py`、安全模块出口、7 项 P04-02 contract tests 与工程报告。策略同时复核角色/范围、数据状态、事实时效、证据、功能开关、DNC/同意、环境、审批状态与 correlation；外部发送、发布、报价、支付、订单、退款和库存写入一律策略拒绝。
+- **控制器审查与修复**：规格审查发现执行前复核未将获批请求绑定到 exact `subject_version`，以及同一幂等键未涵盖证据、时效、开关、DNC/同意和环境等审批语义。执行线程先以 RED/GREEN（先失败/后通过）回归修复；复审证明版本不一致返回 `approval_subject_version_mismatch` 且 `external_execution_attempted=false`，任一语义变更返回 `idempotency_conflict`。质量审查未发现公共接口绕过、敏感输出或追加式决定回归。
+- **验证**：干净 task worktree 的 P00 default/`--all-files`、7 项策略专项、11 项 workflow、8 项 architecture、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、机制验证、compile 与 diff 均通过。控制器在外置盘 root 复验策略/工作流/架构、完整 `make regression`、机制验证、diff 和排除 AppleDouble `._*` 的编译；root 不运行 P00 default/`--all-files`，因为既有用户文件会使该模式失真。
+- **Git 证据**：任务提交 `fe492f1` 与修复提交 `fd727fd` 均已 push；控制器 fast-forward 集成并将 `main` push/readback 至 `fd727fd0a74068edfa5511a18f878c312c062b6c`。远端安全模块、策略专项测试与 P04-02 报告 blob 已从 `origin/main` 回读。
+- **状态边界**：仅为 Phase 4/P04-02 工程完成，不代表 Phase 4 整体完成；不改变 BUSINESS_STATUS、真实身份/权限、SKU/价格/库存/资质/账号/收款/履约、生产审计/队列/数据库或任何 external flag（外部动作开关）。
+
 ## 2026-08-09｜P04-01 工作流状态、检查点与恢复（controller integration）
 
 - **目标与边界**：只建立 stdlib/local-only/synthetic/value-free 的 workflow run（工作流运行）、checkpoint（检查点）、idempotency（幂等）、pause/resume（暂停/恢复）、retry/DLQ（重试/死信队列）与 manual queue（人工队列）合同；不得让 workflow 拥有业务真值、真实审批、外部 adapter（适配器）或外部动作。

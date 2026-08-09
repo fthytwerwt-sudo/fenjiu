@@ -17,7 +17,7 @@
 - **CONFIRMED**：固定入口、事实分级、任务交接、执行记录和同步包机制已建立。
 - **CONFIRMED**：GPT Project 配合机制包已在仓库内生成并通过本地验证；包内 AGENTS 镜像与根 AGENTS SHA-256 一致。
 - **部分成立**：V2 正在将公开历史脱敏、干净 main、远端默认分支、visibility 和新同步包验证收口；这些事项必须以最终远端回读为准。
-- **最近远端验证**：P04-01 工程代码已由 `origin/main` 回读至 `d2805b293cbb71f7c5898ad0c611d863fb87e4b7`；默认分支仍不是 `main`，visibility 与同步包最终验证仍待单独完成，不能用本文件编辑或本地 commit 替代。
+- **最近远端验证**：P04-02 工程代码已由 `origin/main` 回读至 `fd727fd0a74068edfa5511a18f878c312c062b6c`；默认分支仍不是 `main`，visibility 与同步包最终验证仍待单独完成，不能用本文件编辑或本地 commit 替代。
 
 ## 工程规划状态摘要
 
@@ -32,6 +32,7 @@
 - **CONFIRMED（工程 Phase 3 / P03-02）**：控制器已将修复后的 P03-02 安全集成，并从 `origin/main` 回读至 `355483121580c0205a43e59078eba8c29d719d93`。初始分支的 forged profile provenance HIGH 和 quarantine/non-`STAGED` lifecycle MEDIUM 均已由 profile fingerprint/report/replay binding 与 P03-01 lifecycle enum guard 修复；最终独立复审 `APPROVE`。控制器完整回归通过 118 项 Python tests、两次 migration replay 和 16 类 SQL 负例，mechanism validation 与 Docker cleanup 通过。它只提供 synthetic/value-free mapping fingerprint、quality 和 replay proof，不读取或保存真实值，不创建 approved truth，也不改变任何 external flag 或 business gate。
 - **CONFIRMED（工程 Phase 3 / P03-03）**：控制器已将三笔已审查任务提交快进集成，并从 `origin/main` 回读至 `5d2c429bd253344ce3c2a3a30a31315f4a81f177`。P03-03 仅建立 stdlib/local-only/synthetic 的 candidate→review→human decision→isolated approved synthetic version→supersede/revoke→internal refresh 合同；其记录固定为 `DataState.FIXTURE`，不接入 P02 current truth。关联链完整性、过期审计状态与业务范围 current-read 索引均有独立回归；客户管理、客服和内容视频仅收到未来内部失效通知的合同枚举，未实现模块或外部动作。控制器复验 9 项专项、35 项 ingestion、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、机制验证和排除 AppleDouble 元数据的编译检查均通过；两轮最终只读审查为 `APPROVE` 与无阻断评论。
 - **CONFIRMED（工程 Phase 4 / P04-01）**：控制器已将三笔已审查任务提交快进集成，并从 `origin/main` 回读至 `d2805b293cbb71f7c5898ad0c611d863fb87e4b7`。P04-01 仅建立 stdlib/local-only 的 simple workflow runner（简易工作流运行器）、安全 checkpoint（检查点）、幂等恢复、暂停/批准/恢复、超时重试/死信队列和人工队列合同；可选 LangGraph probe（探测）因未安装而保持 deferred（暂缓），未新增依赖。审查先后发现 terminal approval replay（终态批准回放）和 public store write bypass（公开存储写入绕过）三项 HIGH，均已以 fail-closed（默认拒绝）状态守卫、受限写面和专项回归修复；11 项工作流专项、8 项架构、完整 `make regression`、机制验证与任务干净 worktree 的两种 P00 检查均通过。它不认证 actor（操作者）、不实现 RBAC（基于角色的权限控制）、不接外部 provider（服务提供方）或生产队列，也不改变任何外部动作开关。
+- **CONFIRMED（工程 Phase 4 / P04-02）**：控制器已将已审查任务提交快进集成，并从 `origin/main` 回读至 `fd727fd0a74068edfa5511a18f878c312c062b6c`。P04-02 仅建立 stdlib/local-only/synthetic 的角色、动作策略与追加式审批合同；高风险复核必须精确绑定已批准请求的 `subject_version`（事实版本），同一幂等键的任一审批语义变化均拒绝，不执行外部动作。两轮审查发现并修复 subject-version 漂移与幂等语义复用；7 项策略专项、11 项工作流、8 项架构、完整 `make regression`、机制验证、排除 AppleDouble 元数据的编译和 diff 均通过。它不认证真实身份、不授予真实权限、不连接生产审计/队列，也不改变任何外部动作开关。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
 详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)
