@@ -1,1 +1,43 @@
-"""Content and video ownership shell."""
+"""Synthetic content and video contracts."""
+
+from modules.content_video.contracts import (
+    AssetOrigin,
+    AssetRightsState,
+    AssetRightsVersionLock,
+    BriefDataOrigin,
+    ContentPolicySuite,
+    ContentReviewRecord,
+    ContentReviewState,
+    ContentTask,
+    ContentTaskState,
+    ContentVideoBoundaryError,
+    FactApprovalState,
+    FactVersionLock,
+    ForbiddenExpressionPolicy,
+    PolicyBoundaryState,
+    PolicyVersionLock,
+    SyntheticBrief,
+    VideoTask,
+    VideoTaskState,
+)
+
+__all__ = [
+    "AssetOrigin",
+    "AssetRightsState",
+    "AssetRightsVersionLock",
+    "BriefDataOrigin",
+    "ContentPolicySuite",
+    "ContentReviewRecord",
+    "ContentReviewState",
+    "ContentTask",
+    "ContentTaskState",
+    "ContentVideoBoundaryError",
+    "FactApprovalState",
+    "FactVersionLock",
+    "ForbiddenExpressionPolicy",
+    "PolicyBoundaryState",
+    "PolicyVersionLock",
+    "SyntheticBrief",
+    "VideoTask",
+    "VideoTaskState",
+]
