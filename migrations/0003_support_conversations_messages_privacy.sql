@@ -240,6 +240,37 @@ CREATE TABLE IF NOT EXISTS fenjiu_contract.support_handoff_cases (
     )
 );
 
+CREATE TABLE IF NOT EXISTS fenjiu_contract.support_unknown_scope_quarantines (
+    id uuid PRIMARY KEY,
+    channel_ref text NOT NULL CHECK (channel_ref ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    external_conversation_ref text NOT NULL
+        CHECK (external_conversation_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    external_message_ref text NOT NULL
+        CHECK (external_message_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    content_hash text NOT NULL CHECK (content_hash ~ '^[0-9a-f]{64}$'),
+    content_ref text NOT NULL CHECK (content_ref ~ '^ref:[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    reason text NOT NULL CHECK (reason = 'unknown_scope'),
+    status text NOT NULL CHECK (status = 'open'),
+    policy_version text NOT NULL CHECK (policy_version ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    correlation_id text NOT NULL CHECK (correlation_id ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    retention_policy_ref text NOT NULL
+        CHECK (retention_policy_ref ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    redaction_ref text NOT NULL CHECK (redaction_ref ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    received_at timestamptz NOT NULL,
+    received_by text NOT NULL CHECK (received_by ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    is_synthetic boolean NOT NULL,
+    external_execution_allowed boolean NOT NULL DEFAULT false,
+    created_at timestamptz NOT NULL,
+    updated_at timestamptz NOT NULL,
+    created_by text NOT NULL CHECK (created_by ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$'),
+    CONSTRAINT support_unknown_scope_external_disabled CHECK (external_execution_allowed = false),
+    CONSTRAINT support_unknown_scope_synthetic_only CHECK (is_synthetic = true),
+    CONSTRAINT support_unknown_scope_timestamp_order CHECK (updated_at >= created_at),
+    CONSTRAINT support_unknown_scope_external_unique UNIQUE (
+        channel_ref, external_message_ref
+    )
+);
+
 CREATE OR REPLACE FUNCTION fenjiu_contract.prevent_support_history_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -277,6 +308,12 @@ DROP TRIGGER IF EXISTS support_handoffs_prevent_mutation
     ON fenjiu_contract.support_handoff_cases;
 CREATE TRIGGER support_handoffs_prevent_mutation
 BEFORE UPDATE OR DELETE ON fenjiu_contract.support_handoff_cases
+FOR EACH ROW EXECUTE FUNCTION fenjiu_contract.prevent_support_history_mutation();
+
+DROP TRIGGER IF EXISTS support_unknown_scope_prevent_mutation
+    ON fenjiu_contract.support_unknown_scope_quarantines;
+CREATE TRIGGER support_unknown_scope_prevent_mutation
+BEFORE UPDATE OR DELETE ON fenjiu_contract.support_unknown_scope_quarantines
 FOR EACH ROW EXECUTE FUNCTION fenjiu_contract.prevent_support_history_mutation();
 
 INSERT INTO fenjiu_contract.schema_migrations (version, description)

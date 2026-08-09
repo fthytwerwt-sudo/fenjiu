@@ -136,6 +136,11 @@ def _stable_id(kind: str, *parts: object) -> UUID:
     return uuid5(NAMESPACE_URL, "|".join((kind, *(str(part) for part in parts))))
 
 
+def _external_ref(kind: str, value: str) -> str:
+    _require_identifier(value, f"{kind}_required")
+    return f"ref:{kind}:{_digest(kind, value)[:32]}"
+
+
 def _scope_key(scope: ScopeRef) -> tuple[UUID, UUID, UUID]:
     return (scope.tenant_id, scope.project_id, scope.business_line_id)
 
@@ -402,9 +407,9 @@ class DraftReplyRecord:
 @dataclass(frozen=True)
 class HandoffCase:
     id: UUID
-    scope: ScopeRef | None
-    conversation_id: UUID | None
-    message_id: UUID | None
+    scope: ScopeRef
+    conversation_id: UUID
+    message_id: UUID
     reason: HandoffReason
     status: HandoffStatus
     policy_version: str
@@ -415,16 +420,19 @@ class HandoffCase:
     external_execution_allowed: bool = False
 
     def __post_init__(self) -> None:
-        if self.scope is not None:
-            _require_scope(self.scope)
-            if self.correlation_id != self.scope.correlation_id:
-                raise _boundary("correlation_mismatch")
+        _require_scope(self.scope)
+        _require_uuid(self.conversation_id, "conversation_id_required")
+        _require_uuid(self.message_id, "message_id_required")
         if not isinstance(self.reason, HandoffReason):
             raise _boundary("handoff_reason_required")
+        if self.reason is HandoffReason.UNKNOWN_SCOPE:
+            raise _boundary("unknown_scope_quarantine_required")
         if self.status is not HandoffStatus.OPEN:
             raise _boundary("handoff_status_required")
         _require_identifier(self.policy_version, "policy_version_required")
         _require_identifier(self.correlation_id, "correlation_id_required")
+        if self.correlation_id != self.scope.correlation_id:
+            raise _boundary("correlation_mismatch")
         _require_time(self.created_at, "created_at_required")
         _require_identifier(self.created_by, "created_by_required")
         _require_synthetic_local(self.is_synthetic, self.external_execution_allowed)
@@ -432,13 +440,73 @@ class HandoffCase:
     def safe_summary(self) -> dict[str, object]:
         return {
             "id": str(self.id),
-            "scope_known": self.scope is not None,
-            "conversation_id": None if self.conversation_id is None else str(self.conversation_id),
-            "message_id": None if self.message_id is None else str(self.message_id),
+            "scope_known": True,
+            "conversation_id": str(self.conversation_id),
+            "message_id": str(self.message_id),
             "reason": self.reason.value,
             "status": self.status.value,
             "policy_version": self.policy_version,
             "correlation_id": self.correlation_id,
+            "external_execution_allowed": self.external_execution_allowed,
+        }
+
+
+@dataclass(frozen=True)
+class UnknownScopeQuarantineRecord:
+    id: UUID
+    channel_ref: str
+    external_conversation_ref: str
+    external_message_ref: str
+    content_hash: str
+    content_ref: str
+    reason: HandoffReason
+    status: HandoffStatus
+    policy_version: str
+    correlation_id: str
+    retention_policy_ref: str
+    redaction_ref: str
+    received_at: datetime
+    received_by: str
+    created_at: datetime
+    created_by: str
+    is_synthetic: bool = True
+    external_execution_allowed: bool = False
+
+    def __post_init__(self) -> None:
+        _require_identifier(self.channel_ref, "channel_ref_required")
+        _require_ref(self.external_conversation_ref, "external_conversation_ref_required")
+        _require_ref(self.external_message_ref, "external_message_ref_required")
+        _require_hash(self.content_hash, "content_hash_required")
+        _require_ref(self.content_ref, "content_ref_required")
+        if self.reason is not HandoffReason.UNKNOWN_SCOPE:
+            raise _boundary("unknown_scope_reason_required")
+        if self.status is not HandoffStatus.OPEN:
+            raise _boundary("handoff_status_required")
+        _require_identifier(self.policy_version, "policy_version_required")
+        _require_identifier(self.correlation_id, "correlation_id_required")
+        _require_identifier(self.retention_policy_ref, "retention_policy_ref_required")
+        _require_identifier(self.redaction_ref, "redaction_ref_required")
+        _require_time(self.received_at, "received_at_required")
+        _require_identifier(self.received_by, "received_by_required")
+        _require_time(self.created_at, "created_at_required")
+        _require_identifier(self.created_by, "created_by_required")
+        _require_synthetic_local(self.is_synthetic, self.external_execution_allowed)
+
+    def safe_summary(self) -> dict[str, object]:
+        return {
+            "id": str(self.id),
+            "channel_ref": self.channel_ref,
+            "external_conversation_ref": self.external_conversation_ref,
+            "external_message_ref": self.external_message_ref,
+            "content_hash": self.content_hash,
+            "content_ref": self.content_ref,
+            "reason": self.reason.value,
+            "status": self.status.value,
+            "policy_version": self.policy_version,
+            "correlation_id": self.correlation_id,
+            "retention_policy_ref": self.retention_policy_ref,
+            "redaction_ref": self.redaction_ref,
+            "is_synthetic": self.is_synthetic,
             "external_execution_allowed": self.external_execution_allowed,
         }
 
@@ -473,6 +541,7 @@ class ConversationReceipt:
     intent: IntentRecord | None
     draft: DraftReplyRecord | None
     handoff: HandoffCase | None
+    quarantine: UnknownScopeQuarantineRecord | None
     audit_event: SupportAuditEvent | None
     replayed: bool = False
 
@@ -484,6 +553,7 @@ class ConversationReceipt:
             "intent": None if self.intent is None else self.intent.safe_summary(),
             "draft": None if self.draft is None else self.draft.safe_summary(),
             "handoff": None if self.handoff is None else self.handoff.safe_summary(),
+            "quarantine": None if self.quarantine is None else self.quarantine.safe_summary(),
             "audit_event": None if self.audit_event is None else self.audit_event.safe_summary(),
             "replayed": self.replayed,
         }
@@ -499,6 +569,7 @@ class InMemoryConversationStore:
         self._intents: tuple[IntentRecord, ...] = ()
         self._drafts: tuple[DraftReplyRecord, ...] = ()
         self._handoffs: tuple[HandoffCase, ...] = ()
+        self._unknown_quarantines: tuple[UnknownScopeQuarantineRecord, ...] = ()
         self._audit_events: tuple[SupportAuditEvent, ...] = ()
         self._conversation_scope_by_external: dict[tuple[str, str], tuple[UUID, UUID, UUID]] = {}
         self._conversation_by_external: dict[tuple[tuple[UUID, UUID, UUID], str, str], ConversationRecord] = {}
@@ -528,6 +599,10 @@ class InMemoryConversationStore:
         return self._handoffs
 
     @property
+    def unknown_quarantines(self) -> tuple[UnknownScopeQuarantineRecord, ...]:
+        return self._unknown_quarantines
+
+    @property
     def audit_events(self) -> tuple[SupportAuditEvent, ...]:
         return self._audit_events
 
@@ -545,6 +620,7 @@ class InMemoryConversationStore:
             "intents": len(self._intents),
             "drafts": len(self._drafts),
             "handoffs": len(self._handoffs),
+            "unknown_quarantines": len(self._unknown_quarantines),
             "audit_events": len(self._audit_events),
         }
 
@@ -556,20 +632,33 @@ class InMemoryConversationStore:
                 raise _boundary("idempotency_conflict")
             return _replayed(self._receipt_by_unknown[key])
 
-        handoff = HandoffCase(
+        quarantine = UnknownScopeQuarantineRecord(
             id=_stable_id(
-                "handoff_unknown",
+                "unknown_quarantine",
                 command.channel_ref,
                 command.external_conversation_id,
                 command.external_message_id,
+                command.content_hash,
             ),
-            scope=None,
-            conversation_id=None,
-            message_id=None,
+            channel_ref=command.channel_ref,
+            external_conversation_ref=_external_ref(
+                "external_conversation",
+                command.external_conversation_id,
+            ),
+            external_message_ref=_external_ref(
+                "external_message",
+                command.external_message_id,
+            ),
+            content_hash=command.content_hash,
+            content_ref=command.content_ref,
             reason=HandoffReason.UNKNOWN_SCOPE,
             status=HandoffStatus.OPEN,
             policy_version=command.policy_version,
             correlation_id="unknown_scope",
+            retention_policy_ref=command.retention_policy_ref,
+            redaction_ref="redaction:hash_only",
+            received_at=command.received_at,
+            received_by=command.received_by,
             created_at=self._now(),
             created_by=command.received_by,
         )
@@ -578,16 +667,17 @@ class InMemoryConversationStore:
             scope=None,
             target_ref="unknown_scope",
             result_code=HandoffReason.UNKNOWN_SCOPE.value,
-            correlation_id=handoff.correlation_id,
+            correlation_id=quarantine.correlation_id,
         )
-        self._handoffs = (*self._handoffs, handoff)
+        self._unknown_quarantines = (*self._unknown_quarantines, quarantine)
         receipt = ConversationReceipt(
             disposition=SupportDisposition.QUARANTINED,
             conversation=None,
             message=None,
             intent=None,
             draft=None,
-            handoff=handoff,
+            handoff=None,
+            quarantine=quarantine,
             audit_event=event,
         )
         self._fingerprint_by_unknown[key] = command.input_fingerprint
@@ -656,6 +746,7 @@ class InMemoryConversationStore:
             intent=intent,
             draft=draft,
             handoff=handoff,
+            quarantine=None,
             audit_event=event,
         )
         self._fingerprint_by_message[message_key] = command.input_fingerprint
@@ -803,6 +894,12 @@ def _require_hash(value: object, code: str) -> str:
     return value
 
 
+def _require_uuid(value: object, code: str) -> UUID:
+    if not isinstance(value, UUID) or value.int == 0:
+        raise _boundary(code)
+    return value
+
+
 def _require_synthetic_local(
     is_synthetic: object,
     external_execution_allowed: object,
@@ -835,6 +932,7 @@ def _replayed(receipt: ConversationReceipt) -> ConversationReceipt:
         intent=receipt.intent,
         draft=receipt.draft,
         handoff=receipt.handoff,
+        quarantine=receipt.quarantine,
         audit_event=receipt.audit_event,
         replayed=True,
     )

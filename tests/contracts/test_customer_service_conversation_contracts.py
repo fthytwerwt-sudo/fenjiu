@@ -93,6 +93,7 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
                 "intents": 1,
                 "drafts": 1,
                 "handoffs": 0,
+                "unknown_quarantines": 0,
                 "audit_events": 1,
             },
         )
@@ -148,8 +149,17 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
         self.assertEqual(receipt.disposition, SupportDisposition.QUARANTINED)
         self.assertIsNone(receipt.conversation)
         self.assertIsNone(receipt.message)
-        self.assertIsNotNone(receipt.handoff)
-        self.assertEqual(receipt.handoff.reason, HandoffReason.UNKNOWN_SCOPE)
+        self.assertIsNone(receipt.handoff)
+        self.assertIsNotNone(receipt.quarantine)
+        self.assertEqual(receipt.quarantine.reason, HandoffReason.UNKNOWN_SCOPE)
+        self.assertEqual(receipt.quarantine.content_hash, receipt.quarantine.safe_summary()["content_hash"])
+        self.assertTrue(receipt.quarantine.external_conversation_ref.startswith("ref:external_conversation:"))
+        self.assertTrue(receipt.quarantine.external_message_ref.startswith("ref:external_message:"))
+        rendered = json.dumps(receipt.safe_summary(), sort_keys=True)
+        self.assertNotIn("synthetic product question", rendered)
+        self.assertNotIn("unknown_scope_conversation", rendered)
+        self.assertNotIn("unknown_scope_message", rendered)
+        self.assertNotIn("body_text", rendered)
         self.assertEqual(
             self.store.snapshot_counts(),
             {
@@ -157,7 +167,8 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
                 "messages": 0,
                 "intents": 0,
                 "drafts": 0,
-                "handoffs": 1,
+                "handoffs": 0,
+                "unknown_quarantines": 1,
                 "audit_events": 1,
             },
         )
@@ -231,6 +242,7 @@ class CustomerServiceConversationContractTests(unittest.TestCase):
                 "intents": 0,
                 "drafts": 0,
                 "handoffs": 0,
+                "unknown_quarantines": 0,
                 "audit_events": 0,
             },
         )

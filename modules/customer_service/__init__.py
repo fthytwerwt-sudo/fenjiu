@@ -19,6 +19,7 @@ from modules.customer_service.contracts import (
     ScopeStatus,
     SupportAuditEvent,
     SupportDisposition,
+    UnknownScopeQuarantineRecord,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "ScopeStatus",
     "SupportAuditEvent",
     "SupportDisposition",
+    "UnknownScopeQuarantineRecord",
 ]
