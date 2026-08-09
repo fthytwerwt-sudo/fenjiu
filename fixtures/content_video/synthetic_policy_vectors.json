@@ -1,0 +1,61 @@
+{
+  "fixture_kind": "synthetic_content_video_policy_vectors",
+  "is_synthetic": true,
+  "external_execution_allowed": false,
+  "business_external_ready": false,
+  "scope": {
+    "tenant_id": "00000000-0000-4000-8000-000000000001",
+    "project_id": "00000000-0000-4000-8000-000000000101",
+    "business_line_id": "00000000-0000-4000-8000-000000000201",
+    "correlation_id": "synthetic_correlation"
+  },
+  "asset_vectors": [
+    {
+      "asset_ref": "asset.ai_generated.demo",
+      "version_id": "00000000-0000-4000-8000-000000007001",
+      "version_no": 1,
+      "origin": "ai_generated",
+      "rights_state": "authorized",
+      "rights_version": "asset_rights_v1",
+      "evidence_ref": "asset_evidence_ai_v1",
+      "expires_at": "2040-01-03T00:00:00+00:00"
+    },
+    {
+      "asset_ref": "asset.supplier_authorized.demo",
+      "version_id": "00000000-0000-4000-8000-000000007002",
+      "version_no": 1,
+      "origin": "supplier_authorized",
+      "rights_state": "authorized",
+      "rights_version": "asset_rights_v1",
+      "evidence_ref": "asset_evidence_supplier_v1",
+      "expires_at": "2040-01-03T00:00:00+00:00"
+    },
+    {
+      "asset_ref": "asset.unknown.demo",
+      "version_id": "00000000-0000-4000-8000-000000007003",
+      "version_no": 1,
+      "origin": "unknown",
+      "rights_state": "unknown",
+      "rights_version": "asset_rights_v1",
+      "evidence_ref": "asset_evidence_unknown_v1",
+      "expires_at": "2040-01-03T00:00:00+00:00"
+    }
+  ],
+  "brief_vectors": [
+    {
+      "brief_ref": "brief.synthetic.safe",
+      "locale": "en_np",
+      "tokens": ["synthetic_origin", "neutral_demo", "internal_only"]
+    },
+    {
+      "brief_ref": "brief.synthetic.forbidden",
+      "locale": "en_np",
+      "tokens": ["synthetic_origin", "health_claim", "internal_only"]
+    }
+  ],
+  "forbidden_policy": {
+    "policy_version": "content_policy_v1",
+    "version_id": "00000000-0000-4000-8000-000000007101",
+    "denied_tokens": ["health_claim", "minor_targeting", "public_publish_claim"]
+  }
+}
