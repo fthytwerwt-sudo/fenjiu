@@ -222,6 +222,24 @@ class RegressionBaselineScannerTests(unittest.TestCase):
         self.assertIn("local_absolute_path", result.stdout)
         self.assertNotIn(secret_path, result.stdout + result.stderr)
 
+    def test_windows_absolute_path_fails_without_full_value_echo(self) -> None:
+        secret_path = "\\".join(("C:", "Users", "example", "private", "file.txt"))
+        result = self.run_scan({"docs/report.md": f"local path: {secret_path}\n"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("local_absolute_path", result.stdout)
+        self.assertNotIn(secret_path, result.stdout + result.stderr)
+
+    def test_printf_newline_escape_after_colon_is_not_windows_path(self) -> None:
+        result = self.run_scan(
+            {
+                "tests/migrations/format.sh": (
+                    "printf 'schema_migrations version order mismatch\\nexpected:\\n%s\\nactual:\\n%s\\n' \\\n"
+                    "    \"$expected_migration_versions\" \"$actual_migration_versions\"\n"
+                )
+            }
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_high_confidence_secret_fails_without_value_echo(self) -> None:
         secret_value = "sk_live_" + "1234567890abcdefghijklmnop"
         key_name = "api_" + "key"
