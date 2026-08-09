@@ -62,8 +62,13 @@ EOF
 actual_migration_versions=$(psql_database "$TEST_DATABASE" -Atc \
     "SELECT version FROM fenjiu_contract.schema_migrations ORDER BY version")
 if ! test "$actual_migration_versions" = "$expected_migration_versions"; then
-    printf 'schema_migrations version order mismatch\nexpected:\n%s\nactual:\n%s\n' \
-        "$expected_migration_versions" "$actual_migration_versions" >&2
+    {
+        printf '%s\n' 'schema_migrations version order mismatch'
+        printf '%s\n' 'expected:'
+        printf '%s\n' "$expected_migration_versions"
+        printf '%s\n' 'actual:'
+        printf '%s\n' "$actual_migration_versions"
+    } >&2
     exit 1
 fi
 

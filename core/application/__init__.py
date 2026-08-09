@@ -5,6 +5,7 @@ from core.application.interfaces import (
     ExternalActionGuard,
     PortProbe,
 )
+from core.application.outreach_draft import OutreachDraftApprovalCoordinator
 from core.application.retry import (
     DeadLetterItem,
     LocalDeadLetterQueue,
@@ -22,6 +23,7 @@ __all__ = [
     "DeadLetterItem",
     "ExternalActionGuard",
     "LocalDeadLetterQueue",
+    "OutreachDraftApprovalCoordinator",
     "PortProbe",
     "QueueDeliveryState",
     "RetryBoundaryError",

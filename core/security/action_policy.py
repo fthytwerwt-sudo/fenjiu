@@ -46,6 +46,7 @@ class ActionName(str, Enum):
     APPROVE_DATA_CANDIDATE = "approve_data_candidate"
     EXPORT_CONTENT_INTERNAL = "export_content_internal"
     APPLY_SUPPORT_DRAFT = "apply_support_draft"
+    APPROVE_OUTREACH_DRAFT = "approve_outreach_draft"
     CONFIGURE_SAFE_FLAG = "configure_safe_flag"
     READ_AUDIT = "read_audit"
     EXTERNAL_SEND = "external_send"
@@ -288,7 +289,7 @@ _DIRECT_ROLE_ACTIONS: dict[ActorRole, tuple[ActionName, ...]] = {
     ActorRole.SYSTEM_WORKER: (ActionName.RUN_INTERNAL_WORKFLOW,),
     ActorRole.DATA_REVIEWER: (ActionName.APPROVE_DATA_CANDIDATE,),
     ActorRole.CONTENT_REVIEWER: (ActionName.EXPORT_CONTENT_INTERNAL,),
-    ActorRole.SUPPORT_AGENT: (ActionName.APPLY_SUPPORT_DRAFT,),
+    ActorRole.SUPPORT_AGENT: (ActionName.APPLY_SUPPORT_DRAFT, ActionName.APPROVE_OUTREACH_DRAFT),
     ActorRole.PROJECT_OWNER: (ActionName.CONFIGURE_SAFE_FLAG,),
     ActorRole.AUDITOR: (ActionName.READ_AUDIT,),
 }
@@ -330,6 +331,12 @@ _ACTION_CONTRACTS: dict[ActionName, _ActionContract] = {
         allowed_data_states=frozenset({DataState.APPROVED}),
         requires_approval=True,
         required_flag=FeatureFlagName.EXTERNAL_SEND,
+    ),
+    ActionName.APPROVE_OUTREACH_DRAFT: _ActionContract(
+        allowed_roles=frozenset({ActorRole.SUPPORT_AGENT}),
+        request_roles=frozenset({ActorRole.SYSTEM_WORKER, ActorRole.SUPPORT_AGENT}),
+        allowed_data_states=frozenset({DataState.FIXTURE}),
+        requires_approval=True,
     ),
     ActionName.CONFIGURE_SAFE_FLAG: _ActionContract(
         allowed_roles=frozenset({ActorRole.PROJECT_OWNER}),
