@@ -16,6 +16,7 @@ from core.application.retry import (
     RetryDecision,
     RetryEffect,
 )
+from core.application.support_takeover import SupportDraftApprovalCoordinator, SupportTakeoverWorkflow
 from core.application.truth_consumer import ScopedTruthConsumer, TruthConsumerCommand
 
 __all__ = [
@@ -32,5 +33,7 @@ __all__ = [
     "RetryDecision",
     "RetryEffect",
     "ScopedTruthConsumer",
+    "SupportDraftApprovalCoordinator",
+    "SupportTakeoverWorkflow",
     "TruthConsumerCommand",
 ]

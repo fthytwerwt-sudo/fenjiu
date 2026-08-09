@@ -12,6 +12,7 @@ from workflows.runner import (
     WorkflowRunState,
     probe_optional_langgraph_adapter,
 )
+from workflows.support import safe_support_case_summaries
 
 __all__ = [
     "CommandEffect",
@@ -24,4 +25,5 @@ __all__ = [
     "WorkflowCrash",
     "WorkflowRunState",
     "probe_optional_langgraph_adapter",
+    "safe_support_case_summaries",
 ]
