@@ -52,9 +52,26 @@ schema_table_count=$(psql_database "$TEST_DATABASE" -Atc \
     "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'fenjiu_contract' AND table_type = 'BASE TABLE'")
 test "$schema_table_count" -eq 22
 
-migration_row_count=$(psql_database "$TEST_DATABASE" -Atc \
-    "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version IN ('0001', '0002', '0003', '0004')")
-test "$migration_row_count" -eq 4
+expected_migration_versions=$(cat <<'EOF'
+0001
+0002
+0003
+0004
+EOF
+)
+actual_migration_versions=$(psql_database "$TEST_DATABASE" -Atc \
+    "SELECT version FROM fenjiu_contract.schema_migrations ORDER BY version")
+if ! test "$actual_migration_versions" = "$expected_migration_versions"; then
+    printf 'schema_migrations version order mismatch\nexpected:\n%s\nactual:\n%s\n' \
+        "$expected_migration_versions" "$actual_migration_versions" >&2
+    exit 1
+fi
+
+for migration_version in 0001 0002 0003 0004; do
+    migration_version_count=$(psql_database "$TEST_DATABASE" -Atc \
+        "SELECT count(*) FROM fenjiu_contract.schema_migrations WHERE version = '$migration_version'")
+    test "$migration_version_count" -eq 1
+done
 
 psql_database "$TEST_DATABASE" >/dev/null <<'SQL'
 INSERT INTO fenjiu_contract.tenants (
