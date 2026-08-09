@@ -2,6 +2,15 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-09｜P04-03 审计、指标、重试与死信队列（controller integration）
+
+- **目标与边界**：只建立 local-only/synthetic/value-free 的追加式 audit（审计）、retry/DLQ/manual（重试/死信/人工）分类和脱敏 metrics/log（指标/日志）合同；不得接数据库、broker、监控 SaaS、真实资料或任何外部动作。
+- **实际改动**：新增 audit chain（审计链）、staged effect（暂存效果）协议、retry classification（重试分类）、DLQ 记录和 safe metrics（安全指标）模块，以及 9 项 P04-03 专项测试与工程报告。审计 metadata 只允许安全标识符/代码/布尔值，命令与效果只以 correlation、scope、版本和安全引用追踪。
+- **控制器审查与修复**：规格审查先发现 success audit 写入失败可让 mutation 已发生而无成功审计；修复为 staged effect 在成功审计后才提交，失败即回滚。质量审查继而发现 `commit()` 失败会在不可篡改的 `command_succeeded` 后留下假成功；修复为 best-effort rollback 并追加 `command_commit_failed`，即使 rollback 再失败也保留 `manual_required=true` 的安全失败事件。最终规格与质量复审均为 `APPROVE`。
+- **验证**：干净 task worktree 的 P00 default/`--all-files`、9 项审计、7 项策略、11 项 workflow、8 项 architecture、完整 `make regression`（两次 migration replay、16 类 SQL negative constraints）、机制验证、compile 与 diff 均通过。控制器在外置盘 root 复验审计/策略/工作流/架构、完整 `make regression`、机制验证、diff 和排除 AppleDouble `._*` 的编译；root 不运行 P00 default/`--all-files`，因为既有用户文件会使该模式失真。
+- **Git 证据**：任务提交 `8554beb`、`fc86a43` 与 `6cf2033` 均已 push；控制器 fast-forward 集成并将 `main` push/readback 至 `6cf2033b0376add9fabb6487d818d00f8a4805d1`。远端审计、重试、指标、专项测试和 P04-03 报告 blob 已从 `origin/main` 回读。
+- **状态边界**：Phase 4 仅为工程完成；不改变 BUSINESS_STATUS、真实身份/权限、SKU/价格/库存/资质/账号/收款/履约、生产审计/队列/监控/数据库或任何 external flag（外部动作开关）。
+
 ## 2026-08-09｜P04-02 角色、审批与动作策略（controller integration）
 
 - **目标与边界**：只建立 stdlib/local-only/synthetic 的最小角色/动作矩阵、追加式审批与执行前复核合同；不得认证真实身份、读取真实业务资料、授权外部执行或将审批合同写成真实业务权限。

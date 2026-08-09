@@ -11,7 +11,7 @@
 
 ## 工程下一步（与业务 P0 独立）
 
-1. **P04-02 已完成（工程）**：控制器已将任务分支集成并从 `origin/main` `fd727fd0a74068edfa5511a18f878c312c062b6c` 回读。它只完成 local synthetic 的角色/动作策略、追加式审批与版本绑定复核合同；不读取真实资料、不认证真实角色、不打开 external action（外部动作）。P04-03 已按依赖解锁，仍必须在新建干净 task worktree（任务工作目录）单卡执行。
+1. **Phase 4 已完成（工程）**：控制器已将 P04-03 集成并从 `origin/main` `6cf2033b0376add9fabb6487d818d00f8a4805d1` 回读。Phase 4 仅完成 local synthetic 的工作流恢复、动作策略/审批和审计/重试/DLQ（重试/死信队列）合同；不读取真实资料、不认证真实角色、不打开 external action（外部动作）。P05-01、P06-01 与 P07-01 已按依赖解锁，可分别在新建干净 task worktree（任务工作目录）单卡并行执行。
 2. **远端 CI 授权待补**：仍需持有 `workflow` scope 的授权凭据单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 
 ## 每项完成证据

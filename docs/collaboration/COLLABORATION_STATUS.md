@@ -46,7 +46,7 @@
 | Visibility | **BLOCKED / 未确认**：GitHub CLI 认证读取超时，尚无法读取或改为 Private |
 | Default branch | **CONFIRMED（远端读取）**：仍为 `chore/project-collaboration-system`；`main` 尚非 default branch |
 | 最近验证远端 branch | **CONFIRMED（远端读取）**：main 已创建 |
-| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P04-02 工程代码为 `fd727fd0a74068edfa5511a18f878c312c062b6c` |
+| 最近验证远端代码 commit | **CONFIRMED（远端读取）**：`main` 的 P04-03 工程代码为 `6cf2033b0376add9fabb6487d818d00f8a4805d1` |
 | Pull requests | **UNKNOWN**：需要 GitHub API/CLI 认证后回读 |
 | 旧临时分支 | **待清理**；必须在 main 成功成为默认分支后再删除 |
 
@@ -66,6 +66,7 @@
 - **CONFIRMED（P03-03 / Phase 3 engineering）**：控制器已将 `codex/p03-03-approval-publish-refresh-v2` 的三笔已审查提交快进集成，并从远端 `main` `5d2c429bd253344ce3c2a3a30a31315f4a81f177` 回读。P03-03 固定 candidate→review→human decision→isolated approved synthetic version→supersede/revoke→internal invalidation 合同；每条写入链的 correlation 完整性、过期审计状态和不含 correlation 的业务范围 current-read 索引均有回归。版本保持 `DataState.FIXTURE`，所有外部 flags 为 false，未接入 P02 current truth、真实审批/RBAC、CRM/客服/内容视频模块或外部动作。控制器复验专项 9 项、ingestion 35 项、完整 `make regression`、机制验证和 AppleDouble 排除编译检查；两轮最终只读审查没有阻断项。
 - **CONFIRMED（P04-01 / Phase 4 engineering）**：控制器已将 `codex/p04-01-workflow-state` 的三笔已审查提交快进集成，并从远端 `main` `d2805b293cbb71f7c5898ad0c611d863fb87e4b7` 回读。P04-01 固定 local simple workflow runner（本地简易工作流运行器）为主路线和回退路线；checkpoint（检查点）只保存安全引用/哈希/元数据，超时进入 retry/DLQ（重试/死信队列），未知效果进入 manual queue（人工队列）。两轮审查发现的 terminal replay（终态回放）与 public store write bypass（公开存储写入绕过）均已用 fail-closed 守卫和回归修复；控制器复验 11 项工作流、8 项架构、完整 `make regression`、机制验证及干净 task worktree 的两种 P00 检查通过。未新增依赖、真实 provider（服务提供方）、业务资料、真实审批/RBAC 或外部动作。
 - **CONFIRMED（P04-02 / Phase 4 engineering）**：控制器已将 `codex/p04-02-rbac-approvals` 的已审查提交快进集成，并从远端 `main` `fd727fd0a74068edfa5511a18f878c312c062b6c` 回读。P04-02 固定 local synthetic 的角色/动作策略、追加式审批决定和执行前复核；两轮审查发现并修复了 subject-version（事实版本）漂移与不完整幂等语义指纹，所有外部动作仍策略拒绝且不执行。控制器复验 7 项策略、11 项工作流、8 项架构、完整 `make regression`、机制验证、排除 AppleDouble 元数据的编译和 diff；未新增依赖、真实角色、业务资料、生产审计/队列或外部动作。P04-03 可从含本次状态回填的最新远端 `main` 新建干净 worktree。
+- **CONFIRMED（P04-03 / Phase 4 engineering complete）**：控制器已将 `codex/p04-03-audit-metrics-retry-dlq` 的审查后提交快进集成，并从远端 `main` `6cf2033b0376add9fabb6487d818d00f8a4805d1` 回读。P04-03 固定 local-only 的 append-only audit（追加式审计）、retry/DLQ/manual（重试/死信/人工）分类和脱敏指标/日志；三轮审查先后修复 success-audit failure（成功审计失败）未回滚、commit failure（提交失败）伪装成功及 rollback failure（回滚失败）未人工标记的问题。控制器复验 9 项审计专项、7 项策略、11 项工作流、8 项架构、完整 `make regression`、机制验证、排除 AppleDouble 元数据的编译和 diff；未新增依赖、真实角色、业务资料、生产审计/队列/监控或外部动作。P05-01、P06-01 和 P07-01 可从含本次状态回填的最新远端 `main` 并行新建干净 worktree。
 - **边界**：该工程阻断不改变 BUSINESS_STATUS；公开发布、报价、收款、订单、履约及任何外部业务动作仍为关闭状态。
 
 ## 剩余机制收口
