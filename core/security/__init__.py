@@ -43,6 +43,7 @@ from core.security.audit import (
     AuditBoundaryError,
     AuditEvent,
     AuditRequiredCommandExecutor,
+    AuditStagedEffect,
     InMemoryAuditLog,
 )
 
@@ -50,6 +51,7 @@ __all__ = [
     "AuditBoundaryError",
     "AuditEvent",
     "AuditRequiredCommandExecutor",
+    "AuditStagedEffect",
     "ConfigStatus",
     "ControlPlaneSettings",
     "FailClosedFeatureFlags",

@@ -1,6 +1,6 @@
 # P04-03｜审计、指标、重试与死信队列报告
 
-> **状态：task_branch_local_validated；最终 commit / push / remote readback 以执行回报为准。**
+> **状态：task_branch_local_validated_with_spec_review_high_fix；最终 commit / push / remote readback 以执行回报为准。**
 >
 > **执行日期：** 2026-08-09
 >
@@ -13,6 +13,7 @@
 ## 1. 结论
 
 - 新增 `core/security/audit.py`：提供 `InMemoryAuditLog`、`AuditEvent` 与 `AuditRequiredCommandExecutor`。审计事件由 sink 内部生成 sequence（序列）、previous/chain hash（链式哈希）与 event ref；事件 frozen（不可变），无 public update/delete。
+- 审查 HIGH 修复：`AuditRequiredCommandExecutor` 现在只接受 staged effect（暂存效果）合同；`command_started` 审计成功后，mutation 只能准备 effect，必须等 `command_succeeded` 审计写入成功后才 `commit()`。若 success audit 写入失败，执行 `rollback()` 并抛 `audit_persistence_required`，不留下可见 mutation。
 - 新增 `core/application/retry.py`：提供 `RetryClassifier`、`RetryDecision`、`LocalDeadLetterQueue`。自动重试仅限 internal transient（内部瞬时失败）；external side effect（外部副作用）、unknown side effect（未知副作用）和 broker unavailable（broker 不可用）进入 manual/pending 状态。
 - 新增 `observability/metrics.py`：提供本地 append-only metric samples（指标样本）、固定 metric names（指标名）和 label redaction（标签脱敏）；不定义告警阈值、保留期或外部 endpoint。
 - 扩展 `core/application/__init__.py`、`core/security/__init__.py`、`observability/__init__.py` 的导出，不修改 P04-02 action policy（动作策略）边界，不开启任何外部执行。
@@ -25,9 +26,10 @@
 | tamper visibility | `verify_chain()` 可重算链式哈希；事件 dataclass frozen，测试验证直接改 actor 会失败 |
 | no ordinary mutation | `InMemoryAuditLog` 不暴露 `update` / `delete` |
 | sensitive rejection | metadata key/value 含 raw content、contact、secret-like value 或 local path pattern 时 fail closed，记录数不变化 |
-| mutating command audit gate | `AuditRequiredCommandExecutor` 在 audit sink 写入失败时不调用 mutation callback，稳定返回 `audit_persistence_required` |
+| mutating command audit gate | `AuditRequiredCommandExecutor` 在 start audit 写入失败时不调用 mutation callback，稳定返回 `audit_persistence_required` |
+| success audit atomicity | started 审计成功、effect 已准备、success 审计失败时，rollback 被调用，commit 不可见 |
 
-审计事件只保留 actor/command/correlation/scope/policy/version/time/result/hash/safe metadata；不记录 raw content（原始内容）、PII（个人资料）、secret（密钥）、token（访问令牌）、cookie（身份凭证）或 local absolute path（本地绝对路径）。
+审计事件只保留 actor/command/correlation/scope/policy/version/time/result/hash/safe metadata；不记录 raw content（原始内容）、PII（个人资料）、secret（密钥）、token（访问令牌）、cookie（身份凭证）或 local absolute path（本地绝对路径）。本地 synthetic 合同不假装能回滚任意已执行副作用；调用方必须返回可 `commit` / `rollback` 的 staged effect。
 
 ## 3. Retry / DLQ 证明
 
@@ -54,17 +56,19 @@
 - **RED**：新增 `tests/contracts/test_audit_metrics_retry_dead_letter.py` 后，首次运行 `python3 -m unittest tests.contracts.test_audit_metrics_retry_dead_letter` 失败于 `ModuleNotFoundError: No module named 'core.application.retry'`。
 - **GREEN**：新增 audit/retry/metrics 最小实现后，P04-03 专项 6 项通过。
 - **Safety repair**：P00 `--all-files` 首次发现新测试文件含可匹配的 `local_absolute_path` 合成样本；已将样本拆为安全字符串拼接，保留测试语义后 P00 `--all-files` 通过。
+- **Spec review HIGH RED**：新增 `test_staged_mutation_is_not_committed_when_success_audit_fails` 后，P04-03 专项先失败，`prepared` 未出现 `rolled_back`，证明 success audit 失败后 staged effect 未回滚。
+- **Spec review HIGH GREEN**：加入 `AuditStagedEffect` 与 staged commit/rollback 协议后，started 审计成功、success 审计失败时 rollback 被调用，commit 列表保持空，P04-03 专项 7 项通过。
 
 ## 6. Validation evidence
 
-- `python3 -m unittest tests.contracts.test_audit_metrics_retry_dead_letter`：6 项通过。
+- `python3 -m unittest tests.contracts.test_audit_metrics_retry_dead_letter`：7 项通过。
 - `python3 -m unittest discover -s tests/workflows`：11 项通过。
 - `python3 -m unittest tests.contracts.test_action_policy_rbac_approvals`：7 项通过。
 - `python3 -m unittest tests.control_plane.test_config_flags_health_observability`：16 项通过。
-- `python3 -m unittest discover -s tests/contracts`：59 项通过。
+- `python3 -m unittest discover -s tests/contracts`：60 项通过。
 - `python3 -m unittest discover -s tests/architecture`：8 项通过。
 - `python3 -m unittest tests.ingestion.test_approval_publish_and_refresh`：9 项通过。
-- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、59 contracts、35 ingestion tests 全部通过。
+- `make regression`：通过；两轮 migration replay、16 类 SQL negative constraints、8 architecture、14 regression、8 local-runtime、16 control-plane、60 contracts、35 ingestion tests 全部通过。
 - `python3 -m compileall -q -x '(^|/)\._' apps core observability modules adapters workflows tests`：通过。
 - `git diff --check`：通过。
 - `python3 scripts/validate_gpt_project_mechanism_sync.py --no-report`：通过。
@@ -77,7 +81,7 @@
 - `configuration_validation（配置验证）`：未新增配置、环境变量、生产连接、真实账号、真实 broker 或监控 endpoint。
 - `data_safety_check（数据安全检查）`：未读取、复制、记录或提交真实供应链资料、个人信息、海鲜业务事实、raw content、PII、secret、token、cookie 或 local absolute path。
 - `dependency_compatibility_check（依赖兼容检查）`：`not_applicable`；未新增或修改依赖。
-- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 audit persistence failure、敏感 metadata 拒绝、external/unknown/manual retry、broker unavailable pending/manual、DLQ 安全摘要、metrics/log redaction。
+- `failure_handling（失败处理）/ negative behavior test（负向行为测试）`：覆盖 audit persistence failure、success audit failure rollback、敏感 metadata 拒绝、external/unknown/manual retry、broker unavailable pending/manual、DLQ 安全摘要、metrics/log redaction。
 
 ## 8. 事实分级与剩余阻断
 

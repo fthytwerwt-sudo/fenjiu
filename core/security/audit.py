@@ -207,6 +207,27 @@ class AuditEvent:
         return result
 
 
+@dataclass(frozen=True)
+class AuditStagedEffect:
+    """Prepared local effect committed only after success audit is durable."""
+
+    _commit: Callable[[], Any]
+    _rollback: Callable[[], None] | None = None
+
+    def __post_init__(self) -> None:
+        if not callable(self._commit):
+            raise _boundary("staged_effect_required")
+        if self._rollback is not None and not callable(self._rollback):
+            raise _boundary("staged_effect_required")
+
+    def commit(self) -> Any:
+        return self._commit()
+
+    def rollback(self) -> None:
+        if self._rollback is not None:
+            self._rollback()
+
+
 class InMemoryAuditLog:
     """Append-only local audit sink used by P04 contract probes."""
 
@@ -308,7 +329,7 @@ def _jsonable_chain_material(payload: Mapping[str, object]) -> dict[str, object]
 
 
 class AuditRequiredCommandExecutor:
-    """Run a mutating local command only after audit intent is persisted."""
+    """Run a staged local command only after audit intent is persisted."""
 
     def __init__(
         self,
@@ -329,17 +350,29 @@ class AuditRequiredCommandExecutor:
         self._policy_version = _require_identifier(policy_version, "policy_version_required")
         self._subject_version = _require_positive_int(subject_version, "subject_version_required")
 
-    def run(self, mutation: Callable[[], Any], *, result_code: str) -> Any:
+    @staticmethod
+    def stage_effect(
+        *,
+        commit: Callable[[], Any],
+        rollback: Callable[[], None] | None = None,
+    ) -> AuditStagedEffect:
+        return AuditStagedEffect(_commit=commit, _rollback=rollback)
+
+    def run(self, mutation: Callable[[], object], *, result_code: str) -> Any:
         if not callable(mutation):
             raise _boundary("mutation_required")
         self._record(result_code="started", event_kind="command_started")
         try:
-            result = mutation()
+            staged_effect = _require_staged_effect(mutation())
         except Exception:
             self._record(result_code="failed", event_kind="command_failed")
             raise
-        self._record(result_code=result_code, event_kind="command_succeeded")
-        return result
+        try:
+            self._record(result_code=result_code, event_kind="command_succeeded")
+        except Exception:
+            staged_effect.rollback()
+            raise
+        return staged_effect.commit()
 
     def _record(self, *, result_code: str, event_kind: str) -> None:
         record = getattr(self._audit_log, "record", None)
@@ -355,3 +388,11 @@ class AuditRequiredCommandExecutor:
             subject_version=self._subject_version,
             result_code=result_code,
         )
+
+
+def _require_staged_effect(value: object) -> object:
+    commit = getattr(value, "commit", None)
+    rollback = getattr(value, "rollback", None)
+    if not callable(commit) or not callable(rollback):
+        raise _boundary("staged_effect_required")
+    return value

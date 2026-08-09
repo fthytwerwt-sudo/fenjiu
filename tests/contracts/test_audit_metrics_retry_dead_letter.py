@@ -52,6 +52,18 @@ class FailingAuditLog:
         raise AuditBoundaryError("audit_persistence_required")
 
 
+class SecondWriteFailingAuditLog:
+    def __init__(self) -> None:
+        self.calls = 0
+        self.delegate = audit_log()
+
+    def record(self, **kwargs: object) -> object:
+        self.calls += 1
+        if self.calls == 2:
+            raise AuditBoundaryError("audit_persistence_required")
+        return self.delegate.record(**kwargs)
+
+
 class AuditMetricsRetryDeadLetterTests(unittest.TestCase):
     def setUp(self) -> None:
         self.clock = Clock()
@@ -152,6 +164,32 @@ class AuditMetricsRetryDeadLetterTests(unittest.TestCase):
             executor.run(lambda: calls.append("mutated"), result_code="succeeded")
 
         self.assertEqual(calls, [])
+
+    def test_staged_mutation_is_not_committed_when_success_audit_fails(self) -> None:
+        committed: list[str] = []
+        prepared: list[str] = []
+        executor = AuditRequiredCommandExecutor(
+            audit_log=SecondWriteFailingAuditLog(),
+            actor_ref="system_worker",
+            scope=SCOPE,
+            command_ref="workflow.synthetic.mutate",
+            target_ref="target_ref_1",
+            policy_version="audit_policy_v1",
+            subject_version=1,
+        )
+
+        def stage_effect():
+            prepared.append("prepared")
+            return executor.stage_effect(
+                commit=lambda: committed.append("mutated"),
+                rollback=lambda: prepared.append("rolled_back"),
+            )
+
+        with self.assertRaisesRegex(AuditBoundaryError, "audit_persistence_required"):
+            executor.run(stage_effect, result_code="succeeded")
+
+        self.assertEqual(prepared, ["prepared", "rolled_back"])
+        self.assertEqual(committed, [])
 
     def test_retry_classification_keeps_external_and_unknown_effects_manual(self) -> None:
         classifier = RetryClassifier()
