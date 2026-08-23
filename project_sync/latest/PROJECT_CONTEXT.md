@@ -117,7 +117,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-10
+- **最近更新**：2026-08-23
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -126,6 +126,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **UNKNOWN**：供应链尚未在当前资料中实际提供 SKU、价格、库存、补货、主体/资质、品牌授权、账号权限、收款、仓储配送、售后及负责人确认。
 - **当前最重要任务**：先补齐商品单、价格规则和库存，再确认首批可上架 SKU，并补齐账号、资质、收款和履约资料。
 - **P0 阻断**：在上述资料及 TikTok 当前酒类内容/广告边界获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
+- **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
 
 详情：[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
 
@@ -185,6 +186,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 汾酒市场、渠道和合规研究 | research_root.json、research_execution.json、research_culture_compliance.json | 资料存在为 **CONFIRMED**；涉及 B2B、多平台、90 天方案的内容为 **SUPERSEDED**（仅当前执行范围层面被替代），保留为历史市场背景，须由用户重新确认才可恢复 |
 | 汾酒供应链启动模板 | 任务相关的汾酒供应链原始文件 | 模板和字段存在为 **CONFIRMED**；未签署、未回执或未回传的字段不得写为已确认 |
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
+| 未来客户发现、评分与 CRM 准入标准 | `docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` | **CONFIRMED（内部规范）**：定义两条业务线各自的产品-客户匹配、城市/关键词、字段、评分、来源/DNC 与 CRM 准入规则；不代表真实获客、联系人处理、发送、供应链资料或合规已获授权。 |
 | 生成逻辑 | 根目录生成脚本与 scripts | 脚本存在/运行结果不等于业务事实 |
 | P01 local-only runtime 与 control plane 验证 | `docker-compose.yml`、`Makefile`、`apps/*/local_runtime.py`、`core/security/`、`observability/`、`tests/local_runtime/`、`tests/control_plane/`、`docs/implementation/P01-02_LOCAL_RUNTIME_AND_MAKE_ENTRYPOINTS_REPORT.md`、`docs/implementation/P01-03_CONFIG_FLAGS_HEALTH_AND_OBSERVABILITY_REPORT.md` | **CONFIRMED（工程）**：`main` 代码已远端回读；仅证明 local-only runtime、disabled flags、not-ready control plane 和日志脱敏边界，不代表数据库接入、远端 CI、供应链、合规或业务执行成立 |
 | P02-01 scope contracts 与 migration 防护 | `core/contracts/`、`migrations/0001_scope_contracts.sql`、`fixtures/synthetic_metadata.json`、`tests/contracts/`、`tests/migrations/`、`docs/implementation/P02-01_SCOPE_CONTRACTS_AND_MIGRATIONS_REPORT.md` | **CONFIRMED（工程）**：`main` P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`；仅证明 synthetic local metadata、scope/lineage database constraints 和隔离 migration regression，不代表 production database、真实 scope、真实业务数据、审批、供应链、合规或外部业务执行成立 |

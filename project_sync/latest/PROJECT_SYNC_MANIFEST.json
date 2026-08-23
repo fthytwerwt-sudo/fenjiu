@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
   "project": "fenjiu_nepal",
-  "generated_at": "2026-08-10T02:10:37+08:00",
+  "generated_at": "2026-08-23T22:39:48+08:00",
   "source_git": {
     "branch": "main",
-    "source_commit": "ae84e183be38da62d17c8567569f75206ddb35f1",
-    "short_source_commit": "ae84e18",
+    "source_commit": "06216d288902b441d149b24c22768ab7c46f31e9",
+    "short_source_commit": "06216d2",
     "worktree_status": "dirty",
     "remote_origin": "unavailable"
   },
   "sync_strategy": "strict_allowlist",
   "max_file_bytes": 1048576,
-  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260810_021037.zip",
+  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260823_223948.zip",
   "files": [
     {
       "path": "AGENTS.md",
@@ -30,13 +30,13 @@
     },
     {
       "path": "CURRENT_STATUS.md",
-      "bytes": 16498,
-      "sha256": "dcf5d302bab5ec03e1a973a2d7ded2adbfe6c3286b25aec2505df3f3f31334a2"
+      "bytes": 16765,
+      "sha256": "cbb0c9fa83e871e224e367becd971a32866356f36c8f6b2c8664f3e5412e4db0"
     },
     {
       "path": "DECISIONS.md",
-      "bytes": 32759,
-      "sha256": "8a3be35ba9393b1623885ccf001b6d2e994842e735fcd126a6eb339fab5f7239"
+      "bytes": 34381,
+      "sha256": "bdc6674ed9294a5ae760673b90500f2b6d925eceb897319b45b8be7a83013984"
     },
     {
       "path": "FILE_INDEX.md",
@@ -46,22 +46,22 @@
     {
       "path": "GIT_STATE.md",
       "bytes": 425,
-      "sha256": "6c84bfd884d818a838c7a5dabd14e6f4b95c56ccbcff0bbb81959bcf3b10e21b"
+      "sha256": "ccdf0e6c3a9d0f8be93689f6b63a50a019a42bc8e85aff96b784f2e09a3987c5"
     },
     {
       "path": "NEXT_ACTIONS.md",
-      "bytes": 2705,
-      "sha256": "d894b6b571743a7913071b9556cfbb5db4eadcd230299944f2397dcf6d6ec374"
+      "bytes": 3193,
+      "sha256": "d2ec5c6e1d7129a91f216cadb443098cd3d6fffd6839439480ffef414aa29ed1"
     },
     {
       "path": "OPEN_QUESTIONS.md",
-      "bytes": 1769,
-      "sha256": "369d791e0f34c84db6cea5edcec13c6cb764f389f29ee82fde7f029f803f27e4"
+      "bytes": 2600,
+      "sha256": "bb4022fa1f2f493c77850bd604a0d00eb32128223ac9f430b042b7be129e9e07"
     },
     {
       "path": "PROJECT_CONTEXT.md",
-      "bytes": 59577,
-      "sha256": "735ce51b6e3feaffb492c78daaa4260ae6844804f499f19eaef9646aa94a597a"
+      "bytes": 60212,
+      "sha256": "abf48e6ee5c99367358a3f716a92420d7627f6a291b2c5354b4a6fb50f362a84"
     },
     {
       "path": "PROJECT_ENTRY.md",
@@ -71,7 +71,7 @@
     {
       "path": "PROJECT_SYNC_README.md",
       "bytes": 1282,
-      "sha256": "cda5ddfa04d98a6c3d2ea8aa55b5c21aa269a8b3c4b8fae5bb6f47de8f34ada9"
+      "sha256": "2a22df262b3f2692ad83c7f0c19894d20fd577e30664286cc2db3d6d4bc5f7f9"
     },
     {
       "path": "README.md",
@@ -80,13 +80,13 @@
     },
     {
       "path": "RISKS_AND_BLOCKERS.md",
-      "bytes": 4464,
-      "sha256": "c52a2f5bab6c29c0107466a65d74ee50d4dee43399d3d7cecfb142fa8c05a2d5"
+      "bytes": 5079,
+      "sha256": "efe66010a7b9410b28169f3a66c5c910767d63ab59269dd195158190f15b5bc5"
     },
     {
       "path": "SOURCE_OF_TRUTH.md",
-      "bytes": 12352,
-      "sha256": "6d293083dc13522aa78b3a6106b15ce7d0ae3086d2a272fed198a60ebec05bf9"
+      "bytes": 12720,
+      "sha256": "da3f7b203a1b5afe595c6f9b56a208e715a63287fa4f31dbd47a08844bba82a0"
     },
     {
       "path": "docs/collaboration/CHATGPT_CODEX_WORKFLOW.md",
@@ -95,8 +95,8 @@
     },
     {
       "path": "docs/collaboration/EXECUTION_HISTORY.md",
-      "bytes": 45311,
-      "sha256": "ac2dfc05f1ef3274d927f4cdf4c884ad01d09bca5f009b2a6e3bb1b7a16a2644"
+      "bytes": 47062,
+      "sha256": "7c4cf64a4b85da3244cc8d2e73a2ce713d743eb0c886110515ae992f5295e131"
     },
     {
       "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
@@ -157,7 +157,7 @@
     {
       "category": "git_internal",
       "reason": "Git 内部数据不属于可交接项目上下文",
-      "count": 4672,
+      "count": 4587,
       "file_size_range_bytes": {
         "min": 6,
         "max": 282455
@@ -166,7 +166,7 @@
     {
       "category": "local_runtime_or_cache",
       "reason": "本地运行、缓存或派生产物不进入同步包",
-      "count": 927,
+      "count": 931,
       "file_size_range_bytes": {
         "min": 82,
         "max": 25982812
@@ -175,7 +175,7 @@
     {
       "category": "media_binary_or_archive",
       "reason": "媒体、二进制或压缩产物不进入同步包",
-      "count": 95,
+      "count": 101,
       "file_size_range_bytes": {
         "min": 45825,
         "max": 6532770
@@ -211,7 +211,7 @@
     {
       "category": "system_metadata",
       "reason": "系统元数据会破坏跨机器可移植性",
-      "count": 279,
+      "count": 290,
       "file_size_range_bytes": {
         "min": 4096,
         "max": 4096
