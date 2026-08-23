@@ -1,0 +1,605 @@
+schema_version: "1.0"
+catalog_id: "fenjiu-nepal-source-catalog-v1"
+business_line: "fenjiu_nepal"
+catalog_status: "source_catalog_ready"
+last_reviewed_at: "2026-08-23"
+purpose: "company-discovery-only; no contact processing, CRM write, or outreach"
+approved_source_ids:
+  - "FEN-OSM-POI-NP"
+minimum_discovery_mode:
+  mode: "transient_discovery_only"
+  candidate_store_write_enabled: false
+  crm_write_enabled: false
+  contact_processing_enabled: false
+  requires_company_owned_site_cross_verification: true
+prohibited_source_patterns:
+  - "google_maps_or_places_export"
+  - "private_social_profile"
+  - "login_or_captcha_bypass"
+  - "leaked_or_paid_contact_list"
+  - "email_guessing_or_verification"
+
+sources:
+  - source_id: "FEN-OSM-POI-NP"
+    business_line: "fenjiu_nepal"
+    source_name: "OpenStreetMap public POI data"
+    source_owner: "OpenStreetMap Foundation / OpenStreetMap contributors"
+    source_country: "global; Nepal coverage"
+    source_category: "open geospatial POI dataset"
+    source_tier: "B"
+    source_homepage: "https://www.openstreetmap.org/"
+    discovery_entry_url: "https://www.openstreetmap.org/"
+    terms_url: "https://www.openstreetmap.org/copyright"
+    privacy_url: "https://osmfoundation.org/wiki/Services_and_tile_users_privacy_FAQ"
+    robots_or_access_policy_url: "https://operations.osmfoundation.org/policies/nominatim/"
+    terms_reviewed_at: "2026-08-23"
+    data_freshness: "community-maintained; each POI requires company-owned-site verification"
+    target_customer_types:
+      - "premium_dining"
+      - "hotel"
+      - "alcohol_channel_candidate"
+    supported_geographies:
+      - "Kathmandu"
+      - "Lalitpur"
+      - "Bhaktapur"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "public business name"
+      - "POI category"
+      - "location"
+      - "some website and opening-hours tags"
+    available_contact_fields:
+      - "some public tags may contain contact-like fields; do not collect or process"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "conditional"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: "conditional"
+    manual_search_available: true
+    access_constraints:
+      requires_attribution: true
+      max_requests_per_second: 1
+      requires_identifying_user_agent: true
+      public_service_only_for_manual_queries: true
+      systematic_enumeration_prohibited: true
+      details_page_automation_prohibited: true
+      cache_policy: "no candidate-store persistence in the current task"
+      retry_policy: "stop on rate-limit or policy uncertainty; no automatic retry loop"
+    recommended_query_patterns:
+      - "single city plus one business category"
+      - "one company candidate followed by company-owned-site verification"
+    recommended_search_keywords:
+      - "hotel Kathmandu"
+      - "Chinese restaurant Kathmandu"
+      - "wine shop Kathmandu"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.openstreetmap.org/copyright"
+      - "https://operations.osmfoundation.org/policies/nominatim/"
+    confidence: "high"
+    use_decision: "APPROVED_FOR_DISCOVERY"
+    reason_codes:
+      - "LICENSE_ODBL_REVIEWED"
+      - "LOW_FREQUENCY_ONLY"
+      - "COMPANY_SITE_RECHECK_REQUIRED"
+    stop_conditions:
+      - "systematic Nominatim query or complete POI download"
+      - "missing ODbL attribution/governance"
+      - "attempt to collect contacts"
+    fallback_source_ids:
+      - "FEN-HAN-MEMBER-DB"
+      - "FEN-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-HAN-MEMBER-DB"
+    business_line: "fenjiu_nepal"
+    source_name: "Hotel Association Nepal Membership Database"
+    source_owner: "Hotel Association Nepal"
+    source_country: "Nepal"
+    source_category: "industry association member directory"
+    source_tier: "A"
+    source_homepage: "https://hotelassociationnepal.org.np/"
+    discovery_entry_url: "https://hotelassociationnepal.org.np/storage/Membership%20database.pdf"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no reusable-data terms located"
+    data_freshness: "membership PDF has no current update date on the inspected landing page"
+    target_customer_types:
+      - "hotel"
+      - "hotel_fnb"
+      - "banquet_event"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "member hotel name"
+      - "hotel/resort/boutique category"
+      - "star-category grouping"
+    available_contact_fields: []
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "identify a hotel name then verify on the hotel's own website"
+    recommended_search_keywords:
+      - "HAN hotel members"
+      - "hotel name official website Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://hotelassociationnepal.org.np/"
+      - "https://hotelassociationnepal.org.np/storage/Membership%20database.pdf"
+    confidence: "high"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_AND_DIRECTORY_CONFIRMED"
+      - "REUSE_TERMS_NOT_LOCATED"
+      - "COMPANY_SITE_RECHECK_REQUIRED"
+    stop_conditions:
+      - "storage without Hotel Association Nepal permission"
+      - "contact collection"
+    fallback_source_ids:
+      - "FEN-NTB-ACCOMMODATION"
+      - "FEN-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-FNCCI-MEMBER-DB"
+    business_line: "fenjiu_nepal"
+    source_name: "FNCCI Members Database"
+    source_owner: "Federation of Nepalese Chambers of Commerce & Industry"
+    source_country: "Nepal"
+    source_category: "chamber and association directory"
+    source_tier: "A"
+    source_homepage: "https://www.fncci.org/"
+    discovery_entry_url: "https://fncci.org/member/anca.php"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no reusable-data terms located"
+    data_freshness: "live directory; individual entry freshness varies"
+    target_customer_types:
+      - "restaurant_association"
+      - "liquor_trade_association"
+      - "bilateral_chamber"
+      - "regional_chamber"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "organization name"
+      - "association category"
+      - "district"
+      - "some organization websites"
+    available_contact_fields:
+      - "organization and individual contact-like fields may be visible; do not collect"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "locate a relevant association then request permission or verify a member company independently"
+    recommended_search_keywords:
+      - "Restaurant and Bar Association Nepal"
+      - "Nepal China Chamber of Commerce"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.fncci.org/"
+      - "https://fncci.org/member/anca.php"
+      - "https://fncci.org/member/bncci.php"
+    confidence: "high"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_CONFIRMED"
+      - "ASSOCIATION_NOT_COMPANY_LIST"
+      - "PERSONAL_FIELDS_PRESENT"
+    stop_conditions:
+      - "copying contacts or personal officer data"
+      - "using association affiliation as a liquor-license proof"
+    fallback_source_ids:
+      - "FEN-CNI-MEMBERS"
+      - "FEN-TEPC-CCI-DIRECTORY"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-CNI-MEMBERS"
+    business_line: "fenjiu_nepal"
+    source_name: "Confederation of Nepalese Industries Members"
+    source_owner: "Confederation of Nepalese Industries"
+    source_country: "Nepal"
+    source_category: "industry confederation company directory"
+    source_tier: "A"
+    source_homepage: "https://cni.org.np/"
+    discovery_entry_url: "https://cni.org.np/members"
+    terms_url: null
+    privacy_url: "https://cni.org.np/privacy-policy"
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; privacy page read, third-party reuse terms not located"
+    data_freshness: "live directory; member-level refresh not declared"
+    target_customer_types:
+      - "alcohol_channel_candidate"
+      - "beverage_distributor_candidate"
+      - "corporate_gifting_candidate"
+      - "event_conference_candidate"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "company name"
+      - "member category"
+      - "address"
+      - "some organization profile fields"
+    available_contact_fields:
+      - "representative, phone, and email fields may be visible; prohibited from collection"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "manual category review then company-owned-site verification"
+    recommended_search_keywords:
+      - "beverage distributor Nepal official website"
+      - "corporate member Nepal official website"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://cni.org.np/members"
+      - "https://cni.org.np/privacy-policy"
+    confidence: "medium"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_CONFIRMED"
+      - "PRIVACY_PAGE_READ"
+      - "REUSE_LICENSE_NOT_LOCATED"
+    stop_conditions:
+      - "copying representatives or contacts"
+      - "treating member category as procurement or alcohol-license evidence"
+    fallback_source_ids:
+      - "FEN-FNCCI-MEMBER-DB"
+      - "FEN-TEPC-CCI-DIRECTORY"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-LAK-MEMBER-DIRECTORY"
+    business_line: "fenjiu_nepal"
+    source_name: "Liquor Association of Kathmandu Member and Trade Directory"
+    source_owner: "Liquor Association of Kathmandu"
+    source_country: "Nepal"
+    source_category: "liquor trade association directory"
+    source_tier: "B"
+    source_homepage: "https://lak.org.np/"
+    discovery_entry_url: "https://lak.org.np/members"
+    terms_url: "https://lak.org.np/legal/terms-and-conditions"
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; terms read, privacy-page fetch timed out"
+    data_freshness: "membership directory page timed out during review; no member-level freshness confirmed"
+    target_customer_types:
+      - "alcohol_distributor_candidate"
+      - "liquor_retailer_candidate"
+      - "beverage_distributor_candidate"
+    supported_geographies:
+      - "Kathmandu Valley"
+    available_company_fields:
+      - "member or trade-directory company fields if publicly accessible"
+    available_contact_fields:
+      - "not read or collected; processing prohibited"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: "unknown"
+    paid_access_required: "unknown"
+    captcha_or_anti_bot_present: "unknown"
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "obtain written association permission before any company-data storage"
+    recommended_search_keywords:
+      - "Kathmandu liquor association"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://lak.org.np/"
+      - "https://lak.org.np/legal/terms-and-conditions"
+    confidence: "medium"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "TARGET_SEGMENT_MATCH"
+      - "TERMS_REVIEWED"
+      - "DIRECTORY_ACCESS_NOT_CONFIRMED"
+    stop_conditions:
+      - "member-directory timeout or login requirement"
+      - "copying service text or listings without permission"
+      - "assuming an association member holds a required license"
+    fallback_source_ids:
+      - "FEN-CNI-MEMBERS"
+      - "FEN-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-REBAN-ASSOCIATION"
+    business_line: "fenjiu_nepal"
+    source_name: "Restaurant & Bar Association of Nepal"
+    source_owner: "Restaurant & Bar Association of Nepal"
+    source_country: "Nepal"
+    source_category: "restaurant industry association"
+    source_tier: "B"
+    source_homepage: "https://rebannepal.com/"
+    discovery_entry_url: "https://rebannepal.com/memberships"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no public reusable member directory or reuse terms located"
+    data_freshness: "association site live; public member data not confirmed"
+    target_customer_types:
+      - "premium_dining"
+      - "asian_restaurant"
+      - "hotel_fnb"
+    supported_geographies:
+      - "Kathmandu"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "association and chapter information only"
+    available_contact_fields: []
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "manual association inquiry followed by company-owned-site verification"
+    recommended_search_keywords:
+      - "Restaurant and Bar Association Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://rebannepal.com/"
+      - "https://rebannepal.com/memberships"
+      - "https://fncci.org/member/anca.php"
+    confidence: "medium"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "ASSOCIATION_EXISTENCE_CROSS_VERIFIED"
+      - "NO_REUSABLE_MEMBER_DIRECTORY"
+    stop_conditions:
+      - "copying membership-application fields"
+      - "contact processing"
+    fallback_source_ids:
+      - "FEN-OSM-POI-NP"
+      - "FEN-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-NTB-ACCOMMODATION"
+    business_line: "fenjiu_nepal"
+    source_name: "Nepal Tourism Board Accommodation"
+    source_owner: "Nepal Tourism Board"
+    source_country: "Nepal"
+    source_category: "official tourism information"
+    source_tier: "A"
+    source_homepage: "https://trade.ntb.gov.np/"
+    discovery_entry_url: "https://trade.ntb.gov.np/travel-essentials/accommodations/"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no company-data reuse terms located"
+    data_freshness: "industry information page; not a current company directory"
+    target_customer_types:
+      - "hotel"
+      - "hotel_fnb"
+      - "banquet_event"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "hotel-sector information and official HAN route"
+    available_contact_fields: []
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "use as an official route to HAN or company-owned sites"
+    recommended_search_keywords:
+      - "Nepal Tourism Board accommodation"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://trade.ntb.gov.np/travel-essentials/accommodations/"
+    confidence: "high"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "OFFICIAL_OWNER"
+      - "NOT_A_REUSABLE_COMPANY_DIRECTORY"
+    stop_conditions:
+      - "treating tourism information as customer data"
+    fallback_source_ids:
+      - "FEN-HAN-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-TEPC-CCI-DIRECTORY"
+    business_line: "fenjiu_nepal"
+    source_name: "Trade and Export Promotion Centre Useful Addresses"
+    source_owner: "Trade and Export Promotion Centre, Government of Nepal"
+    source_country: "Nepal"
+    source_category: "official chamber and trade-organization directory"
+    source_tier: "A"
+    source_homepage: "https://tepc.gov.np/"
+    discovery_entry_url: "https://tepc.gov.np/pages/useful-addresses-in-nepal"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; entry opened during research, reuse terms not located"
+    data_freshness: "directory of organizations; individual company freshness not applicable"
+    target_customer_types:
+      - "regional_chamber"
+      - "import_trade_association"
+      - "event_conference_candidate"
+    supported_geographies:
+      - "Kathmandu Valley"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "chamber name"
+      - "regional location"
+      - "organization website"
+    available_contact_fields:
+      - "organization contacts may be visible; do not process"
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "identify a regional chamber then obtain independent source permission"
+    recommended_search_keywords:
+      - "Pokhara Chamber of Commerce"
+      - "Chitwan Chamber of Commerce"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://tepc.gov.np/pages/useful-addresses-in-nepal"
+    confidence: "medium"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "OFFICIAL_OWNER"
+      - "ORGANIZATION_ROUTER_ONLY"
+    stop_conditions:
+      - "treating chamber details as company candidates"
+    fallback_source_ids:
+      - "FEN-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-NEPALYP"
+    business_line: "fenjiu_nepal"
+    source_name: "Nepal Business Directory"
+    source_owner: "Global Business Directory (GBD)"
+    source_country: "Nepal"
+    source_category: "commercial business directory"
+    source_tier: "X"
+    source_homepage: "https://www.nepalyp.com/"
+    discovery_entry_url: "https://www.nepalyp.com/"
+    terms_url: "https://www.nepalyp.com/terms-of-use"
+    privacy_url: "https://www.nepalyp.com/privacy-policy"
+    robots_or_access_policy_url: "https://www.nepalyp.com/terms-of-use"
+    terms_reviewed_at: "2026-08-23"
+    data_freshness: "not applicable because use is rejected"
+    target_customer_types: []
+    supported_geographies: []
+    available_company_fields: []
+    available_contact_fields: []
+    company_data_storage_status: "prohibited"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: false
+    recommended_query_patterns: []
+    recommended_search_keywords: []
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.nepalyp.com/terms-of-use"
+      - "https://www.nepalyp.com/privacy-policy"
+    confidence: "high"
+    use_decision: "REJECTED"
+    reason_codes:
+      - "TERMS_FORBID_AUTOMATED_ACCESS"
+      - "TERMS_FORBID_COMMERCIAL_DATABASE_REUSE"
+      - "PERSONAL_INFORMATION_MAY_BE_PRESENT"
+    stop_conditions:
+      - "any use of directory data for a candidate list"
+    fallback_source_ids:
+      - "FEN-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "FEN-OPENCORPORATES"
+    business_line: "fenjiu_nepal"
+    source_name: "OpenCorporates"
+    source_owner: "OpenCorporates Ltd."
+    source_country: "global"
+    source_category: "company registry aggregator"
+    source_tier: "X"
+    source_homepage: "https://opencorporates.com/"
+    discovery_entry_url: "https://knowledge.opencorporates.com/knowledge-base/website-data-access-changes/"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: "https://knowledge.opencorporates.com/knowledge-base/website-data-access-changes/"
+    terms_reviewed_at: "2026-08-23; website data-access notice read, linked terms/privacy not independently opened"
+    data_freshness: "coverage and commercial access not verified for this task"
+    target_customer_types: []
+    supported_geographies: []
+    available_company_fields: []
+    available_contact_fields: []
+    company_data_storage_status: "prohibited"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "conditional"
+    login_required: "conditional"
+    paid_access_required: "conditional"
+    captcha_or_anti_bot_present: "unknown"
+    official_api_available: true
+    manual_search_available: false
+    recommended_query_patterns: []
+    recommended_search_keywords: []
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://knowledge.opencorporates.com/knowledge-base/website-data-access-changes/"
+    confidence: "high"
+    use_decision: "REJECTED"
+    reason_codes:
+      - "COMMERCIAL_USE_REQUIRES_SEPARATE_REVIEW"
+      - "REGISTERED_ACCESS_FOR_SELECTED_ATTRIBUTES"
+      - "NEPAL_COVERAGE_NOT_VERIFIED"
+    stop_conditions:
+      - "use without a separately approved commercial data licence"
+    fallback_source_ids:
+      - "FEN-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+primary_and_fallback_routes:
+  - customer_type: "hotel_or_hotel_fnb"
+    primary_source_id: "FEN-OSM-POI-NP"
+    fallback_source_ids: ["FEN-HAN-MEMBER-DB", "FEN-NTB-ACCOMMODATION"]
+  - customer_type: "premium_dining_or_asian_restaurant"
+    primary_source_id: "FEN-OSM-POI-NP"
+    fallback_source_ids: ["FEN-REBAN-ASSOCIATION", "FEN-FNCCI-MEMBER-DB"]
+  - customer_type: "alcohol_channel_candidate"
+    primary_source_id: "FEN-OSM-POI-NP"
+    fallback_source_ids: ["FEN-LAK-MEMBER-DIRECTORY", "FEN-CNI-MEMBERS"]
+  - customer_type: "corporate_gifting_or_event"
+    primary_source_id: null
+    fallback_source_ids: ["FEN-CNI-MEMBERS", "FEN-FNCCI-MEMBER-DB", "FEN-TEPC-CCI-DIRECTORY"]
+    blocked_reason: "no approved direct discovery source in this catalog"
+
+nepali_keyword_validation:
+  status: "all tokens downgraded to manual_query_experiment_only"
+  entries:
+    - {keyword: "चिनियाँ रेस्टुरेन्ट", literal_meaning: "Chinese restaurant", search_result_fit: "mixed", recommended: false, notes: "consumer and cross-border noise"}
+    - {keyword: "उच्चस्तरीय रेस्टुरेन्ट", literal_meaning: "high-end restaurant", search_result_fit: "mixed", recommended: false, notes: "results did not provide stable Nepal business-source routing"}
+    - {keyword: "भोज रेस्टुरेन्ट", literal_meaning: "banquet restaurant", search_result_fit: "mixed", recommended: false, notes: "category semantics are broad"}
+    - {keyword: "मदिरा आयातकर्ता", literal_meaning: "liquor importer", search_result_fit: "mixed", recommended: false, notes: "regulatory and news results dominate"}
+    - {keyword: "मदिरा वितरक", literal_meaning: "liquor distributor", search_result_fit: "mixed", recommended: false, notes: "association results require permission"}
+    - {keyword: "पेय पदार्थ वितरक", literal_meaning: "beverage distributor", search_result_fit: "poor", recommended: false, notes: "no stable target-company source"}
+    - {keyword: "पाँच तारे होटल", literal_meaning: "five-star hotel", search_result_fit: "mixed", recommended: false, notes: "official and Google/travel results are mixed"}
+    - {keyword: "बुटिक होटल", literal_meaning: "boutique hotel", search_result_fit: "poor", recommended: false, notes: "Google/travel results must not enter the catalog"}
+    - {keyword: "होटल खाद्य तथा पेय", literal_meaning: "hotel food and beverage", search_result_fit: "poor", recommended: false, notes: "did not locate public procurement entry"}
+    - {keyword: "कर्पोरेट उपहार", literal_meaning: "corporate gift", search_result_fit: "mixed", recommended: false, notes: "supplier and consumer pages dominate"}
+    - {keyword: "व्यावसायिक उपहार", literal_meaning: "business gift", search_result_fit: "poor", recommended: false, notes: "no stable organization discovery result"}
+    - {keyword: "कार्यक्रम उपहार", literal_meaning: "event gift", search_result_fit: "poor", recommended: false, notes: "no stable organization discovery result"}
+    - {keyword: "मदिरा पसल", literal_meaning: "liquor shop", search_result_fit: "mixed", recommended: false, notes: "license and source permission remain unknown"}
+    - {keyword: "वाइन पसल", literal_meaning: "wine shop", search_result_fit: "poor", recommended: false, notes: "no approved source routing"}
+    - {keyword: "विशेष पेय पसल", literal_meaning: "specialty beverage shop", search_result_fit: "poor", recommended: false, notes: "no approved source routing"}

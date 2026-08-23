@@ -275,3 +275,14 @@
 - **影响**：未来 Codex 任务必须一次只处理一个业务线，不得补猜产品、客户资格、联系人、冷链、价格或合规；评分只用于人工排序。海鲜 PDF 只作为产品族输入，不能升级为库存或可售证明。
 - **替代方案**：直接实现 crawler 或 Gmail sender；未采用，因为缺少范围、来源、联系人治理、供应链事实和外部动作授权。把两条业务线放入同一客户名单；未采用，因为违反已确认的事实隔离。
 - **状态边界**：本决定不恢复自动找客、自动外联或任何 B2B 销售范围；不确认真实客户、SKU、价格、库存、资质、冷链、CRM、合规、发送、订单或履约。
+
+### ADR-0023：以来源目录约束最小企业发现，而不放宽联系人边界
+
+- **日期**：2026-08-23
+- **状态**：Accepted / CONFIRMED（来源研究与内部配置，不是外联授权）
+- **来源**：用户本轮明确执行单、当前 Source Catalog 实际网页/条款研究、`NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md`、Phase 8-RAB 边界。
+- **背景**：客户定位标准已定义“找什么”，但 `approved_source_ids` 为空，未来 Codex 仍不知道可从哪里以合规方式发现企业。现有 Customer Score 的 Admission Readiness 也只实际合计 30 分，和宣称的 40 分不一致。
+- **决定**：新增 `FENJIU_SOURCE_CATALOG.md`、`SEAFOOD_SOURCE_CATALOG.md` 和独立 YAML。每个来源分别记录企业发现、公司级存储和联系人处理裁决；当前只将两个业务线各自的 OpenStreetMap 低频企业发现路线列为 `APPROVED_FOR_DISCOVERY`，且严格受 ODbL 与 Nominatim 使用限制约束。同步把评分修正为 Opportunity Fit 60 + Admission Readiness 40，并新增 Commercial Accessibility（商业可进入性/采购流程可进入性）10 分和八个合成验证案例。
+- **影响**：后续最小测试必须一次只使用一个业务线、目录中已批准的 source ID、低频查询和企业官网交叉验证。Google Maps/Places、付费联系人/贸易情报、登录绕过、私人资料和所有联系人处理仍被拒绝。
+- **替代方案**：把协会/商业目录或 Google Maps 直接作为可导出的客户名单；未采用，因为条款、个人信息或商业复用边界不满足。保留 90 分的旧评分；未采用，因为会造成实现评分与契约声明不一致。
+- **状态边界**：本决定不确认任何真实企业是客户，不改变供应链/合规事实，不允许联系人处理、CRM 写入、Gmail、报价、订单或履约。

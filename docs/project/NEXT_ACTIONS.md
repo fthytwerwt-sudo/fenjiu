@@ -14,7 +14,7 @@
 1. **P08-01 等待真实资料（工程/业务闸门）**：Phase 5–7 已完成合成工程合同并进入 `main`；P08-01 只能在供应链提供当前、获授权的资料包后开始。最小输入仍为 SKU、规格、品牌素材、价格/有效期、库存/有效期、来源/版本/负责人，以及主体、资质、授权、账号、收款和履约的书面证据。当前状态为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`。
 2. **保持外部动作关闭**：在 P08 资料审核、业务闸门和用户明确授权完成前，`external_execution_allowed = false（外部执行允许 = 否）`；不得发布、发送、报价、收款、下单、退款或发货。
 3. **远端治理待授权**：GitHub API 的 visibility（可见性）尚未获认证回读，default branch（默认分支）仍为 `chore/project-collaboration-system` 而非 `main`。需具备仓库管理权限的责任人单独核验/决定；不得用本地测试或匿名 Git 读取推断 Private（私有）状态。远端 CI 仍需具备 `workflow` scope 的授权凭据单独写入并回读。
-4. **真实获客仍先补治理输入**：`NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` 已定义未来 Codex 的目标客户、来源、字段和评分；若要把 Real Acquisition Bridge（真实获客桥接层）重新纳入正式范围，先由用户确认范围，并补齐首个允许来源及条款、联系人处理依据、DNC/删除/保留、数据与合规责任人、供应链批准事实和外发停止线。此前不采集真实联系人、不写入真实 CRM、不发信。
+4. **可进入最小企业发现测试，但不得跨越持久化或联系人边界**：`FENJIU_SOURCE_CATALOG.md` 与 `SEAFOOD_SOURCE_CATALOG.md` 已提供单业务线、低频、公司级企业发现来源和 YAML 配置。后续任务只可使用各自 `approved_source_ids`，以 `transient_discovery_only` 方式人工查看并回企业官网交叉验证；不得写入 candidate store 或真实 CRM，不采集联系人、不发信、不报价，也不将目录结果写成供应链或合规事实。
 
 ## 每项完成证据
 

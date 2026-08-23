@@ -2,6 +2,13 @@
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
+## 2026-08-23｜双业务线真实获客来源目录与 100 分评分合同修复
+
+- **目标与边界**：只研究未来从哪里发现企业客户，形成可审计 Source Catalog（来源目录）和单业务线机器配置；不建立真实客户名单、不处理联系人、不写 CRM、不运行 crawler、不发送 Gmail。汾酒与海鲜继续隔离，汾酒产品事实、海鲜食品/冷链事实均不补猜。
+- **实际研究**：逐项打开并审阅 OpenStreetMap/ODbL/Nominatim、Hotel Association Nepal、FNCCI、CNI、Liquor Association of Kathmandu、REBAN、Nepal Tourism Board、TEPC、DirectoryOfNepal、Nepal Business Directory、DFTQC/NNSW 与付费贸易情报来源的入口或条款。目录把企业发现、企业字段存储、联系人处理三项分开；Google Maps/Places、付费联系人数据、登录绕过和私人资料均列为拒绝路线。Nepali 查询词完成实际结果检验，全部降级为人工实验词，不进入自动查询词库。
+- **实际改动**：新增两份人工阅读目录和三份 `source_catalogs/` 配置/说明；修正 Customer Score 为 60 + 40 的精确 100 分制，新增 Commercial Accessibility 10 分和八个合成评分验证案例；更新项目状态、决策、风险、待办与事实源，并让同步包 allowlist 收录这些可交接规范资产。
+- **状态边界**：`source_catalog_ready` 只表示来源研究和配置已完成。最低限度的公司级企业发现尚未开始；联系人、真实 CRM、Gmail、酒类/食品合规、供应链事实、冷链、价格、报价、订单与履约仍未获授权或确认。
+
 ## 2026-08-23｜双业务线客户定位规范与 Codex 输入合同
 
 - **目标与边界**：在不接触真实客户名单、联系人、CRM、邮件、价格、库存或供应链私有资料的前提下，建立未来客户发现、人工评分和 CRM 准入可引用的业务标准。汾酒和海鲜严格隔离；汾酒仍保持 TikTok 上线准备范围，真实获客与外联不因此恢复。

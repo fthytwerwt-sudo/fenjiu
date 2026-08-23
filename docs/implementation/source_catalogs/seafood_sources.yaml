@@ -1,0 +1,714 @@
+schema_version: "1.0"
+catalog_id: "seafood-nepal-source-catalog-v1"
+business_line: "seafood_nepal"
+catalog_status: "source_catalog_ready"
+last_reviewed_at: "2026-08-23"
+purpose: "company-discovery-only; no contact processing, CRM write, outreach, or food/import/cold-chain claims"
+product_scope:
+  - "shrimp"
+  - "fish"
+  - "shellfish_mollusc"
+  - "premium_specialty"
+  - "crayfish"
+approved_source_ids:
+  - "SEA-OSM-POI-NP"
+minimum_discovery_mode:
+  mode: "transient_discovery_only"
+  candidate_store_write_enabled: false
+  crm_write_enabled: false
+  contact_processing_enabled: false
+  requires_company_owned_site_cross_verification: true
+prohibited_source_patterns:
+  - "google_maps_or_places_export"
+  - "private_social_profile"
+  - "login_or_captcha_bypass"
+  - "paid_trade_intelligence_or_decision_maker_data"
+  - "email_guessing_or_verification"
+
+sources:
+  - source_id: "SEA-OSM-POI-NP"
+    business_line: "seafood_nepal"
+    source_name: "OpenStreetMap public POI data"
+    source_owner: "OpenStreetMap Foundation / OpenStreetMap contributors"
+    source_country: "global; Nepal coverage"
+    source_category: "open geospatial POI dataset"
+    source_tier: "B"
+    source_homepage: "https://www.openstreetmap.org/"
+    discovery_entry_url: "https://www.openstreetmap.org/"
+    terms_url: "https://www.openstreetmap.org/copyright"
+    privacy_url: "https://osmfoundation.org/wiki/Services_and_tile_users_privacy_FAQ"
+    robots_or_access_policy_url: "https://operations.osmfoundation.org/policies/nominatim/"
+    terms_reviewed_at: "2026-08-23"
+    data_freshness: "community-maintained; each POI needs company-owned-site verification"
+    target_customer_types:
+      - "hotel"
+      - "seafood_restaurant"
+      - "chinese_restaurant"
+      - "frozen_food_retailer"
+      - "cold_storage_candidate"
+    supported_geographies:
+      - "Kathmandu"
+      - "Lalitpur"
+      - "Bhaktapur"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "public business name"
+      - "POI category"
+      - "location"
+      - "some website and opening-hours tags"
+    available_contact_fields:
+      - "some public tags may contain contact-like fields; do not collect or process"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "conditional"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: "conditional"
+    manual_search_available: true
+    access_constraints:
+      requires_attribution: true
+      max_requests_per_second: 1
+      requires_identifying_user_agent: true
+      public_service_only_for_manual_queries: true
+      systematic_enumeration_prohibited: true
+      details_page_automation_prohibited: true
+      cache_policy: "no candidate-store persistence in the current task"
+      retry_policy: "stop on rate-limit or policy uncertainty; no automatic retry loop"
+    recommended_query_patterns:
+      - "single city plus one business category"
+      - "one company candidate followed by company-owned-site verification"
+    recommended_search_keywords:
+      - "hotel Kathmandu"
+      - "seafood restaurant Kathmandu"
+      - "cold storage Kathmandu"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.openstreetmap.org/copyright"
+      - "https://operations.osmfoundation.org/policies/nominatim/"
+    confidence: "high"
+    use_decision: "APPROVED_FOR_DISCOVERY"
+    reason_codes:
+      - "LICENSE_ODBL_REVIEWED"
+      - "LOW_FREQUENCY_ONLY"
+      - "COMPANY_SITE_RECHECK_REQUIRED"
+    stop_conditions:
+      - "systematic Nominatim query or complete POI download"
+      - "missing ODbL attribution/governance"
+      - "attempt to collect contacts"
+    fallback_source_ids:
+      - "SEA-HAN-MEMBER-DB"
+      - "SEA-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-HAN-MEMBER-DB"
+    business_line: "seafood_nepal"
+    source_name: "Hotel Association Nepal Membership Database"
+    source_owner: "Hotel Association Nepal"
+    source_country: "Nepal"
+    source_category: "industry association member directory"
+    source_tier: "A"
+    source_homepage: "https://hotelassociationnepal.org.np/"
+    discovery_entry_url: "https://hotelassociationnepal.org.np/storage/Membership%20database.pdf"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no reusable-data terms located"
+    data_freshness: "membership PDF has no confirmed current refresh date"
+    target_customer_types:
+      - "hotel_procurement"
+      - "hotel_fnb"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "member hotel name"
+      - "hotel/resort/boutique category"
+      - "star-category grouping"
+    available_contact_fields: []
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "identify hotel then verify food-service capability and procurement route on company site"
+    recommended_search_keywords:
+      - "HAN hotel member official website"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://hotelassociationnepal.org.np/"
+      - "https://hotelassociationnepal.org.np/storage/Membership%20database.pdf"
+    confidence: "high"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_AND_DIRECTORY_CONFIRMED"
+      - "REUSE_TERMS_NOT_LOCATED"
+      - "COLD_CHAIN_NOT_INFERABLE"
+    stop_conditions:
+      - "storage without Hotel Association Nepal permission"
+      - "assume food procurement, freezer, or cold chain"
+    fallback_source_ids:
+      - "SEA-NTB-ACCOMMODATION"
+      - "SEA-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-FNCCI-MEMBER-DB"
+    business_line: "seafood_nepal"
+    source_name: "FNCCI Members Database"
+    source_owner: "Federation of Nepalese Chambers of Commerce & Industry"
+    source_country: "Nepal"
+    source_category: "chamber and association directory"
+    source_tier: "A"
+    source_homepage: "https://www.fncci.org/"
+    discovery_entry_url: "https://fncci.org/member/anca.php"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no reusable-data terms located"
+    data_freshness: "live directory; individual entry freshness varies"
+    target_customer_types:
+      - "frozen_food_distributor"
+      - "food_importer"
+      - "cold_storage_operator"
+      - "regional_chamber"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "organization name"
+      - "association category"
+      - "district"
+      - "some organization websites"
+    available_contact_fields:
+      - "organization and individual contact-like fields may be visible; do not collect"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "locate an industry association then request permission or verify a company on its own site"
+    recommended_search_keywords:
+      - "Association of Cold Storages of Nepal"
+      - "food trade association Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.fncci.org/"
+      - "https://fncci.org/member/anca.php"
+    confidence: "high"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_CONFIRMED"
+      - "ASSOCIATION_NOT_COMPANY_LIST"
+      - "PERSONAL_FIELDS_PRESENT"
+    stop_conditions:
+      - "copying contacts or personal officer data"
+      - "treating association affiliation as food/import/cold-chain proof"
+    fallback_source_ids:
+      - "SEA-COLD-STORAGE-ASSOCIATION"
+      - "SEA-TEPC-CCI-DIRECTORY"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-CNI-MEMBERS"
+    business_line: "seafood_nepal"
+    source_name: "Confederation of Nepalese Industries Members"
+    source_owner: "Confederation of Nepalese Industries"
+    source_country: "Nepal"
+    source_category: "industry confederation company directory"
+    source_tier: "A"
+    source_homepage: "https://cni.org.np/"
+    discovery_entry_url: "https://cni.org.np/members"
+    terms_url: null
+    privacy_url: "https://cni.org.np/privacy-policy"
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; privacy page read, third-party reuse terms not located"
+    data_freshness: "live directory; member-level refresh not declared"
+    target_customer_types:
+      - "food_importer_candidate"
+      - "foodservice_distributor_candidate"
+      - "frozen_food_retailer_candidate"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "company name"
+      - "member category"
+      - "address"
+      - "some organization profile fields"
+    available_contact_fields:
+      - "representative, phone, and email fields may be visible; prohibited from collection"
+    company_data_storage_status: "conditional"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "manual category review then company-owned-site verification"
+    recommended_search_keywords:
+      - "food company Nepal official website"
+      - "frozen food distributor Nepal official website"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://cni.org.np/members"
+      - "https://cni.org.np/privacy-policy"
+    confidence: "medium"
+    use_decision: "CONDITIONAL"
+    reason_codes:
+      - "OWNER_CONFIRMED"
+      - "PRIVACY_PAGE_READ"
+      - "REUSE_LICENSE_NOT_LOCATED"
+    stop_conditions:
+      - "copying representatives or contacts"
+      - "assuming any food company imports seafood or has cold-chain capacity"
+    fallback_source_ids:
+      - "SEA-FNCCI-MEMBER-DB"
+      - "SEA-TEPC-CCI-DIRECTORY"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-COLD-STORAGE-ASSOCIATION"
+    business_line: "seafood_nepal"
+    source_name: "Association of Cold Storages of Nepal"
+    source_owner: "Association of Cold Storages of Nepal; association identity cross-referenced by FNCCI and a Government of Nepal commodity profile"
+    source_country: "Nepal"
+    source_category: "cold-storage industry association"
+    source_tier: "B"
+    source_homepage: "https://fncci.org/member/anca.php"
+    discovery_entry_url: "https://giwmscdnone.gov.np/media/pdf_upload/2_merged-1_aqcr2dn.pdf"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no public member-company directory or reuse terms located"
+    data_freshness: "association identity and member count only; company-level freshness unavailable"
+    target_customer_types:
+      - "cold_storage_operator"
+      - "cold_chain_operator"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "association identity"
+      - "association address"
+      - "member count"
+      - "national operating scope"
+    available_contact_fields:
+      - "association contacts may be visible; do not process"
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "request a permitted member-company source or verify a named company on its own site"
+    recommended_search_keywords:
+      - "Association of Cold Storages of Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://fncci.org/member/anca.php"
+      - "https://giwmscdnone.gov.np/media/pdf_upload/2_merged-1_aqcr2dn.pdf"
+    confidence: "high"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "ASSOCIATION_NOT_MEMBER_DIRECTORY"
+      - "COLD_CHAIN_CAPABILITY_NOT_INFERABLE"
+    stop_conditions:
+      - "treating membership count as a company list"
+      - "treating association affiliation as cold-chain proof"
+    fallback_source_ids:
+      - "SEA-FNCCI-MEMBER-DB"
+      - "SEA-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-REBAN-ASSOCIATION"
+    business_line: "seafood_nepal"
+    source_name: "Restaurant & Bar Association of Nepal"
+    source_owner: "Restaurant & Bar Association of Nepal"
+    source_country: "Nepal"
+    source_category: "restaurant industry association"
+    source_tier: "B"
+    source_homepage: "https://rebannepal.com/"
+    discovery_entry_url: "https://rebannepal.com/memberships"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no public reusable member directory or terms located"
+    data_freshness: "association site live; member data not confirmed"
+    target_customer_types:
+      - "seafood_restaurant"
+      - "chinese_restaurant"
+      - "hotpot_restaurant"
+    supported_geographies:
+      - "Kathmandu"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "association and chapter information only"
+    available_contact_fields: []
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "manual association inquiry followed by company-owned-site verification"
+    recommended_search_keywords:
+      - "Restaurant and Bar Association Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://rebannepal.com/"
+      - "https://rebannepal.com/memberships"
+      - "https://fncci.org/member/anca.php"
+    confidence: "medium"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "ASSOCIATION_EXISTENCE_CROSS_VERIFIED"
+      - "NO_REUSABLE_MEMBER_DIRECTORY"
+    stop_conditions:
+      - "copying membership-application fields"
+      - "contact processing"
+    fallback_source_ids:
+      - "SEA-OSM-POI-NP"
+      - "SEA-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-NTB-ACCOMMODATION"
+    business_line: "seafood_nepal"
+    source_name: "Nepal Tourism Board Accommodation"
+    source_owner: "Nepal Tourism Board"
+    source_country: "Nepal"
+    source_category: "official tourism information"
+    source_tier: "A"
+    source_homepage: "https://trade.ntb.gov.np/"
+    discovery_entry_url: "https://trade.ntb.gov.np/travel-essentials/accommodations/"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; no company-data reuse terms located"
+    data_freshness: "industry information page; not a current company directory"
+    target_customer_types:
+      - "hotel_procurement"
+      - "hotel_fnb"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "hotel-sector information and official HAN route"
+    available_contact_fields: []
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "use as an official route to HAN or a company-owned site"
+    recommended_search_keywords:
+      - "Nepal Tourism Board accommodation"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://trade.ntb.gov.np/travel-essentials/accommodations/"
+    confidence: "high"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "OFFICIAL_OWNER"
+      - "NOT_A_REUSABLE_COMPANY_DIRECTORY"
+    stop_conditions:
+      - "treating tourism information as procurement or cold-chain data"
+    fallback_source_ids:
+      - "SEA-HAN-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-TEPC-CCI-DIRECTORY"
+    business_line: "seafood_nepal"
+    source_name: "Trade and Export Promotion Centre Useful Addresses"
+    source_owner: "Trade and Export Promotion Centre, Government of Nepal"
+    source_country: "Nepal"
+    source_category: "official chamber and trade-organization directory"
+    source_tier: "A"
+    source_homepage: "https://tepc.gov.np/"
+    discovery_entry_url: "https://tepc.gov.np/pages/useful-addresses-in-nepal"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; reuse terms not located"
+    data_freshness: "organization directory; company freshness not applicable"
+    target_customer_types:
+      - "food_importer_candidate"
+      - "regional_chamber"
+      - "foodservice_distributor_candidate"
+    supported_geographies:
+      - "Kathmandu Valley"
+      - "Pokhara"
+      - "Chitwan"
+    available_company_fields:
+      - "chamber name"
+      - "regional location"
+      - "organization website"
+    available_contact_fields:
+      - "organization contacts may be visible; do not process"
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "identify a regional chamber then request a permitted company source"
+    recommended_search_keywords:
+      - "Pokhara Chamber of Commerce"
+      - "Chitwan Chamber of Commerce"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://tepc.gov.np/pages/useful-addresses-in-nepal"
+    confidence: "medium"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "OFFICIAL_OWNER"
+      - "ORGANIZATION_ROUTER_ONLY"
+    stop_conditions:
+      - "treating chamber details as food-company candidates"
+    fallback_source_ids:
+      - "SEA-FNCCI-MEMBER-DB"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-DIRECTORYOFNEPAL"
+    business_line: "seafood_nepal"
+    source_name: "DirectoryOfNepal"
+    source_owner: "DirectoryOfNepal.com"
+    source_country: "Nepal"
+    source_category: "commercial business directory"
+    source_tier: "B"
+    source_homepage: "https://www.directoryofnepal.com/"
+    discovery_entry_url: "https://www.directoryofnepal.com/category/553/cold-storage.html"
+    terms_url: null
+    privacy_url: "https://www.directoryofnepal.com/about/3/privacy-policy.html"
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; privacy policy reviewed, third-party reuse terms not located"
+    data_freshness: "category pages visible; individual listing freshness not declared"
+    target_customer_types:
+      - "cold_storage_candidate"
+      - "frozen_food_distributor_candidate"
+      - "food_importer_candidate"
+      - "frozen_food_retailer_candidate"
+    supported_geographies:
+      - "Nepal"
+    available_company_fields:
+      - "business name"
+      - "category"
+      - "district or address-like location"
+      - "some website fields"
+    available_contact_fields:
+      - "public phone/email may be visible; prohibited from collection"
+    company_data_storage_status: "unknown"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "unknown"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: true
+    recommended_query_patterns:
+      - "manual directory discovery then independent company-site verification"
+    recommended_search_keywords:
+      - "cold storage Nepal"
+      - "frozen food Nepal"
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.directoryofnepal.com/category/553/cold-storage.html"
+      - "https://www.directoryofnepal.com/about/3/privacy-policy.html"
+    confidence: "medium"
+    use_decision: "MANUAL_ONLY"
+    reason_codes:
+      - "DIRECTORY_OWNER_CONFIRMED"
+      - "REUSE_TERMS_NOT_LOCATED"
+      - "CONTACTS_MAY_BE_PERSONAL"
+    stop_conditions:
+      - "copying listings into candidate storage"
+      - "processing public contacts"
+    fallback_source_ids:
+      - "SEA-OSM-POI-NP"
+      - "SEA-COLD-STORAGE-ASSOCIATION"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-NEPALYP"
+    business_line: "seafood_nepal"
+    source_name: "Nepal Business Directory"
+    source_owner: "Global Business Directory (GBD)"
+    source_country: "Nepal"
+    source_category: "commercial business directory"
+    source_tier: "X"
+    source_homepage: "https://www.nepalyp.com/"
+    discovery_entry_url: "https://www.nepalyp.com/"
+    terms_url: "https://www.nepalyp.com/terms-of-use"
+    privacy_url: "https://www.nepalyp.com/privacy-policy"
+    robots_or_access_policy_url: "https://www.nepalyp.com/terms-of-use"
+    terms_reviewed_at: "2026-08-23"
+    data_freshness: "not applicable because use is rejected"
+    target_customer_types: []
+    supported_geographies: []
+    available_company_fields: []
+    available_contact_fields: []
+    company_data_storage_status: "prohibited"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: false
+    paid_access_required: false
+    captcha_or_anti_bot_present: false
+    official_api_available: false
+    manual_search_available: false
+    recommended_query_patterns: []
+    recommended_search_keywords: []
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.nepalyp.com/terms-of-use"
+      - "https://www.nepalyp.com/privacy-policy"
+    confidence: "high"
+    use_decision: "REJECTED"
+    reason_codes:
+      - "TERMS_FORBID_AUTOMATED_ACCESS"
+      - "TERMS_FORBID_COMMERCIAL_DATABASE_REUSE"
+      - "PERSONAL_INFORMATION_MAY_BE_PRESENT"
+    stop_conditions:
+      - "any use of directory data for a candidate list"
+    fallback_source_ids:
+      - "SEA-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-DFTQC-NNSW"
+    business_line: "seafood_nepal"
+    source_name: "DFTQC food-import notice and Nepal National Single Window process"
+    source_owner: "Department of Food Technology and Quality Control / Government of Nepal"
+    source_country: "Nepal"
+    source_category: "food-import regulatory process"
+    source_tier: "X"
+    source_homepage: "https://www.dftqc.gov.np/"
+    discovery_entry_url: "https://www.dftqc.gov.np/noticefiles/113-1742816126.pdf"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23; notice fetch was unstable, source purpose verified from official search result"
+    data_freshness: "regulatory process information only"
+    target_customer_types: []
+    supported_geographies: []
+    available_company_fields: []
+    available_contact_fields: []
+    company_data_storage_status: "prohibited"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: "conditional"
+    paid_access_required: false
+    captcha_or_anti_bot_present: "unknown"
+    official_api_available: false
+    manual_search_available: false
+    recommended_query_patterns: []
+    recommended_search_keywords: []
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.dftqc.gov.np/noticefiles/113-1742816126.pdf"
+    confidence: "medium"
+    use_decision: "REJECTED"
+    reason_codes:
+      - "REGULATORY_PROCESS_NOT_DISCOVERY_DIRECTORY"
+      - "PUBLIC_COMPANY_LIST_NOT_VERIFIED"
+    stop_conditions:
+      - "using a permit portal as a company-data source"
+      - "bypassing account or authorization requirements"
+    fallback_source_ids: []
+    last_reviewed_at: "2026-08-23"
+
+  - source_id: "SEA-TRADE-INTELLIGENCE-PAID"
+    business_line: "seafood_nepal"
+    source_name: "Paid trade-intelligence buyer and decision-maker databases"
+    source_owner: "Third-party commercial data providers"
+    source_country: "global"
+    source_category: "paid trade and contact intelligence"
+    source_tier: "X"
+    source_homepage: "https://www.volza.com/"
+    discovery_entry_url: "https://www.volza.com/p/frozen-fish/buyers/buyers-in-nepal/"
+    terms_url: null
+    privacy_url: null
+    robots_or_access_policy_url: null
+    terms_reviewed_at: "2026-08-23"
+    data_freshness: "not applicable because use is rejected"
+    target_customer_types: []
+    supported_geographies: []
+    available_company_fields: []
+    available_contact_fields: []
+    company_data_storage_status: "prohibited"
+    contact_data_processing_status: "prohibited"
+    bulk_access_status: "prohibited"
+    login_required: "conditional"
+    paid_access_required: true
+    captcha_or_anti_bot_present: "unknown"
+    official_api_available: "unknown"
+    manual_search_available: false
+    recommended_query_patterns: []
+    recommended_search_keywords: []
+    nepali_keywords_verified: false
+    evidence_refs:
+      - "https://www.volza.com/p/frozen-fish/buyers/buyers-in-nepal/"
+    confidence: "high"
+    use_decision: "REJECTED"
+    reason_codes:
+      - "PAID_BUYER_AND_DECISION_MAKER_DATA"
+      - "CONTACT_DATA_PRODUCT"
+      - "OUT_OF_SCOPE_FOR_THIS_TASK"
+    stop_conditions:
+      - "use of buyer, pricing, shipment, or decision-maker data"
+      - "contact export or enrichment"
+    fallback_source_ids:
+      - "SEA-OSM-POI-NP"
+    last_reviewed_at: "2026-08-23"
+
+primary_and_fallback_routes:
+  - customer_type: "hotel_procurement_or_hotel_fnb"
+    primary_source_id: "SEA-OSM-POI-NP"
+    fallback_source_ids: ["SEA-HAN-MEMBER-DB", "SEA-NTB-ACCOMMODATION"]
+  - customer_type: "seafood_chinese_or_hotpot_restaurant"
+    primary_source_id: "SEA-OSM-POI-NP"
+    fallback_source_ids: ["SEA-REBAN-ASSOCIATION", "SEA-FNCCI-MEMBER-DB"]
+  - customer_type: "cold_storage_or_frozen_wholesale"
+    primary_source_id: "SEA-OSM-POI-NP"
+    fallback_source_ids: ["SEA-COLD-STORAGE-ASSOCIATION", "SEA-DIRECTORYOFNEPAL"]
+  - customer_type: "food_or_seafood_importer"
+    primary_source_id: null
+    fallback_source_ids: ["SEA-CNI-MEMBERS", "SEA-FNCCI-MEMBER-DB", "SEA-TEPC-CCI-DIRECTORY"]
+    blocked_reason: "no approved direct discovery source in this catalog"
+  - customer_type: "supermarket_or_frozen_retail"
+    primary_source_id: "SEA-OSM-POI-NP"
+    fallback_source_ids: ["SEA-CNI-MEMBERS", "SEA-DIRECTORYOFNEPAL"]
+
+nepali_keyword_validation:
+  status: "all tokens downgraded to manual_query_experiment_only"
+  entries:
+    - {keyword: "होटल खरिद विभाग", literal_meaning: "hotel procurement department", search_result_fit: "poor", recommended: false, notes: "no stable public procurement route"}
+    - {keyword: "होटल खाद्य तथा पेय", literal_meaning: "hotel food and beverage", search_result_fit: "poor", recommended: false, notes: "no stable public procurement route"}
+    - {keyword: "होटल भान्सा", literal_meaning: "hotel kitchen", search_result_fit: "poor", recommended: false, notes: "consumer/general content dominates"}
+    - {keyword: "समुद्री खाना रेस्टुरेन्ट", literal_meaning: "seafood restaurant", search_result_fit: "mixed", recommended: false, notes: "restaurant and review results are not approved directories"}
+    - {keyword: "माछा रेस्टुरेन्ट", literal_meaning: "fish restaurant", search_result_fit: "mixed", recommended: false, notes: "restaurant and review results are not approved directories"}
+    - {keyword: "हटपोट रेस्टुरेन्ट", literal_meaning: "hotpot restaurant", search_result_fit: "mixed", recommended: false, notes: "restaurant results require company-site verification"}
+    - {keyword: "फ्रोजन फूड वितरक", literal_meaning: "frozen food distributor", search_result_fit: "mixed", recommended: false, notes: "manufacturer and directory noise"}
+    - {keyword: "थोक वितरक", literal_meaning: "wholesale distributor", search_result_fit: "mixed", recommended: false, notes: "generic trade noise"}
+    - {keyword: "कोल्ड स्टोरेज", literal_meaning: "cold storage", search_result_fit: "mixed", recommended: false, notes: "association and unapproved directory results"}
+    - {keyword: "शीत भण्डार", literal_meaning: "cold warehouse", search_result_fit: "poor", recommended: false, notes: "no stable source route"}
+    - {keyword: "खाद्य आयातकर्ता", literal_meaning: "food importer", search_result_fit: "mixed", recommended: false, notes: "regulatory and paid-trade results dominate"}
+    - {keyword: "समुद्री खाना आयातकर्ता", literal_meaning: "seafood importer", search_result_fit: "mixed", recommended: false, notes: "paid trade-intelligence results dominate"}
+    - {keyword: "फ्रोजन खाद्य आयातकर्ता", literal_meaning: "frozen food importer", search_result_fit: "mixed", recommended: false, notes: "paid trade-intelligence results dominate"}
+    - {keyword: "सुपरमार्केट", literal_meaning: "supermarket", search_result_fit: "mixed", recommended: false, notes: "retail results do not prove frozen-food procurement"}
+    - {keyword: "फ्रोजन फूड खुद्रा", literal_meaning: "frozen food retail", search_result_fit: "poor", recommended: false, notes: "no stable source route"}
+    - {keyword: "किराना चेन", literal_meaning: "grocery chain", search_result_fit: "poor", recommended: false, notes: "no stable source route"}

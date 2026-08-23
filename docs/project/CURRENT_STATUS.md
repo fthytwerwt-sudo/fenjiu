@@ -10,6 +10,7 @@
 - **当前最重要任务**：先补齐商品单、价格规则和库存，再确认首批可上架 SKU，并补齐账号、资质、收款和履约资料。
 - **P0 阻断**：在上述资料及 TikTok 当前酒类内容/广告边界获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
 - **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
+- **已确认（来源研究层）**：双业务线 Source Catalog（真实获客来源目录）已形成并提供 machine-readable（机器可读）YAML；状态为 `source_catalog_ready`，但真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权。
 
 详情：[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
 
