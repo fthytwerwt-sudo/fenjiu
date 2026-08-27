@@ -1,11 +1,25 @@
 # 风险与阻断｜RISKS_AND_BLOCKERS
 
+## 2026-08-28 当前优先级（Sales-First 覆盖层）
+
+以下为本轮 P0 的当前风险排序；下方历史行保留可追溯性，但不得覆盖本节。工程/规划完成不降低业务、平台、法律或隐私闸门。
+
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |
 |---|---|---|---|---|
-| R-01 | **BLOCKED / P0** | TikTok 酒类内容、广告、账号和转化边界未获当前书面核验 | 不得公开发布、投放、导流或开展真实销售 | 保持内部资料与草稿；取得平台和当地合规书面证据 |
-| R-02 | **BLOCKED / P0** | SKU、价格、价格有效期、库存、补货和首批商品未确认 | 不得展示为可售、报价、承诺供货或决定首批上架 | 由供应链提供商品主数据并核验 |
-| R-03 | **BLOCKED / P0** | 当地销售主体、产品合法可售、品牌授权和资质未确认 | 不得建立真实销售或对外承诺 | 取得当地实体、品牌方和持牌专业人士的当前书面文件 |
-| R-04 | **BLOCKED / P0** | 账号权限、收款、仓储配送、售后和结算责任未确认 | 不得收款、下单、发货或处理真实售后 | 明确主体、负责人、SOP、SLA 和退出/交接规则 |
+| SR-R01 | `BLOCKED / supplier_fact_missing` | SKU、价格、库存、授权素材和 Offer 未有当前书面证据 | 不得展示为可售、报价或启动真实试点 | SR-1 evidence contract。 |
+| SR-R02 | `BLOCKED / local_licence_and_entity_unknown` | 主体、许可、品牌授权、年龄边界未确认 | 不得真实销售、收款、订单、履约 | 当前当地书面证据/专业意见。 |
+| SR-R03 | `BLOCKED / fulfilment_and_payment_unknown` | 收款、配送、售后和责任人未确认 | 不能形成可信订单闭环 | 供应链 SOP、owner 和异常处理。 |
+| SR-R04 | `BLOCKED / channel_authorization_unknown` | 账号、地区、内容/广告/消息/展示权限未核验 | 不能启动真实渠道动作 | 四层授权矩阵逐动作核验。 |
+| SR-R05 | `BLOCKED / platform_policy_constraint` | WhatsApp 禁止酒类交易；Meta commerce channels 禁止酒类销售 | 不能把任意沟通/商业渠道等同成交路径 | 不在禁止通道交易；另选合规路径。 |
+| SR-R06 | `BLOCKED / privacy_and_contact_basis_missing` | DNC、保留/删除、联系人处理依据和数据 owner 缺失 | 不能做真实 CRM、B2B 联系或 Gmail 外联 | SR-6 前单独补齐。 |
+| SR-R07 | `RISK / overengineering` | 工程可能抢在 Offer、客户承接和履约前扩张 | 延迟学习并制造错误完成感 | 无漏斗/指标/人工基线即 `DEFER`。 |
+
+| 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |
+|---|---|---|---|---|
+| R-01 | **BLOCKED / business gate** | TikTok 酒类内容、广告、账号和转化边界未获当前书面核验 | 不得公开发布、投放、导流或开展真实销售 | 保持内部资料与草稿；取得平台和当地合规书面证据 |
+| R-02 | **BLOCKED / business gate** | SKU、价格、价格有效期、库存、补货和首批商品未确认 | 不得展示为可售、报价、承诺供货或决定首批上架 | 由供应链提供商品主数据并核验 |
+| R-03 | **BLOCKED / business gate** | 当地销售主体、产品合法可售、品牌授权和资质未确认 | 不得建立真实销售或对外承诺 | 取得当地实体、品牌方和持牌专业人士的当前书面文件 |
+| R-04 | **BLOCKED / business gate** | 账号权限、收款、仓储配送、售后和结算责任未确认 | 不得收款、下单、发货或处理真实售后 | 明确主体、负责人、SOP、SLA 和退出/交接规则 |
 | R-05 | **INFERRED** | 历史 B2B、多平台和 90 天研究可能被误用为当前指令 | 范围漂移或错误投入 | 以 BUSINESS_STATUS、DECISIONS 和 SOURCE_OF_TRUTH 为准；旧研究仅作历史背景 |
 | R-06 | **PARTIAL / repository governance（仓库治理）** | `main` 已由远端回读至 `ae84e183be38da62d17c8567569f75206ddb35f1`，但 default branch（默认分支）仍为 `chore/project-collaboration-system`；匿名 `git ls-remote` 可读取引用，而 GitHub API 的 visibility（可见性）认证回读仍未成功 | 不得把默认分支、Private（私有）状态或仓库治理收口写为已完成；不阻断 synthetic（合成）工程合同，但需在真实资料/业务接入前单独处理 | 由具备仓库管理权限的责任人核验可见性、决定是否切换默认分支并回读；不得凭匿名读取推断可见性 |
 | R-07 | **CONFIRMED** | 本地存在私有配置、联系资料和大体积派生产物 | 可能泄露秘密/隐私或污染 Git/同步包 | 保持忽略、allowlist、敏感扫描和最小披露；发现真实凭据须评估轮换 |

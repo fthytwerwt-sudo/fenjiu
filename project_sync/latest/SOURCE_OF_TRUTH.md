@@ -4,11 +4,13 @@
 
 | 信息类型 | 当前事实源 | 状态与说明 |
 |---|---|---|
-| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的范围和职责来自用户明确确认（2026-08-05）；供应链实际交付仍须原始书面证据 |
+| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围和职责来自用户 P0（2026-08-28）；供应链实际交付仍须原始书面证据 |
 | 项目总览与路由 | docs/project/CURRENT_STATUS.md | 短摘要；不替代业务或协作详细状态 |
 | 协作、Git、同步包与远端回读 | docs/collaboration/COLLABORATION_STATUS.md | 远端 branch、commit、默认分支和 visibility 仅以最终回读为准 |
 | 协作规则与阅读顺序 | AGENTS.md、PROJECT_ENTRY.md | **CONFIRMED** 的仓库规则和导航 |
 | 当前执行范围 | docs/project/PROJECT_GOAL.md、SCOPE_AND_BOUNDARIES.md | **CONFIRMED**；旧研究不覆盖当前范围 |
+| Sales-First 北极星、漏斗、阶段、渠道、指标与复用判断 | `docs/strategy/` | **CONFIRMED（规划）**：2026-08-28 用户 P0 已落库；不替代每个业务闸门、政策、账号或外部执行授权的当前证据 |
+| 平台/当地政策与项目授权四层核验 | `docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md` | 官方来源是 **CONFIRMED（外部资料）**；项目满足政策/许可/账号/授权的程度仍逐项为 `UNKNOWN / BLOCKED`，执行前需刷新 |
 | 已采用的业务与机制取舍 | docs/project/DECISIONS.md | **CONFIRMED**；每条决定须保留来源、日期、影响和状态 |
 | 待补业务输入、阻断与顺序 | OPEN_QUESTIONS.md、RISKS_AND_BLOCKERS.md、NEXT_ACTIONS.md | **UNKNOWN/BLOCKED**；收到书面证据后再更新 |
 | 汾酒市场、渠道和合规研究 | research_root.json、research_execution.json、research_culture_compliance.json | 资料存在为 **CONFIRMED**；涉及 B2B、多平台、90 天方案的内容为 **SUPERSEDED**（仅当前执行范围层面被替代），保留为历史市场背景，须由用户重新确认才可恢复 |

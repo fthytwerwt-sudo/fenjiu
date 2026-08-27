@@ -1,42 +1,42 @@
 {
   "schema_version": 2,
   "project": "fenjiu_nepal",
-  "generated_at": "2026-08-23T23:25:31+08:00",
+  "generated_at": "2026-08-28T02:29:46+08:00",
   "source_git": {
     "branch": "main",
-    "source_commit": "43fc7a5d883f78b1847d11d3cf4388cc680992f0",
-    "short_source_commit": "43fc7a5",
+    "source_commit": "8e03083be90f9d7e355787596a35598eb629a5e8",
+    "short_source_commit": "8e03083",
     "worktree_status": "dirty",
     "remote_origin": "unavailable"
   },
   "sync_strategy": "strict_allowlist",
   "max_file_bytes": 1048576,
-  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260823_232531.zip",
+  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260828_022946.zip",
   "files": [
     {
       "path": "AGENTS.md",
-      "bytes": 9912,
-      "sha256": "99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893"
+      "bytes": 10297,
+      "sha256": "a8e2adf50c22dff6c45f8ceb68222b16db14bcd17f1fb9e9c9a2cd55971599af"
     },
     {
       "path": "BUSINESS_STATUS.md",
-      "bytes": 3939,
-      "sha256": "d12a36132b82cdd9840583cb2ed0e22efcae41c4a4b566f15ecf79a1091e8a62"
+      "bytes": 4397,
+      "sha256": "d272189f1b0206d21edad2dccc0cfeb8db211afce1245073f0af4cd049a802f7"
     },
     {
       "path": "COLLABORATION_STATUS.md",
-      "bytes": 20860,
-      "sha256": "d2b89c69ed89875956ad9d0b131029ae65b4614c45b7d28870657115f90ede73"
+      "bytes": 21731,
+      "sha256": "3b6bb177d6625e64c5f232fea18d508432d752c76df242fd2fa8fe34c00490cb"
     },
     {
       "path": "CURRENT_STATUS.md",
-      "bytes": 17045,
-      "sha256": "36ad5fa83680b28f609fa580def7fd7245d96a7888afd23fccc7d4a9c607711f"
+      "bytes": 17353,
+      "sha256": "4de8835cd342a9b8ca98e85722b507a2b6175fda4d89c7664bd80d69fc3e4df9"
     },
     {
       "path": "DECISIONS.md",
-      "bytes": 36256,
-      "sha256": "5e5a90661ddb8088946aab9c73d18c609c585a3e81ad012501f51ebb3db54047"
+      "bytes": 38533,
+      "sha256": "01730ac6863c02688cf797d319c6b2759efe9927543fbe4eb94bf6e58fc1c2fb"
     },
     {
       "path": "FILE_INDEX.md",
@@ -46,32 +46,32 @@
     {
       "path": "GIT_STATE.md",
       "bytes": 425,
-      "sha256": "89bbb371548c6763b3f79159a1ae6a5c80d5f5640c4cc0b4137973b3cb7ec340"
+      "sha256": "ad8ba7cecc2df49e1398a2a6ca33e24118078f953cb5be9273991f35ad90b1a0"
     },
     {
       "path": "NEXT_ACTIONS.md",
-      "bytes": 3212,
-      "sha256": "466b78cdb98e67b0e43fdd870993b177657d76f4f886f3b1e3404fe1ad529e35"
+      "bytes": 3909,
+      "sha256": "eee36f7a6408baaad6faff3c051387132d58ee53fdaad5923f8809cd8c7f07ea"
     },
     {
       "path": "OPEN_QUESTIONS.md",
-      "bytes": 2625,
-      "sha256": "bed102c0120cee725f327bf7aa565b087944dc70ff465a9aa58216d25424b4c4"
+      "bytes": 4302,
+      "sha256": "3e73ced665b53810c21b47339b809ea7a4c398f9baa37d11223f34af379fb7dc"
     },
     {
       "path": "PROJECT_CONTEXT.md",
-      "bytes": 60934,
-      "sha256": "12d21f4bf1f89ce4edbb01a1d0c68ba2da4726eb4e4c9edd507d74a77a344260"
+      "bytes": 63760,
+      "sha256": "8a3d2312134176d7ddfa91b285e0c98f26cf7cfdd353b3742b205f2e6d61de62"
     },
     {
       "path": "PROJECT_ENTRY.md",
-      "bytes": 3653,
-      "sha256": "8a0955cf62b93ca88049c47dc40be0894b2455ce973d7e40bbcb7b2e398fce99"
+      "bytes": 3916,
+      "sha256": "a2811cd94894e0accd9c6ccdd22e3b2fd7513ee8ebeb8ccdaeb45277e1d84914"
     },
     {
       "path": "PROJECT_SYNC_README.md",
       "bytes": 1282,
-      "sha256": "d40aac22b24915703ccc983486273f966b5370ee6abbc7256289a2ef9d139771"
+      "sha256": "fa5a5cb7c21297fc66483fa8d53c0cda19022e03705a279679467a82a9e7bc4e"
     },
     {
       "path": "README.md",
@@ -80,13 +80,13 @@
     },
     {
       "path": "RISKS_AND_BLOCKERS.md",
-      "bytes": 5077,
-      "sha256": "21a95efd55bf1e4d25ff792a4b3a9fa6ab23a1bee3660b41567f0ad58fa9ff9e"
+      "bytes": 6840,
+      "sha256": "590dde610dbfde0d7db0d92351ebe2cd64d575f10d9edc2cf9f1dc404904498f"
     },
     {
       "path": "SOURCE_OF_TRUTH.md",
-      "bytes": 13162,
-      "sha256": "e068ac2ae65fc56eaaf26d3d387d887d6276a9ca2bdca64c147633b5c82d31fc"
+      "bytes": 13674,
+      "sha256": "d2d50e37f630ee143699e4f26af3ae6738ee5142292c029f46c7d3aa4d0f5c42"
     },
     {
       "path": "docs/collaboration/CHATGPT_CODEX_WORKFLOW.md",
@@ -95,8 +95,8 @@
     },
     {
       "path": "docs/collaboration/EXECUTION_HISTORY.md",
-      "bytes": 48685,
-      "sha256": "6091eabd2e1c233b08717592b1040bd3367ed78fc777c08c324bc742239749e7"
+      "bytes": 51399,
+      "sha256": "29cc1503d49da4f09ef1768b30675133188d542b1beadcb92683e165d23cc5e3"
     },
     {
       "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
@@ -150,13 +150,53 @@
     },
     {
       "path": "docs/project/PROJECT_GOAL.md",
-      "bytes": 1325,
-      "sha256": "2a6582c459dc0693dcce3137603a7d4905c0a0e876b6e7908c0f03786b943480"
+      "bytes": 1795,
+      "sha256": "9aeeb70ef19dad9879bf344d081ce3dc2f09dfaef4a525eebd09845ab5fa8f2e"
     },
     {
       "path": "docs/project/SCOPE_AND_BOUNDARIES.md",
-      "bytes": 2009,
-      "sha256": "54ba8a1cc93dc24f912eb19737df1565fa546563c14f9479ae66fb161c49b9bd"
+      "bytes": 2423,
+      "sha256": "ef9c08aa769116abdfd0dd61572126c25ae21e0210d5b14d6e7c10d8a589fd56"
+    },
+    {
+      "path": "docs/strategy/CHANNEL_ROLE_MATRIX.md",
+      "bytes": 4661,
+      "sha256": "b05a6f817ea51dd94295d069e0d0fcecb89168ba7fc81c1c558792e9dd897667"
+    },
+    {
+      "path": "docs/strategy/CURRENT_SYSTEM_REUSE_MATRIX.md",
+      "bytes": 3246,
+      "sha256": "437e6fde4bfd45a29df528726477f87aa166ad8f878069e0a85223f3873c4a05"
+    },
+    {
+      "path": "docs/strategy/CURRENT_TO_TARGET_GAP_ANALYSIS.md",
+      "bytes": 8828,
+      "sha256": "431c4e403f97e0706dce954e475160f3fa9316470b8c40f8b5768969cce35246"
+    },
+    {
+      "path": "docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md",
+      "bytes": 4916,
+      "sha256": "f1df15bbf0b37a8303ae7255876b38688c62a5a08218063d3ece4e2262c9ee24"
+    },
+    {
+      "path": "docs/strategy/SALES_EFFECT_SCORECARD.md",
+      "bytes": 3977,
+      "sha256": "84dac31cce563f4365ae32c711aee9a80f05a687dc8c1d0b1c7b26ffd7f02b3b"
+    },
+    {
+      "path": "docs/strategy/SALES_EXECUTION_PHASES.md",
+      "bytes": 14013,
+      "sha256": "1d447a6d1207455cadee05e42fd0461de646bec198da7022882e9c6d304a00e1"
+    },
+    {
+      "path": "docs/strategy/SALES_FIRST_MASTER_PLAN.md",
+      "bytes": 10789,
+      "sha256": "7f90863628748ce935a198e75695775d0d98399684fc60cb3b7f5d3374ef9aec"
+    },
+    {
+      "path": "docs/strategy/SALES_SYSTEM_TARGET_ARCHITECTURE.md",
+      "bytes": 6610,
+      "sha256": "a8e313b351031227604b6b85370b72abf9eeed38b915f9714f85e70d9baf472e"
     },
     {
       "path": "docs/sync/README.md",
@@ -170,8 +210,8 @@
     },
     {
       "path": "scripts/build_project_sync_pack.py",
-      "bytes": 31213,
-      "sha256": "0fe5d97c15653141b2dd25ab1b5d57e9fc60b6d59f906807b9d5ae2aab4cef2d"
+      "bytes": 31628,
+      "sha256": "9e3ff6eabed670d2cdf160ced32921c028b388179f3269b318b09e94cb4660e8"
     }
   ],
   "excluded_summary": [
@@ -187,7 +227,7 @@
     {
       "category": "git_internal",
       "reason": "Git 内部数据不属于可交接项目上下文",
-      "count": 4631,
+      "count": 4775,
       "file_size_range_bytes": {
         "min": 6,
         "max": 282455
@@ -205,7 +245,7 @@
     {
       "category": "media_binary_or_archive",
       "reason": "媒体、二进制或压缩产物不进入同步包",
-      "count": 107,
+      "count": 109,
       "file_size_range_bytes": {
         "min": 45825,
         "max": 6532770
@@ -241,7 +281,7 @@
     {
       "category": "system_metadata",
       "reason": "系统元数据会破坏跨机器可移植性",
-      "count": 303,
+      "count": 309,
       "file_size_range_bytes": {
         "min": 4096,
         "max": 4096

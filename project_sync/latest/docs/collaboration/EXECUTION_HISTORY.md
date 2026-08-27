@@ -1,5 +1,15 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-28｜Sales-First 项目级审计、目标架构重构与机制同步
+
+- **目标与边界**：先以 `origin/main` 完整审计项目事实、Phase 0–8 文档和实际代码，再将北极星从“完成 AI Native Sales OS / TikTok-only”重设为“业务闸门满足后验证最小、可核验的销售闭环”。本轮只改规划/事实/机制文件；不重构业务代码，不连接真实系统，不发布、外联、报价、付款、订单或履约。
+- **Git 基线**：确认工作区、仓库根目录、分支均为预期；`origin=https://github.com/fthytwerwt-sudo/fenjiu.git`，`git fetch origin` 后 `HEAD` 与 `origin/main` 同为 `f89a86f3317fdf32b9c6c498455bb76ec8d4249b`，divergence 为 `0/0`。本次最终 Git 收口证据以后续 commit/push/readback 为准。
+- **审计结论**：现有 Truth Center、ingestion、workflow、审批、审计、leads/CRM/DNC、客服、内容/视频均为 synthetic/local-only 合同或 fake；`external_execution_allowed=false`，真实 provider/账号/客户/订单/履约未实现。正确资产是隔离、来源、DNC、审批、审计、人工接管与 QC；最关键缺口是可售 Offer、渠道承接、人工销售、订单交接和销售反馈。
+- **外部资料核验**：官方资料显示 TikTok/Meta/Instagram/WhatsApp/Gmail 的部分技术能力存在，但不等于项目可用；TikTok 酒类广告条件严格、Meta commerce channels 不得销售酒类、WhatsApp 不得交易酒类；尼泊尔 Madira Act 是许可框架。本项目账号、许可、地域、数据处理和用户授权保持 `UNKNOWN / BLOCKED`。
+- **实际改动**：新增 `docs/strategy/` 的总规划、差距/架构/阶段/渠道/指标/复用/政策矩阵；更新项目事实、决定、入口、工程索引、sync allowlist 和 GPT Project 长期机制。旧决定以 `SUPERSEDED` 保留，不删除历史。
+- **状态边界**：本轮规划、文档、测试、commit 或推送不确认 SKU、价格、库存、许可、账户资格、收款、客户、订单、履约或销售成立。下一张任务为 `SR-1 / Sellable Offer Evidence Contract`。
+- **验证**：`git diff --check`、两份同步脚本的 `py_compile`、战略文件非空/引用/敏感路径检查、`python3 scripts/validate_gpt_project_mechanism_sync.py --write-manifest`、`python3 scripts/build_project_sync_pack.py`、`python3 scripts/build_project_sync_pack.py --verify` 全部通过；`make regression` 通过 Compose 配置、两次 migration replay、负向 SQL 约束、8 architecture、16 regression、8 local-runtime、16 control-plane、120 contract 和 35 ingestion 测试。其余 Git commit/push/remote readback 以本轮最终执行回报为准。
+
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 
 ## 2026-08-23｜双业务线真实获客来源目录与 100 分评分合同修复

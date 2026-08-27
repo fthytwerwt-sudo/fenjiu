@@ -7,28 +7,28 @@
 ## AGENTS 镜像来源
 
 - `source_repository`: `fthytwerwt-sudo/fenjiu`
-- `source_branch`: `codex/prompt-governance-language`
-- `source_commit`: `8637f827d62e5e5e48af96f4c1d1725fc0ff097d`
+- `source_branch`: `main`
+- `source_commit`: `8e03083be90f9d7e355787596a35598eb629a5e8`
 - `source_file`: `AGENTS.md`
-- `source_sha256`: `99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893`
+- `source_sha256`: `a8e2adf50c22dff6c45f8ceb68222b16db14bcd17f1fb9e9c9a2cd55971599af`
 - `mirror_file`: `project_entry/AGENTS.md`
-- `mirror_sha256`: `99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893`
-- `mirror_generated_at_utc`: `2026-08-06T18:06:05Z`
+- `mirror_sha256`: `a8e2adf50c22dff6c45f8ceb68222b16db14bcd17f1fb9e9c9a2cd55971599af`
+- `mirror_generated_at_utc`: `2026-08-27T18:29:46Z`
 
 本清单由验证脚本根据实际文件生成。字符数和 SHA-256 以当前目录内容为准。
 
 | 文件路径 | 中文用途 | 上传位置 | 字符数 | SHA-256 | 是否包含动态项目事实 | 敏感扫描 | 推荐读取顺序 |
 |---|---|---|---:|---|---|---|---:|
 | `00_GPT_Project上传说明_readme.md` | 说明上传方式、状态边界和禁止上传内容 | Project Knowledge | 2338 | `0673b982f5a3b739e101081a7c38f581bc7a2ee53bcd8c84d24886087bfb7770` | 否 | 通过 | 1 |
-| `上传清单_manifest.md` | 列出文件、用途、上传位置、字符数和哈希 | Project Knowledge | 5184 | `self-referential-see-validation-report` | 否 | 通过 | 2 |
-| `01_汾酒项目系统提示词_fenjiu_project_system_prompt.md` | 复制到 Project Instructions 的汾酒专用系统提示词 | Project Instructions | 4317 | `db041b8dfbe4a380f8c1591d49cb51e3ed51de68fef1c93dc49731401e1dec49` | 否 | 通过 | 3 |
-| `02_项目身份与长期业务边界_project_identity_stable_scope.md` | 固定汾酒尼泊尔 TikTok 主线和业务边界 | Project Knowledge | 866 | `43197c6faf53a6b299fd4d9988ad9bb66c9abfe8d5be8d884a47587ea8866b5a` | 否 | 通过 | 4 |
+| `上传清单_manifest.md` | 列出文件、用途、上传位置、字符数和哈希 | Project Knowledge | 5158 | `self-referential-see-validation-report` | 否 | 通过 | 2 |
+| `01_汾酒项目系统提示词_fenjiu_project_system_prompt.md` | 复制到 Project Instructions 的汾酒专用系统提示词 | Project Instructions | 4861 | `188b3d29e02f292bbcc87a7014c08070249cf998e2f82d305514c8d4ef435767` | 否 | 通过 | 3 |
+| `02_项目身份与长期业务边界_project_identity_stable_scope.md` | 固定汾酒尼泊尔 TikTok 主线和业务边界 | Project Knowledge | 1280 | `f3a35d65bece333bb917bba91cbfa3d657c7155b73349cb2920698dc166c9ee3` | 否 | 通过 | 4 |
 | `03_三层架构与事实源边界_three_layer_source_boundary.md` | 区分 GPT Project、GitHub、Codex 和账号记忆 | Project Knowledge | 715 | `bd35ad5e723cd87ed7952f63ba6232d8b763b5241b836c6ac20fdba90340ae78` | 否 | 通过 | 5 |
 | `04_P0-P1-P2锚点与抗漂移机制_anchor_priority_anti_drift.md` | 规定来源优先级和抗漂移检查 | Project Knowledge | 1017 | `01f47a9ad1d7f1f037adbf9b117264905233a11fbb30b11470e5149c2afe22b9` | 否 | 通过 | 6 |
 | `05_GitHub事实源读取机制_github_fact_source_protocol.md` | 规定何时回读 GitHub 当前事实源 | Project Knowledge | 909 | `221cfac2cf976738207f73933209c42e688de02a7f7deea05963e9b31b0c62cd` | 否 | 通过 | 7 |
 | `06_Codex执行落库机制_codex_execution_to_repo_protocol.md` | 规定 Codex 执行、验证、提交和推送 | Project Knowledge | 1006 | `04cbb85b9f47d8180508d3b5df36c6f4e76187ef6b8e57815892da342576f232` | 否 | 通过 | 8 |
 | `07_供应链启动与资料缺口判断机制_supplier_readiness_gap_protocol.md` | 判断商品、价格、库存、资质和履约业务闸门缺口 | Project Knowledge | 687 | `b37ce083f2b3bb2b5606730294c9223b847db323aeebdbc956280c5793a2cfef` | 否 | 通过 | 9 |
-| `08_TikTok主线与渠道边界_tiktok_channel_scope_protocol.md` | 限定 TikTok 主线和辅助渠道边界 | Project Knowledge | 630 | `4adc67a43cf5705151e8904c67132dfa0c847f7c320a347749ff63dc2ed3e96c` | 否 | 通过 | 10 |
+| `08_TikTok主线与渠道边界_tiktok_channel_scope_protocol.md` | 限定 TikTok 主线和辅助渠道边界 | Project Knowledge | 1019 | `d31df0405904c0673ef7c38738915db939a4fd090af062ef6e0a19c676fdb567` | 否 | 通过 | 10 |
 | `09_酒类合规与外部执行闸门_alcohol_compliance_execution_gate.md` | 规定公开发布、投放、收款和履约的前置条件 | Project Knowledge | 553 | `15628d23b101b582e33ce027c3167a7aed75ef77b9c31ad4048ed97e5019e052` | 否 | 通过 | 11 |
 | `10_汾酒与海鲜业务线隔离机制_business_line_isolation.md` | 防止海鲜资料污染汾酒主线 | Project Knowledge | 436 | `9a23b14406282e2f21879035546793b18a1ca7db563b0f66314e76104bfc65db` | 否 | 通过 | 12 |
 | `11_外部资料保真与执行桥接_external_evidence_bridge.md` | 把外部资料保真转为待验证输入或任务 | Project Knowledge | 626 | `8e55a632217f347853f96751786bcb983c9a6db69e3935479fe9d027497515ae` | 否 | 通过 | 13 |
@@ -40,8 +40,8 @@
 | `17_Git提交推送与远端验证_git_completion_gate.md` | 规定 commit、push 和 remote readback 闸门 | Project Knowledge | 1279 | `82b1da4b770d4e21fe41ba51edc9206e9d147bbd9261230965d996fc19da3f34` | 否 | 通过 | 19 |
 | `18_AGENTS与GPTProject边界_agents_project_boundary.md` | 区分仓库 AGENTS 与 GPT Project 机制包 | Project Knowledge | 848 | `08de27c51d3b45ed56b5f4417b8e1073ed1cd4a74acfa248d4831ddb1c057e5e` | 否 | 通过 | 20 |
 | `19_用户上传后验证清单_post_upload_validation_checklist.md` | 提供上传后测试问题和合格回答要点 | Project Knowledge | 1451 | `a458d57dce35fda4d216b48eb6c5df998ffb159e8a0600c78c22b35f799e5209` | 否 | 通过 | 21 |
-| `20_同步包维护与更新机制_package_maintenance_protocol.md` | 规定后续何时更新机制包和如何更新 | Project Knowledge | 656 | `5815401c586292bcbc9d90346d62a893dfbfc2c23388d8b61ee3301632ce3083` | 否 | 通过 | 22 |
-| `project_entry/AGENTS.md` | 根目录 AGENTS 的生成时只读镜像 | Project Knowledge | 5092 | `99e4cbc4ce40ab95999e858e1a841eab74ca0b84904e7256f4bf5306144a0893` | 否 | 通过 | 23 |
+| `20_同步包维护与更新机制_package_maintenance_protocol.md` | 规定后续何时更新机制包和如何更新 | Project Knowledge | 767 | `020ccf8042da60c0fd5e32fe23218f4f92cbab826a0698b8b823c8dc11e1598f` | 否 | 通过 | 22 |
+| `project_entry/AGENTS.md` | 根目录 AGENTS 的生成时只读镜像 | Project Knowledge | 5297 | `a8e2adf50c22dff6c45f8ceb68222b16db14bcd17f1fb9e9c9a2cd55971599af` | 否 | 通过 | 23 |
 
 ## 上传建议
 

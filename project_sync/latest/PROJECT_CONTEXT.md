@@ -10,12 +10,12 @@
 
 ## 30 秒定位
 
-- **当前正式范围**：汾酒仅做尼泊尔 TikTok 线上销售准备。TikTok 是当前主销售与内容渠道。
-- **当前阶段**：供应链启动资料收集与首批 TikTok 商品上线准备，不是已经公开销售或履约。
-- **用户负责**：线上账号运营、TikTok 内容制作与发布、商品展示和上架、客户沟通、订单转化，以及销售数据和市场反馈。
+- **当前正式范围**：汾酒采用 Sales-First：`business_gates → sellable offer → controlled channel touchpoint → unified inquiry → human-led sales → order handoff → feedback`。TikTok 是候选内容触点，不是自动获准的唯一销售渠道。
+- **当前阶段**：`SR-1 Sellable Offer Ready`，即供应链资料、合规、账号、收款与履约证据准备；不是已经公开销售或履约。
+- **用户负责**：渠道/账号运营、内容、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权。
 - **供应链负责**：当地合法销售与品牌/产品资质、SKU/规格/价格/库存、账号主体认证支持、当地收款、仓储配送、退换货、质量、售后和财务结算；这些均为确认的责任边界，不表示资料已交付。
-- **当前最重要任务**：取得商品单、真实价格与规则、库存/补货、账号和认证支持、资质授权、收款、配送售后及明确负责人；资料齐备后再决定首批可上架 SKU。
-- **不自动恢复的旧范围**：B2B 经销商开发、多平台独立运营、Facebook/Instagram 独立营销、YouTube/Viber、90 天试销、自动找客或自动外联。
+- **当前最重要任务**：取得一个最小 Offer 的商品单、价格/有效期、库存/补货、主体/许可/授权、账号与认证支持、收款、配送售后及明确负责人；资料齐备后才决定渠道试点和询盘入口。
+- **不自动恢复的旧范围**：没有销售证据与单独授权的 B2B 接触、全平台同时运营、Facebook/Instagram 广告、YouTube/Viber、90 天试销、自动找客或自动外联。
 - **海鲜资料线**：独立业务线；可共享有限协作机制，不能直接用于汾酒事实或决策。
 
 ## 必读顺序
@@ -34,7 +34,7 @@
 ## 先分清可继续与不可进入的动作
 
 - **可继续准备**：内部资料整理、供应链启动表、商品字段/上架资料设计、事实核验、合规与平台问题清单、受控草稿。
-- **业务闸门阻断外部执行**：未取得当前书面证据前，不得公开发布、投放、收款、下单、承诺交期或开展真实履约。关键 `business_gates（业务闸门）` 包括 SKU、价格、库存、主体和资质、账号权限、收款、配送售后，以及 TikTok 酒类内容/广告边界；缺失时状态为 `BLOCKED`。
+- **业务闸门阻断外部执行**：未取得当前书面证据前，不得公开发布、投放、收款、下单、承诺交期或开展真实履约。关键 `business_gates（业务闸门）` 包括 SKU、价格、库存、主体和资质、账号权限、收款、配送售后，以及指定渠道的酒类内容/广告/商品展示/消息边界；缺失时状态为 `BLOCKED`。
 
 ## 状态和交接
 
@@ -55,55 +55,54 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 业务项目状态｜BUSINESS_STATUS
 
-- **最近更新**：2026-08-05
+- **最近更新**：2026-08-28
 - **业务线**：汾酒尼泊尔主线
-- **状态来源**：用户明确确认，2026-08-05；以及当前仓库原始资料存在性审计。
+- **状态来源**：用户明确确认，2026-08-05 与 Sales-First P0（2026-08-28）；以及当前仓库原始资料存在性审计。
 
 ## 当前业务阶段
 
-**CONFIRMED**：供应链启动资料收集与首批 TikTok 商品上线准备。
+**CONFIRMED**：`SR-0 Sales Reset` 已完成规划落库；当前业务准备进入 `SR-1 Sellable Offer Ready`。它要求先取得可售 Offer 的供应链与合规证据，再决定任何真实渠道试点。
 
 这表示可继续做内部资料、字段、清单和证据准备；不表示供应链已经交付资料，也不表示已可对外销售。
 
 ## 当前正式业务范围
 
-- **CONFIRMED**：汾酒当前只做尼泊尔 TikTok 线上销售；TikTok 是主销售和内容渠道。
-- **CONFIRMED**：WhatsApp Business、TikTok Business Center/广告账户、Facebook Page、Meta Business Manager、Instagram、官方网站、企业邮箱和当地收款账户可作为认证、广告、客服、询盘、收款或基础设施使用。
-- **CONFIRMED**：上述辅助资产不自动成为独立营销主渠道。
-- **SUPERSEDED**：旧研究中的 B2B 经销商开发、多平台独立运营、Facebook/Instagram 独立营销、YouTube、Viber、完整 90 天试销、自动找客和自动外联，仅在当前执行范围层面被替代；原始研究仍保留为历史背景，重新启用须由用户明确确认。
+- **CONFIRMED**：项目采用“一个销售系统 + 多个受控销售触点 + 一个统一客户漏斗 + 一套销售数据”的 Sales-First 结构。触点候选包括 TikTok、Instagram、Facebook、Website、WhatsApp、Email/Search/B2B 研究；每个触点都必须先有角色、政策、账号、承接和用户授权证据，不能因本文件出现而启动。
+- **SUPERSEDED**：2026-08-05 的 `TikTok-only` 作为当前长期业务范围已被用户本轮 P0 替代；TikTok 仍是候选内容发现触点，不保证项目已获账号、广告、商品展示或转化权限。
+- **SUPERSEDED**：以“完整 AI Native Sales OS”或“多平台独立运营”作为先行目标。B2B 精准开发只在可售 Offer、来源/联系人处理依据、DNC/retention 和单次外联授权齐备后作为后置小样本。
 
 ## 双方职责边界
 
 | 角色 | CONFIRMED 的责任边界 | 不能据此推断 |
 |---|---|---|
-| 用户 | 线上账号运营、TikTok 内容制作与发布、商品线上展示和上架、客户沟通、订单转化、销售数据和市场反馈 | 已获平台权限、已完成发布或已成交 |
+| 用户 | 渠道与内容运营、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权 | 已获平台权限、已完成发布或已成交 |
 | 供应链 | 当地合法销售主体、进口/销售/品牌资质、产品合法可售、SKU/规格/价格/最低价/库存/补货、品牌素材、账号主体认证支持、当地收款、仓储发货配送、退换货、质量、售后和财务结算 | 任一资料已经提供、确认或可执行 |
 
 ## 当前已完成的内部准备
 
 - **CONFIRMED**：汾酒市场、执行与文化/合规研究源文件存在。
 - **CONFIRMED**：供应链启动文件/模板存在，商品、价格、库存、账号、资质和履约字段已被设计。
-- **CONFIRMED**：当前范围、职责和资料收集优先级已被用户明确确认并写入项目状态。
+- **CONFIRMED**：当前范围、职责、销售优先级和最小销售闭环已被用户明确确认并写入 [SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)。
 
 ## 正在进行
 
-- **CONFIRMED**：整理和维护可交给供应链填写的启动资料入口。
+- **CONFIRMED**：整理和维护可交给供应链填写的 Sellable Offer 资料入口、缺口与责任人。
 - **UNKNOWN**：供应链是否已填写、回传或确认任何商品、价格、库存、账号、资质、收款或履约资料。
 - **BLOCKED**：没有上述实际书面资料时，不能决定首批可上架 SKU，也不能进入真实外部销售。
 
-## P0 待补输入
+## 业务闸门待补输入
 
 1. 真实 SKU、规格、商品图片/品牌素材、价格、价格有效期、最低销售价、库存和补货周期。
 2. 当地销售/进口主体、产品合法可售、品牌授权与相关资质。
 3. 账号主体、管理员权限和认证支持。
 4. 当地收款主体、仓储、发货、配送、退换货、质量、售后和财务结算责任人。
-5. TikTok 当前酒类内容、广告、账号和转化边界的书面核验。
-6. 以上资料基础上确定的首批可上架 SKU。
+5. 指定渠道当前酒类内容、广告/商品展示、消息、账号和转化边界的书面核验。
+6. 以上资料基础上确定的最小可售 Offer、询盘入口、人工销售 owner 与订单交接方式。
 
 ## 可继续与必须停止的动作
 
 - **可继续**：内部资料整理、供应链启动清单、商品信息收集、合规/平台问题核验、草稿和人工审核。
-- **BLOCKED**：公开发布、广告投放、真实报价、收款、下单、发货、承诺交期、真实售后，直至对应 P0 输入和授权以当前书面证据解除。
+- **BLOCKED**：公开发布、广告投放、真实报价、收款、下单、发货、承诺交期、真实售后，直至对应 `business_gates` 和用户授权以当前书面证据解除。
 
 ## 海鲜资料线
 
@@ -117,19 +116,19 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-23
+- **最近更新**：2026-08-28
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
 
-- **CONFIRMED**：汾酒当前正式范围为尼泊尔 TikTok 线上销售准备，阶段为供应链启动资料收集与首批商品上线准备。
+- **CONFIRMED**：用户本轮 P0 已将当前方向改为 Sales-First：业务目标是经由最小、可核验的销售闭环验证询盘、人工销售、订单和履约交接；AI 系统完成度不再是北极星。
 - **UNKNOWN**：供应链尚未在当前资料中实际提供 SKU、价格、库存、补货、主体/资质、品牌授权、账号权限、收款、仓储配送、售后及负责人确认。
-- **当前最重要任务**：先补齐商品单、价格规则和库存，再确认首批可上架 SKU，并补齐账号、资质、收款和履约资料。
-- **P0 阻断**：在上述资料及 TikTok 当前酒类内容/广告边界获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
+- **当前最重要任务**：完成 `SR-1 Sellable Offer Ready`：先补齐商品单、价格规则、库存、主体/资质、账号、收款与履约资料，并据此确认一个最小 Offer、询盘入口、人工销售 owner 和交接方式。
+- **BLOCKED / business_gates**：在上述资料与指定渠道当前酒类政策获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
 - **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
-- **已确认（来源研究层）**：双业务线 Source Catalog（真实获客来源目录）已形成并提供 machine-readable（机器可读）YAML；状态为 `source_catalog_ready`，但真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权。
+- **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
 
-详情：[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
+详情：[SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](../strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
 
 ## 协作机制状态摘要
 
@@ -140,8 +139,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 ## 工程规划状态摘要
 
-- **CONFIRMED（规划层）**：`docs/implementation/` 已形成 AI Native Sales OS 的 Phase 0–8 分阶段蓝图、机器可读依赖图和每阶段 3 张 Codex 任务卡；该规划承接 GPT Project / GitHub / Codex 治理机制，不替代它。
-- **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；技术实施仍须按 `docs/implementation/CODEX_EXECUTION_INDEX.md` 一次一张任务卡推进。
+- **CONFIRMED（工程历史层）**：`docs/implementation/` 保留 AI Native Sales OS 的 Phase 0–8 技术蓝图、依赖图和任务卡；自 2026-08-28 起它们不再是业务优先队列，销售顺序以 `docs/strategy/SALES_EXECUTION_PHASES.md` 为准。
+- **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；任何未来技术实施必须先由 Sales-First 阶段证明其必要性，再按独立任务卡推进。
 - **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行 P00 default/`--all-files` 扫描；`make regression` 的 compile step 已显式跳过 AppleDouble metadata，但后续任务仍须在新建、干净的独立 task worktree 中启动。
 - **CONFIRMED（工程 Phase 1）**：P01-01 至 P01-03 已在 `main` 远端回读：模块化单体 skeleton、synthetic-only fixture metadata、local-only Docker Compose / Make、静态 typed settings / FeatureFlagPort、liveness/readiness 与 JSON 脱敏日志合同均已建立。所有敏感 flags 默认 false，broker/provider/real configuration 不存在时 `/ready` 返回 HTTP 503；日志只保留结构化安全码并 fail-closed 脱敏自由文本、URL、DSN、Cookie、secret 和绝对路径。当前通过 8 项 architecture、14 项 regression、8 项 local-runtime 与 16 项 control-plane 测试；未接入应用数据库连接、外部网络、模型、SDK 或真实业务资料。GitHub Actions workflow 因当前凭据缺少 `workflow` scope 未写入远端；Phase 2 仍须在新建干净 task worktree 中逐卡推进。
 - **CONFIRMED（工程 Phase 2 / P02-01）**：`main` 的 P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`：stdlib scope/source/version metadata contracts、local PostgreSQL schema migration 与 compound scope/lineage constraints 已建立。默认 `make regression` fail-closed 地执行隔离 PostgreSQL migration replay（两次）与五类负向约束，再运行既有测试；本轮总计 54 项 Python 测试通过，临时容器与 volumes 已清理。
@@ -177,11 +176,13 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 | 信息类型 | 当前事实源 | 状态与说明 |
 |---|---|---|
-| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的范围和职责来自用户明确确认（2026-08-05）；供应链实际交付仍须原始书面证据 |
+| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围和职责来自用户 P0（2026-08-28）；供应链实际交付仍须原始书面证据 |
 | 项目总览与路由 | docs/project/CURRENT_STATUS.md | 短摘要；不替代业务或协作详细状态 |
 | 协作、Git、同步包与远端回读 | docs/collaboration/COLLABORATION_STATUS.md | 远端 branch、commit、默认分支和 visibility 仅以最终回读为准 |
 | 协作规则与阅读顺序 | AGENTS.md、PROJECT_ENTRY.md | **CONFIRMED** 的仓库规则和导航 |
 | 当前执行范围 | docs/project/PROJECT_GOAL.md、SCOPE_AND_BOUNDARIES.md | **CONFIRMED**；旧研究不覆盖当前范围 |
+| Sales-First 北极星、漏斗、阶段、渠道、指标与复用判断 | `docs/strategy/` | **CONFIRMED（规划）**：2026-08-28 用户 P0 已落库；不替代每个业务闸门、政策、账号或外部执行授权的当前证据 |
+| 平台/当地政策与项目授权四层核验 | `docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md` | 官方来源是 **CONFIRMED（外部资料）**；项目满足政策/许可/账号/授权的程度仍逐项为 `UNKNOWN / BLOCKED`，执行前需刷新 |
 | 已采用的业务与机制取舍 | docs/project/DECISIONS.md | **CONFIRMED**；每条决定须保留来源、日期、影响和状态 |
 | 待补业务输入、阻断与顺序 | OPEN_QUESTIONS.md、RISKS_AND_BLOCKERS.md、NEXT_ACTIONS.md | **UNKNOWN/BLOCKED**；收到书面证据后再更新 |
 | 汾酒市场、渠道和合规研究 | research_root.json、research_execution.json、research_culture_compliance.json | 资料存在为 **CONFIRMED**；涉及 B2B、多平台、90 天方案的内容为 **SUPERSEDED**（仅当前执行范围层面被替代），保留为历史市场背景，须由用户重新确认才可恢复 |
@@ -220,8 +221,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 ## 当前在范围内
 
-- 汾酒尼泊尔 TikTok 线上销售准备；
-- 供应链启动资料收集、商品字段核验、首批 SKU 决策输入与上线前准备；
+- 汾酒尼泊尔的 Sales-First 销售准备：供应链业务闸门 → 可售 Offer → 受控渠道触点 → 统一询盘承接 → 人工销售推进 → 订单交接 → 反馈；
+- `SR-1 Sellable Offer Ready`：供应链启动资料收集、商品字段核验、最小 Offer 决策输入与渠道/询盘/交接准备；
 - 用户的账号运营、内容、商品展示、客户沟通、订单转化和数据反馈准备；
 - 供应链的主体/资质、产品、账号认证支持、收款与履约资料收集和书面确认；
 - 事实分级、状态、决策、风险、交接和同步包机制维护；
@@ -229,8 +230,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 ## 当前不在范围内
 
-- 自动恢复旧研究中的汾酒 B2B 经销商开发、多平台独立运营、Facebook/Instagram 独立营销、YouTube、Viber、完整 90 天试销、自动找客或自动外联；
-- 将 WhatsApp Business、Meta、Instagram、网站等辅助资产自动扩大为独立主营销渠道；
+- 未经阶段证据自动恢复 B2B 经销商开发、多平台独立运营、Facebook/Instagram 广告、YouTube、Viber、完整 90 天试销、自动找客或自动外联；
+- 把任何 TikTok、Meta/Instagram、WhatsApp、Website、Gmail 或搜索触点变成独立项目，或把平台/API 能力当作项目授权；
 - 未经明确授权和书面前置条件的外发、发布、投放、真实报价、下单、收款、发货或售后；
 - 将海鲜产品、客户、价格、资质、履约或结论用于汾酒，或反向推导；
 - 将研究、模板、文档、提交或测试通过描述为当地许可、供应链确认、上线、销售或履约。
@@ -243,13 +244,13 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 ## 许可与执行闸门
 
-内部资料准备可继续。任何公开酒类内容、广告、商品展示、导流、订单、付款、配送或个人数据处理，必须同时满足：当地合法性、当前平台规则、主体/品牌/产品授权、年龄与地域限制、账号与数据归属、收款履约责任、用户授权和可审计证据。任一缺失即 **BLOCKED**。
+内部资料准备可继续。任何公开酒类内容、广告、商品展示、导流、订单、付款、配送或个人数据处理，必须同时满足：当地合法性、当前平台规则、主体/品牌/产品授权、年龄与地域限制、账号与数据归属、收款履约责任、用户授权和可审计证据。任一缺失即 **BLOCKED**。WhatsApp 不得被用作酒类交易通道；Meta commerce channels 不得被用作酒类销售通道，详见 [外部政策与授权矩阵](../strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md)。
 
 ## 协作机制状态
 
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-10
+- **最近更新**：2026-08-28
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -260,6 +261,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | PROJECT_ENTRY | **CONFIRMED** | 已以 TikTok、供应链启动阶段、双方职责、用户本轮输入来源优先级、历史研究降级和海鲜隔离作为首屏信息 |
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
+| Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
 
 ## 安全与历史迁移审计
 
@@ -274,7 +276,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
 - **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
 - **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
-- **最近本地 bundle 验证日期**：2026-08-10；V2 build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过。
+- **最近本地 bundle 验证日期**：2026-08-28；Sales-First allowlist 已纳入八份战略文件，build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；生成基线为 `8e03083be90f9d7e355787596a35598eb629a5e8`。
 - **CONFIRMED**：本文件本次回填后已重新生成并验证同步包；Manifest（清单）记录的 `source_commit` 是生成基线，不是随后提交同步包目录的 commit（提交）。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。
@@ -282,9 +284,10 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 ## GPT Project 配合机制包状态
 
 - **CONFIRMED**：`GPT项目资料同步包_gpt_project_mechanism_sync/` 已创建为 GPT Project 手动上传包；它与 `project_sync/latest/` 分工不同，不能互相替代。
-- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2 来源优先级、GitHub 事实读取、Codex 执行落库、供应链业务闸门缺口、TikTok 主线、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
+- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2 来源优先级、GitHub 事实读取、Codex 执行落库、供应链业务闸门缺口、Sales-First 渠道边界、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
 - **CONFIRMED**：`project_entry/AGENTS.md` 必须由 Manifest 记录的 source commit 中 `AGENTS.md` 生成；验证脚本会回读历史 commit、比较 source SHA、mirror SHA 和镜像内容。
 - **CONFIRMED**：`scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 已升级为语义一致性、业务闸门术语、blocked/Git 状态词和 AGENTS provenance 验证；具体 SHA 和结果以验证报告为准。
+- **CONFIRMED（2026-08-28）**：Sales-First 机制包已重新生成 Manifest 并通过验证；23 个文件、system prompt 4,714 字符，根 AGENTS、镜像和 Manifest source commit `8e03083be90f9d7e355787596a35598eb629a5e8` 一致。此状态不表示用户已重新上传 GPT Project UI。
 - **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本包生成、验证、commit 或 push 不代表用户已上传 GPT Project UI，也不代表供应链、平台、合规、上线、销售或履约成立。
 
 ## GitHub 收口状态
@@ -332,6 +335,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 2. **仓库治理**：具备管理权限的责任人应认证回读 visibility（可见性）、决定是否将默认分支切换为 `main`，再按决定回读和清理旧临时远端分支。
 3. **远端 CI**：具备 `workflow` scope 的授权凭据可单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 4. 用户按需将 `GPT项目资料同步包_gpt_project_mechanism_sync/` 上传到 ChatGPT GPT Project，并用上传后验证清单测试新聊天框。
+5. **Sales-First 包同步**：本轮完成 Manifest、AGENTS 镜像、机制验证、Git commit/push/remote readback 前，不得声明 GPT Project UI 已更新；状态始终保持 `user_uploaded_to_gpt_project_ui = false`。
 
 ## 更新规则
 

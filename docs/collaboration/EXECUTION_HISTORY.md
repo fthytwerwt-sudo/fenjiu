@@ -8,6 +8,7 @@
 - **外部资料核验**：官方资料显示 TikTok/Meta/Instagram/WhatsApp/Gmail 的部分技术能力存在，但不等于项目可用；TikTok 酒类广告条件严格、Meta commerce channels 不得销售酒类、WhatsApp 不得交易酒类；尼泊尔 Madira Act 是许可框架。本项目账号、许可、地域、数据处理和用户授权保持 `UNKNOWN / BLOCKED`。
 - **实际改动**：新增 `docs/strategy/` 的总规划、差距/架构/阶段/渠道/指标/复用/政策矩阵；更新项目事实、决定、入口、工程索引、sync allowlist 和 GPT Project 长期机制。旧决定以 `SUPERSEDED` 保留，不删除历史。
 - **状态边界**：本轮规划、文档、测试、commit 或推送不确认 SKU、价格、库存、许可、账户资格、收款、客户、订单、履约或销售成立。下一张任务为 `SR-1 / Sellable Offer Evidence Contract`。
+- **验证**：`git diff --check`、两份同步脚本的 `py_compile`、战略文件非空/引用/敏感路径检查、`python3 scripts/validate_gpt_project_mechanism_sync.py --write-manifest`、`python3 scripts/build_project_sync_pack.py`、`python3 scripts/build_project_sync_pack.py --verify` 全部通过；`make regression` 通过 Compose 配置、两次 migration replay、负向 SQL 约束、8 architecture、16 regression、8 local-runtime、16 control-plane、120 contract 和 35 ingestion 测试。其余 Git commit/push/remote readback 以本轮最终执行回报为准。
 
 此处只记录真实仓库执行，不补写没有证据的业务动作。每个实质变更、生成、验证、commit/push 或新阻断点应新增条目。
 

@@ -1,18 +1,18 @@
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-23
+- **最近更新**：2026-08-28
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
 
-- **CONFIRMED**：汾酒当前正式范围为尼泊尔 TikTok 线上销售准备，阶段为供应链启动资料收集与首批商品上线准备。
+- **CONFIRMED**：用户本轮 P0 已将当前方向改为 Sales-First：业务目标是经由最小、可核验的销售闭环验证询盘、人工销售、订单和履约交接；AI 系统完成度不再是北极星。
 - **UNKNOWN**：供应链尚未在当前资料中实际提供 SKU、价格、库存、补货、主体/资质、品牌授权、账号权限、收款、仓储配送、售后及负责人确认。
-- **当前最重要任务**：先补齐商品单、价格规则和库存，再确认首批可上架 SKU，并补齐账号、资质、收款和履约资料。
-- **P0 阻断**：在上述资料及 TikTok 当前酒类内容/广告边界获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
+- **当前最重要任务**：完成 `SR-1 Sellable Offer Ready`：先补齐商品单、价格规则、库存、主体/资质、账号、收款与履约资料，并据此确认一个最小 Offer、询盘入口、人工销售 owner 和交接方式。
+- **BLOCKED / business_gates**：在上述资料与指定渠道当前酒类政策获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
 - **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
-- **已确认（来源研究层）**：双业务线 Source Catalog（真实获客来源目录）已形成并提供 machine-readable（机器可读）YAML；状态为 `source_catalog_ready`，但真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权。
+- **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
 
-详情：[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
+详情：[SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](../strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
 
 ## 协作机制状态摘要
 
@@ -23,8 +23,8 @@
 
 ## 工程规划状态摘要
 
-- **CONFIRMED（规划层）**：`docs/implementation/` 已形成 AI Native Sales OS 的 Phase 0–8 分阶段蓝图、机器可读依赖图和每阶段 3 张 Codex 任务卡；该规划承接 GPT Project / GitHub / Codex 治理机制，不替代它。
-- **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；技术实施仍须按 `docs/implementation/CODEX_EXECUTION_INDEX.md` 一次一张任务卡推进。
+- **CONFIRMED（工程历史层）**：`docs/implementation/` 保留 AI Native Sales OS 的 Phase 0–8 技术蓝图、依赖图和任务卡；自 2026-08-28 起它们不再是业务优先队列，销售顺序以 `docs/strategy/SALES_EXECUTION_PHASES.md` 为准。
+- **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；任何未来技术实施必须先由 Sales-First 阶段证明其必要性，再按独立任务卡推进。
 - **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行 P00 default/`--all-files` 扫描；`make regression` 的 compile step 已显式跳过 AppleDouble metadata，但后续任务仍须在新建、干净的独立 task worktree 中启动。
 - **CONFIRMED（工程 Phase 1）**：P01-01 至 P01-03 已在 `main` 远端回读：模块化单体 skeleton、synthetic-only fixture metadata、local-only Docker Compose / Make、静态 typed settings / FeatureFlagPort、liveness/readiness 与 JSON 脱敏日志合同均已建立。所有敏感 flags 默认 false，broker/provider/real configuration 不存在时 `/ready` 返回 HTTP 503；日志只保留结构化安全码并 fail-closed 脱敏自由文本、URL、DSN、Cookie、secret 和绝对路径。当前通过 8 项 architecture、14 项 regression、8 项 local-runtime 与 16 项 control-plane 测试；未接入应用数据库连接、外部网络、模型、SDK 或真实业务资料。GitHub Actions workflow 因当前凭据缺少 `workflow` scope 未写入远端；Phase 2 仍须在新建干净 task worktree 中逐卡推进。
 - **CONFIRMED（工程 Phase 2 / P02-01）**：`main` 的 P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`：stdlib scope/source/version metadata contracts、local PostgreSQL schema migration 与 compound scope/lineage constraints 已建立。默认 `make regression` fail-closed 地执行隔离 PostgreSQL migration replay（两次）与五类负向约束，再运行既有测试；本轮总计 54 项 Python 测试通过，临时容器与 volumes 已清理。
