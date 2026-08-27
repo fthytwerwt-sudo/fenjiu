@@ -1,5 +1,24 @@
 # 下一步行动｜NEXT_ACTIONS
 
+## 2026-08-28 当前唯一优先任务
+
+**`SR-1 / Sellable Offer Evidence Contract`**：把一个候选汾酒 Offer 所需的供应链、合规、渠道、收款与履约证据整理为私有、可审计的 decision register；输出已批准/缺失/冲突/过期清单和负责人。不得导入 Git 真实数据、发布、报价、收款、下单或接触客户。
+
+| 字段 | 定义 |
+|---|---|
+| `primary_route` | 供应链书面资料 → 私有 evidence register → 人工业务/合规审核 → 最小 Offer ready/blocked decision。 |
+| `fallback_route` | 资料不完整时仅生成缺口清单、owner 和补件问题；不猜测、不升级。 |
+| `capability_status` | `requires_supplier_and_human_evidence`。 |
+| `probe_required` | 是：来源、日期、owner、有效期、冲突、业务线和敏感隔离检查。 |
+| `allowed_codex_autonomy` | 整理模板、reference/hash、缺口/冲突报告、内部验证与 Git 文档收口。 |
+| `forbidden_codex_guessing` | SKU、价格、库存、许可、品牌授权、账号、支付、物流、售后、平台允许或用户授权。 |
+| `required_inputs` | 当前供应链书面资料、指定 Offer、资料 owner、当地/平台核验材料、用户定义的审阅人。 |
+| `required_outputs` | 私有 evidence register、最小 Offer decision、gap/conflict/expiry 报告、SR-2 进入/阻断判断。 |
+| `validation_commands` | 文件/哈希/敏感信息/绝对路径、事实分级、文档引用检查；无外部 action counters。 |
+| `blocked_if_missing` | `supplier_fact_missing`、许可/渠道/支付/履约证据缺失、审阅人缺失或资料冲突。 |
+
+之后的顺序：SR-1 达到定义的 `business_ready` 后，由用户决定是否授权 SR-2 的单 Offer、单触点、单承接点人工销售闭环；SR-3/5、SR-6、SR-7 与 SR-8 不允许跳级。`external_execution_allowed=false`、发送、发布、广告、报价、付款、订单、退款、发货和自动联系人采集持续关闭；WhatsApp 不作为酒类交易通道，Meta commerce channels 不作为酒类销售通道。
+
 ## 当前顺序
 
 1. **供应链补齐商品单和价格（P0）**：取得 SKU、规格、商品素材、价格、最低价、价格有效期、库存、有效期和补货周期，并标明资料日期与负责人。

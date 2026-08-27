@@ -2,7 +2,7 @@
 
 ## 1. 项目定位与当前范围
 
-本仓库保存汾酒尼泊尔主线与尼泊尔海鲜独立资料线。当前正式执行范围仅为：汾酒在尼泊尔的 TikTok 线上销售准备；当前阶段为供应链启动资料收集与首批商品上线准备。它不是已上线、已成交、已履约或已获当地许可的证明。
+本仓库保存汾酒尼泊尔主线与尼泊尔海鲜独立资料线。2026-08-28 起，汾酒当前正式方向为 `Sales-First`：先满足供应链业务闸门，形成可售 Offer，再通过受控渠道触点、统一询盘承接、人工销售推进、订单交接和反馈验证销售闭环。TikTok 是候选内容触点而非唯一长期中心；多渠道不是自动执行范围。当前阶段为 `SR-1 Sellable Offer Ready` 的资料准备。它不是已上线、已成交、已履约或已获当地许可的证明。
 
 海鲜可作为独立 B2B/B2C 业务线处理，但产品、客户、价格、资质、履约和业务结论不得与汾酒互推。没有明确任务时，默认只处理汾酒主线。
 
@@ -111,7 +111,7 @@ blocked_need_implementation_design_layer
 
 ## 6. 状态、决策与交接
 
-实质任务完成后，按影响更新 BUSINESS_STATUS、CURRENT_STATUS、SOURCE_OF_TRUTH、DECISIONS、OPEN_QUESTIONS、RISKS_AND_BLOCKERS、NEXT_ACTIONS、COLLABORATION_STATUS 与 EXECUTION_HISTORY。
+实质任务完成后，按影响更新 BUSINESS_STATUS、CURRENT_STATUS、SOURCE_OF_TRUTH、DECISIONS、OPEN_QUESTIONS、RISKS_AND_BLOCKERS、NEXT_ACTIONS、COLLABORATION_STATUS 与 EXECUTION_HISTORY。涉及北极星、渠道边界、AI 优先级或 Codex 判断规则时，同步检查 `docs/strategy/`、GPT Project 机制包、Manifest 与 AGENTS 镜像。
 
 业务状态与协作机制状态必须分开写：前者不因脚本、文档或 Git 成功而升级；后者不替代供应链、平台或合规事实。决策须有来源、日期、影响和状态。
 

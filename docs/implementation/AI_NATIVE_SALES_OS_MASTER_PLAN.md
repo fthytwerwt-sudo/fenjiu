@@ -1,5 +1,7 @@
 # AI Native Sales OS｜Phase 0–8 工程实施总蓝图
 
+> **SUPERSEDED AS BUSINESS MASTER ROUTE｜2026-08-28**：本文件仍是既有工程合同、隔离、审批与 fake/local-only 实施历史的技术参考，但不再决定汾酒的业务优先级或下一张任务。销售北极星、渠道、漏斗和阶段顺序以 [`docs/strategy/SALES_FIRST_MASTER_PLAN.md`](../strategy/SALES_FIRST_MASTER_PLAN.md) 为准；任何继续使用本蓝图任务卡的动作仍须先满足该战略阶段和全部业务闸门，不能以技术依赖解锁代替销售/外部授权。
+
 > **文档状态：PLANNED / RECOMMENDED（2026-08-06）**
 > **本轮完成度：工程实施蓝图、任务依赖图和 Codex 执行卡已规划；系统代码、数据库、账号、真实资料和外部动作均未实施。**
 > 业务状态仍以 [`../project/BUSINESS_STATUS.md`](../project/BUSINESS_STATUS.md) 为准：汾酒处于尼泊尔 TikTok 线上销售准备和供应链资料收集阶段，商品、价格、库存、资质、账号、收款、履约与酒类平台边界仍是 `UNKNOWN` 或 `BLOCKED`。

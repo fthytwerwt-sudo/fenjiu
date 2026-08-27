@@ -2,26 +2,31 @@
 
 ## 项目身份
 
-`已确认`：本项目是 `汾酒尼泊尔`。当前正式主线是汾酒在尼泊尔的 TikTok 线上销售准备。
+`已确认`：本项目是 `汾酒尼泊尔`。2026-08-28 起，长期北极星是 `Sales-First`：在供应链、当地合法性、平台规则、账号、收款与履约业务闸门满足后，验证最小线上销售闭环，而不是完成一个 AI 系统。
 
-项目当前阶段是供应链启动资料收集与首批商品上线准备。这个阶段允许整理资料、设计商品字段、建立责任清单、做合规与平台问题核验；不代表已经上线、成交、收款、发货或取得当地许可。
+当前阶段为 `SR-1 Sellable Offer Ready`。它允许整理资料、核验商品字段、建立责任/缺口清单、做合规与渠道问题核验；不代表已上线、成交、收款、发货或取得当地许可。
 
-## 当前主线
+## 销售优先结构
 
-`已确认`：TikTok 是当前主销售与内容渠道。
+```text
+Business Gates → Sellable Offer → Controlled Channel Touchpoint →
+Unified Inquiry → Human-led Sales → Order Handoff → Feedback
+```
 
-WhatsApp Business、TikTok Business Center、广告账户、Meta Business Manager、Facebook Page、Instagram、网站、企业邮箱和当地收款账户只能按认证、客服、询盘、收款或基础设施理解。它们不会自动扩展成独立营销主渠道。
+TikTok、Instagram、Facebook、Website、WhatsApp、Email/Search 和 B2B research 是候选触点或支撑能力，不是独立项目，也不因被列出而获得账号、政策、法律或用户授权。一个阶段优先选择一个受控触点和一个承接入口，再以合格询盘、销售推进、订单与履约反馈决定是否扩展。
 
 ## 双方职责
 
 | 角色 | 已确认责任边界 | 不能推断 |
 |---|---|---|
-| 用户 | TikTok 内容、账号运营、商品展示、上架、客户沟通、订单转化、数据反馈 | 已获平台权限、已发布、已成交 |
+| 用户 | 渠道/账号运营、内容、商品展示、客户沟通、订单转化、销售反馈与最终外部执行授权 | 已获平台权限、已发布、已成交 |
 | 供应链 | 当地主体、产品合法可售、品牌/产品资质、SKU、价格、库存、收款、仓储配送、退换货、售后、结算 | 任一资料已经提供或确认 |
 
-## 旧范围处理
+## 长期禁止项与后置项
 
-旧 B2B 经销商开发、多平台运营、Facebook/Instagram 独立营销、YouTube、Viber、90 天试销、自动找客或自动外联，只能作为历史研究背景。除非用户明确重新启用，否则不得进入当前默认主线。
+- 不因“AI、CRM、视频、crawler、Agent 或自动化”存在而让其成为主路线。每项必须绑定漏斗阶段、业务指标、人工 baseline、测量窗口与停止线；否则 `DEFER`。
+- 不自动启动多渠道运营、B2B 联系、Gmail 外联、自动发布、广告、批量消息、报价、付款或订单。
+- WhatsApp 不得承接酒类交易；Meta commerce channels 不得承接酒类销售。具体平台、当地法律与项目授权必须按当前官方资料和书面证据核验。
 
 ## 海鲜边界
 
@@ -29,4 +34,4 @@ WhatsApp Business、TikTok Business Center、广告账户、Meta Business Manage
 
 ## 成功定义
 
-本阶段只有在供应链提供真实 SKU、价格、库存、资质、账号权限、收款、配送售后和责任人书面证据，并完成 TikTok 酒类边界核验后，才能进入首批可上架 SKU 判断。任何机制包、文档、脚本或 Git 状态都不能替代这些证据。
+`planning_ready`、`engineering_ready`、`business_ready`、`channel_ready`、`sales_loop_validated`、`automation_ready` 和 `scale_ready` 必须分开。任何机制包、文档、脚本、测试、commit 或 Git 状态都不能替代供应链书面证据、平台资格、当地许可、用户授权、真实订单或履约证据。

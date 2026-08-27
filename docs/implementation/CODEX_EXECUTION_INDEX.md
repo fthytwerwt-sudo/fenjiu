@@ -1,5 +1,7 @@
 # Codex 分阶段执行索引
 
+> **SUPERSEDED AS CURRENT BUSINESS QUEUE｜2026-08-28**：此索引保留为已完成 synthetic/local-only 工程任务的历史与技术依赖图。它不是当前业务优先队列；尤其 P08 不能因代码依赖完成而自动开始。先读 [`docs/strategy/SALES_EXECUTION_PHASES.md`](../strategy/SALES_EXECUTION_PHASES.md) 和 `docs/project/NEXT_ACTIONS.md`，并为每个新实现任务补齐 Sales-First 的实现设计层和业务闸门证据。
+
 > **使用规则：** 一次只下发一个 task card；任务执行前重读当前事实源，执行后按该卡 Git completion 收口。不要把 Phase、目录或 task 卡当作业务已完成。
 
 | Phase | 任务 | 依赖 | 可并行 | 目的 |

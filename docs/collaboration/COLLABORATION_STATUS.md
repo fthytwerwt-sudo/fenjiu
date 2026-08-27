@@ -1,6 +1,6 @@
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-10
+- **最近更新**：2026-08-28
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -11,6 +11,7 @@
 | PROJECT_ENTRY | **CONFIRMED** | 已以 TikTok、供应链启动阶段、双方职责、用户本轮输入来源优先级、历史研究降级和海鲜隔离作为首屏信息 |
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
+| Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
 
 ## 安全与历史迁移审计
 
@@ -33,7 +34,7 @@
 ## GPT Project 配合机制包状态
 
 - **CONFIRMED**：`GPT项目资料同步包_gpt_project_mechanism_sync/` 已创建为 GPT Project 手动上传包；它与 `project_sync/latest/` 分工不同，不能互相替代。
-- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2 来源优先级、GitHub 事实读取、Codex 执行落库、供应链业务闸门缺口、TikTok 主线、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
+- **CONFIRMED**：包内包含上传说明、Manifest、汾酒项目系统提示词、项目身份、三层/四层事实源边界、P0/P1/P2 来源优先级、GitHub 事实读取、Codex 执行落库、供应链业务闸门缺口、Sales-First 渠道边界、酒类合规、海鲜隔离、外部资料桥接、六层需求确认、Codex 任务模板、结果复审、Git 完成闸门和维护机制。
 - **CONFIRMED**：`project_entry/AGENTS.md` 必须由 Manifest 记录的 source commit 中 `AGENTS.md` 生成；验证脚本会回读历史 commit、比较 source SHA、mirror SHA 和镜像内容。
 - **CONFIRMED**：`scripts/validate_gpt_project_mechanism_sync.py --write-manifest` 已升级为语义一致性、业务闸门术语、blocked/Git 状态词和 AGENTS provenance 验证；具体 SHA 和结果以验证报告为准。
 - **状态边界**：`package_ready_for_manual_upload = true`；`user_uploaded_to_gpt_project_ui = false`。本包生成、验证、commit 或 push 不代表用户已上传 GPT Project UI，也不代表供应链、平台、合规、上线、销售或履约成立。
@@ -83,6 +84,7 @@
 2. **仓库治理**：具备管理权限的责任人应认证回读 visibility（可见性）、决定是否将默认分支切换为 `main`，再按决定回读和清理旧临时远端分支。
 3. **远端 CI**：具备 `workflow` scope 的授权凭据可单独写入并回读 GitHub Actions；本地 `make regression` 不替代远端 CI。
 4. 用户按需将 `GPT项目资料同步包_gpt_project_mechanism_sync/` 上传到 ChatGPT GPT Project，并用上传后验证清单测试新聊天框。
+5. **Sales-First 包同步**：本轮完成 Manifest、AGENTS 镜像、机制验证、Git commit/push/remote readback 前，不得声明 GPT Project UI 已更新；状态始终保持 `user_uploaded_to_gpt_project_ui = false`。
 
 ## 更新规则
 

@@ -5,6 +5,7 @@
 以下情况触发 GPT Project 机制包更新：
 
 - 项目长期协作方式变化。
+- 项目北极星、渠道边界、AI 优先级或 Codex 判断规则变化（例如 Sales-First 重规划）。
 - GitHub 事实源读取顺序变化。
 - Codex 任务单格式或 Git 闭环要求变化。
 - 新增重要业务线隔离规则。
@@ -27,11 +28,12 @@
 1. 读取 GitHub 当前事实源和本机制包。
 2. 判断是机制变化还是业务事实变化。
 3. 只修改机制相关文件。
-4. 重新生成 manifest。
-5. 运行验证脚本。
-6. 更新验证报告和必要执行历史。
-7. path-limited commit、push、remote readback。
-8. 告诉用户需要手动重新上传 GPT Project UI。
+4. 若根 `AGENTS.md` 改动，同步更新 `project_entry/AGENTS.md` 镜像。
+5. 重新生成 manifest。
+6. 运行验证脚本。
+7. 更新验证报告和必要执行历史。
+8. path-limited commit、push、remote readback。
+9. 告诉用户需要手动重新上传 GPT Project UI。
 
 ## 版本边界
 

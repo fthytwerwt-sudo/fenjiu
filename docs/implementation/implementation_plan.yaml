@@ -1,6 +1,8 @@
 plan:
   id: fenjiu-ai-native-sales-os-phase-0-8
   status: in_progress
+  business_priority_status: superseded_by_sales_first_2026_08_28
+  business_priority_source: docs/strategy/SALES_FIRST_MASTER_PLAN.md
   business_line_default: fenjiu_nepal
   external_execution_default: false
   readiness_status_keys: [technical_ready, data_ready, business_external_ready]
