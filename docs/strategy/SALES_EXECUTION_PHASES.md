@@ -186,3 +186,11 @@ flowchart LR
 | Exit / unlock / not build | 由用户另行定义；不预设广告/达人/批量自动化。 |
 
 动作级清单：`A1` 人工复核渠道/Offer/履约证据（Input：多个真实周期）；`A2` 定义单一扩张变量（城市、SKU 或渠道）；`A3` 小范围执行并记录收入、毛利、履约、投诉和复购（Output：scale decision）；`A4` 用户决定继续/暂停/回退（Done：跨层指标与业务闸门同时成立）。
+
+## 12. 双业务线执行化补充
+
+本文件保持 Sales-First 的共用顺序；具体业务线不得因为使用同一个 SR 编号而共享产品、客户、价格、合规、履约或渠道事实。
+
+- 汾酒当前对应 `FJ-1 Sellable Offer Ready`；详见 [FENJIU_EXECUTION_PLAYBOOK.md](fenjiu/FENJIU_EXECUTION_PLAYBOOK.md) 与 [FENJIU_CONTENT_PLAYBOOK.md](fenjiu/FENJIU_CONTENT_PLAYBOOK.md)。
+- 海鲜当前对应 `SF-1 Seafood Offer & Cold-Chain Ready`；B2B-first 是基于货品单结构和冷链未知项的 `RECOMMENDATION`，不是已验证结论；详见 [SEAFOOD_EXECUTION_PLAYBOOK.md](seafood/SEAFOOD_EXECUTION_PLAYBOOK.md) 与 [SEAFOOD_CONTENT_PLAYBOOK.md](seafood/SEAFOOD_CONTENT_PLAYBOOK.md)。
+- 两条线的当前动作、`NOT NOW`、渠道扩张、AI/CRM/自动化门槛及指标统一以 [DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md](DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md) 和 [DUAL_BUSINESS_LINE_KPI_SCORECARD.md](DUAL_BUSINESS_LINE_KPI_SCORECARD.md) 为准。

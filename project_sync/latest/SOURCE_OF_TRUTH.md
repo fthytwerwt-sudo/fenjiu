@@ -16,6 +16,9 @@
 | 汾酒市场、渠道和合规研究 | research_root.json、research_execution.json、research_culture_compliance.json | 资料存在为 **CONFIRMED**；涉及 B2B、多平台、90 天方案的内容为 **SUPERSEDED**（仅当前执行范围层面被替代），保留为历史市场背景，须由用户重新确认才可恢复 |
 | 汾酒供应链启动模板 | 任务相关的汾酒供应链原始文件 | 模板和字段存在为 **CONFIRMED**；未签署、未回执或未回传的字段不得写为已确认 |
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
+| 双业务线执行/内容手册与阶段指标 | `docs/strategy/fenjiu/`、`docs/strategy/seafood/`、`DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md`、`DUAL_BUSINESS_LINE_KPI_SCORECARD.md` | **CONFIRMED（内部规划）**：明确阶段、内容、SOP、AI 视觉边界和初始测试阈值；不证明发布、销售、AI 生成、客户、订单或履约。 |
+| 海鲜 2026 第一批次货品清单 | 用户提供的 5 页货品单；执行手册中的 `SM-01` 至 `SM-20` 登记 | **CONFIRMED（来源记录）**：可记录表内产品候选、数量、重量、包装摘记；不证明当前库存、食品/进口合规、冷链、价格或履约。 |
+| 汾酒 20/30 公开产品研究 | `FENJIU_EXECUTION_PLAYBOOK.md` 的公开来源登记 | **部分成立（公开研究）**：可支持产品线有多公开变体；尼泊尔具体 SKU、价格、库存、授权、许可与可售性仍需供应链/当地书面证据。 |
 | 未来客户发现、评分与 CRM 准入标准 | `docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` | **CONFIRMED（内部规范）**：定义两条业务线各自的产品-客户匹配、城市/关键词、字段、评分、来源/DNC 与 CRM 准入规则；不代表真实获客、联系人处理、发送、供应链资料或合规已获授权。 |
 | 真实客户来源目录与机器配置 | `docs/implementation/FENJIU_SOURCE_CATALOG.md`、`docs/implementation/SEAFOOD_SOURCE_CATALOG.md`、`docs/implementation/source_catalogs/` | **CONFIRMED（来源研究）**：逐项记录来源 owner、入口、条款/访问证据、字段和 use decision（使用裁决）；只允许目录标明的最小企业发现动作，不代表联系人、CRM、外联、产品事实或合规已就绪。 |
 | 生成逻辑 | 根目录生成脚本与 scripts | 脚本存在/运行结果不等于业务事实 |

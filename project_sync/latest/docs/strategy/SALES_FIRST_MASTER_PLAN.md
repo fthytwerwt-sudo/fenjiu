@@ -116,3 +116,9 @@ Capability → sales funnel stage → metric → current manual baseline → tar
 - [CHANNEL_ROLE_MATRIX.md](CHANNEL_ROLE_MATRIX.md)：每个触点的角色、承接、政策与人工边界。
 - [SALES_EFFECT_SCORECARD.md](SALES_EFFECT_SCORECARD.md)：业务结果、归因和 AI 效果指标。
 - [CURRENT_SYSTEM_REUSE_MATRIX.md](CURRENT_SYSTEM_REUSE_MATRIX.md)：`KEEP / REFOCUS / DEFER / RETIRE / NEW` 判断。
+- [fenjiu/FENJIU_EXECUTION_PLAYBOOK.md](fenjiu/FENJIU_EXECUTION_PLAYBOOK.md)：汾酒从 FJ-1 到规模化的独立行动、Offer、渠道、SOP 与停止线。
+- [fenjiu/FENJIU_CONTENT_PLAYBOOK.md](fenjiu/FENJIU_CONTENT_PLAYBOOK.md)：汾酒 AI iPhone Natural Look、内容卡、Hook、CTA 与内容归因规则。
+- [seafood/SEAFOOD_EXECUTION_PLAYBOOK.md](seafood/SEAFOOD_EXECUTION_PLAYBOOK.md)：海鲜 B2B-first / B2C-second 的独立 Offer、食品冷链、渠道与销售路线。
+- [seafood/SEAFOOD_CONTENT_PLAYBOOK.md](seafood/SEAFOOD_CONTENT_PLAYBOOK.md)：海鲜 B2B/B2C 内容卡、AI 视觉边界与数据合同。
+- [DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md](DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md)：双线“现在做什么 / NOT NOW / 解锁条件”。
+- [DUAL_BUSINESS_LINE_KPI_SCORECARD.md](DUAL_BUSINESS_LINE_KPI_SCORECARD.md)：双线 Output / Funnel / Decision 指标及建议的初始测试阈值。

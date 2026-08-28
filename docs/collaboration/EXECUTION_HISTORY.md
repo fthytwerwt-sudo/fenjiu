@@ -1,5 +1,15 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-28｜双业务线 Sales-First 执行化与 AI 手机质感内容设计
+
+- **Goal / Scope**：将既有 Sales-First 总规划落为汾酒与海鲜独立的执行/内容手册、阶段闸门和 KPI；不进行发布、外联、报价、收款、订单、履约或真实 AI 视频生成。
+- **事实核验**：从 `origin/main` 读取当前项目边界；视觉核验用户提供的 5 页海鲜货品单，记录 20 行产品候选、表内数量 554、重量 2,895 kg、总立方 11.2323145。此资料仅作产品候选/包装摘记，不升级为库存或冷链/食品事实。公开研究确认青花 20/30 存在多度数/容量/包装变体，故不把名称当固定尼泊尔 SKU。
+- **实际产物**：新增 FJ/SF execution playbook、content playbook、双线 stage-gate/KPI matrix；补入客户问题、人工跟进、失单原因、归因、AI iPhone Natural Look、48 张内容卡与渠道/AI/自动化 gate。
+- **状态边界**：所有内容卡保持 `publish_blocked_pending_business_gates`；没有生成或发布媒体，未处理客户资料，也没有外部动作。
+- **验证**：`git diff --check` 通过；六份新策略文件均非空；两条线各 24 个唯一 content ID，汾酒 30 条 Hook、海鲜 B2B/B2C 各 30 条 Hook；双线关键词污染与本机绝对路径检查无命中。GPT Project mechanism validation、同步包 build/verify 均通过（46 文件）。`make regression` 通过：两次 migration replay、31 类 SQL negative constraints、8 architecture、16 regression、8 local-runtime、16 control-plane、120 contract 与 35 ingestion tests；Docker 资源已清理。
+- **独立复审与修复**：复审发现同步包新增镜像未纳入最终版本、root mirror/PROJECT_CONTEXT 的相对链接失效，以及一个青花 30 来源 URL 已失效。已将 6 个镜像文件 path-limited 纳入、在同步脚本中为平铺/聚合 Markdown 按源路径重写内部链接，并将失效来源替换为当前可访问的海外商业产品页且降级其证据角色。重建后 `--verify` 通过，root mirror 与 PROJECT_CONTEXT 不再含 `../strategy`、`../project` 或 `../collaboration` 失效链接。
+- **待最终收口**：path-limited stage、Lore commit、push、remote HEAD 和核心文件 readback。
+
 ## 2026-08-28｜Sales-First 项目级审计、目标架构重构与机制同步
 
 - **目标与边界**：先以 `origin/main` 完整审计项目事实、Phase 0–8 文档和实际代码，再将北极星从“完成 AI Native Sales OS / TikTok-only”重设为“业务闸门满足后验证最小、可核验的销售闭环”。本轮只改规划/事实/机制文件；不重构业务代码，不连接真实系统，不发布、外联、报价、付款、订单或履约。

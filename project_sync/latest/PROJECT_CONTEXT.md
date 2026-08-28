@@ -82,7 +82,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 - **CONFIRMED**：汾酒市场、执行与文化/合规研究源文件存在。
 - **CONFIRMED**：供应链启动文件/模板存在，商品、价格、库存、账号、资质和履约字段已被设计。
-- **CONFIRMED**：当前范围、职责、销售优先级和最小销售闭环已被用户明确确认并写入 [SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)。
+- **CONFIRMED**：当前范围、职责、销售优先级和最小销售闭环已被用户明确确认并写入 [SALES_FIRST_MASTER_PLAN.md](docs/strategy/SALES_FIRST_MASTER_PLAN.md)。
 
 ## 正在进行
 
@@ -108,6 +108,13 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 **CONFIRMED**：尼泊尔海鲜为独立业务线，可有 B2B 与 B2C 范围。两条业务线可复用有限协作机制，但产品、客户、价格、资质、履约和业务结论不得互推；没有明确任务时，Agent 默认只处理汾酒主线。
 
+## 2026-08-28 双业务线执行化状态
+
+- **CONFIRMED（规划）**：已形成汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行手册、内容手册、阶段闸门和指标计分表。它们包含 AI 视频的 `iPhone Natural Look` 标准、内部内容卡、客户资格问题、人工销售 SOP 与渠道扩张规则。
+- **CONFIRMED（海鲜货品清单事实）**：用户提供的 2026 年第一批次货品单可支持 20 个产品候选行、表内数量 554、总重量 2,895 kg 与总立方 11.2323145 的记录。它不能支持“当前尼泊尔可售库存、已到货、食品合规、冷链、价格、配送或履约”的结论。
+- **部分成立（汾酒公开产品研究）**：公开官方/授权渠道可支持青花 20/30 存在多个度数、容量与包装版本；具体尼泊尔 SKU、价格、库存、授权、许可与可售性仍是 `UNKNOWN / BLOCKED`。
+- **BLOCKED（外部执行）**：新增手册与 AI 内容草稿均为内部设计；发布、广告、报价、收款、下单、发货、真实外联和真实客户资料处理继续关闭。
+
 ## 更新规则
 
 任何实际资料回传、责任确认或范围变化，都须附来源、日期、确认人和事实分级，并同步更新 OPEN_QUESTIONS、RISKS_AND_BLOCKERS、NEXT_ACTIONS 与必要的决策记录。
@@ -127,8 +134,10 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **BLOCKED / business_gates**：在上述资料与指定渠道当前酒类政策获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
 - **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
 - **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
+- **CONFIRMED（执行设计层）**：汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行/内容手册、双线阶段闸门与 KPI 已形成。它们把内容脚本、AI iPhone 质感、渠道/询盘/跟进与决策阈值写成可执行草稿，但不解除任何外部业务闸门。
+- **部分成立（海鲜货品来源）**：用户提供的 2026 年货品单已作为 `SM-01` 至 `SM-20` 的候选产品登记；表内数据不升级为本地可售库存、食品/冷链、价格或履约事实。
 
-详情：[SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](../strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
+详情：[SALES_FIRST_MASTER_PLAN.md](docs/strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](docs/strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](docs/project/OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](docs/project/RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](docs/project/NEXT_ACTIONS.md)
 
 ## 协作机制状态摘要
 
@@ -162,7 +171,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **BLOCKED（工程 Phase 8）**：P08-01 的依赖已经解锁，但任务卡要求当前、获授权的真实供应链资料包及其来源/范围/版本证据。当前仍缺 SKU（商品编号）、价格、库存、资质、授权及履约资料，故状态为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`；不得以合成 fixture（测试模拟数据）替代，也不得启动外部动作。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
-详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)
+详情：[COLLABORATION_STATUS.md](docs/collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](docs/project/SOURCE_OF_TRUTH.md)
 
 ## 范围提醒
 
@@ -188,6 +197,9 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 汾酒市场、渠道和合规研究 | research_root.json、research_execution.json、research_culture_compliance.json | 资料存在为 **CONFIRMED**；涉及 B2B、多平台、90 天方案的内容为 **SUPERSEDED**（仅当前执行范围层面被替代），保留为历史市场背景，须由用户重新确认才可恢复 |
 | 汾酒供应链启动模板 | 任务相关的汾酒供应链原始文件 | 模板和字段存在为 **CONFIRMED**；未签署、未回执或未回传的字段不得写为已确认 |
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
+| 双业务线执行/内容手册与阶段指标 | `docs/strategy/fenjiu/`、`docs/strategy/seafood/`、`DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md`、`DUAL_BUSINESS_LINE_KPI_SCORECARD.md` | **CONFIRMED（内部规划）**：明确阶段、内容、SOP、AI 视觉边界和初始测试阈值；不证明发布、销售、AI 生成、客户、订单或履约。 |
+| 海鲜 2026 第一批次货品清单 | 用户提供的 5 页货品单；执行手册中的 `SM-01` 至 `SM-20` 登记 | **CONFIRMED（来源记录）**：可记录表内产品候选、数量、重量、包装摘记；不证明当前库存、食品/进口合规、冷链、价格或履约。 |
+| 汾酒 20/30 公开产品研究 | `FENJIU_EXECUTION_PLAYBOOK.md` 的公开来源登记 | **部分成立（公开研究）**：可支持产品线有多公开变体；尼泊尔具体 SKU、价格、库存、授权、许可与可售性仍需供应链/当地书面证据。 |
 | 未来客户发现、评分与 CRM 准入标准 | `docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` | **CONFIRMED（内部规范）**：定义两条业务线各自的产品-客户匹配、城市/关键词、字段、评分、来源/DNC 与 CRM 准入规则；不代表真实获客、联系人处理、发送、供应链资料或合规已获授权。 |
 | 真实客户来源目录与机器配置 | `docs/implementation/FENJIU_SOURCE_CATALOG.md`、`docs/implementation/SEAFOOD_SOURCE_CATALOG.md`、`docs/implementation/source_catalogs/` | **CONFIRMED（来源研究）**：逐项记录来源 owner、入口、条款/访问证据、字段和 use decision（使用裁决）；只允许目录标明的最小企业发现动作，不代表联系人、CRM、外联、产品事实或合规已就绪。 |
 | 生成逻辑 | 根目录生成脚本与 scripts | 脚本存在/运行结果不等于业务事实 |
@@ -227,6 +239,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - 供应链的主体/资质、产品、账号认证支持、收款与履约资料收集和书面确认；
 - 事实分级、状态、决策、风险、交接和同步包机制维护；
 - 海鲜资料线的独立保存与明确任务下的独立处理。
+- 海鲜独立的 Sales-First 准备：`SF-1` 的单 SKU 产品、食品/进口、冷链、商业与履约证据；在这些条件成立后再以 B2B-first 的人工采购闭环验证，B2C 后置至已验证履约之后。
 
 ## 当前不在范围内
 
@@ -244,7 +257,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 ## 许可与执行闸门
 
-内部资料准备可继续。任何公开酒类内容、广告、商品展示、导流、订单、付款、配送或个人数据处理，必须同时满足：当地合法性、当前平台规则、主体/品牌/产品授权、年龄与地域限制、账号与数据归属、收款履约责任、用户授权和可审计证据。任一缺失即 **BLOCKED**。WhatsApp 不得被用作酒类交易通道；Meta commerce channels 不得被用作酒类销售通道，详见 [外部政策与授权矩阵](../strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md)。
+内部资料准备可继续。任何公开酒类内容、广告、商品展示、导流、订单、付款、配送或个人数据处理，必须同时满足：当地合法性、当前平台规则、主体/品牌/产品授权、年龄与地域限制、账号与数据归属、收款履约责任、用户授权和可审计证据。任一缺失即 **BLOCKED**。WhatsApp 不得被用作酒类交易通道；Meta commerce channels 不得被用作酒类销售通道，详见 [外部政策与授权矩阵](docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md)。
 
 ## 协作机制状态
 
@@ -262,6 +275,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
+| 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
 
 ## 安全与历史迁移审计
 
@@ -276,7 +290,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
 - **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
 - **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
-- **最近本地 bundle 验证日期**：2026-08-28；Sales-First allowlist 已纳入八份战略文件，build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；生成基线为 `8e03083be90f9d7e355787596a35598eb629a5e8`。
+- **最近本地 bundle 验证日期**：2026-08-28；Sales-First allowlist 已纳入 14 份战略文件（含双线 execution/content playbook 与 stage/KPI matrix），build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；最近生成基线为 `6b6657e2211d859b585ff6f8bd00d7dc3d5adb6d`，文件数为 46。
 - **CONFIRMED**：本文件本次回填后已重新生成并验证同步包；Manifest（清单）记录的 `source_commit` 是生成基线，不是随后提交同步包目录的 commit（提交）。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。

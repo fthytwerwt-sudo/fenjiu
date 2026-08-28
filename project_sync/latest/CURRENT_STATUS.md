@@ -11,8 +11,10 @@
 - **BLOCKED / business_gates**：在上述资料与指定渠道当前酒类政策获得书面确认前，不能进入公开发布、广告、真实销售、收款、订单或履约。
 - **已确认（内部规范层）**：已形成汾酒/海鲜独立的《尼泊尔精准客户获取标准与 Codex 输入规范》；它只定义未来客户发现、评分和 CRM 准入标准，不恢复自动找客/自动外联，也不解除任何业务闸门。
 - **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
+- **CONFIRMED（执行设计层）**：汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行/内容手册、双线阶段闸门与 KPI 已形成。它们把内容脚本、AI iPhone 质感、渠道/询盘/跟进与决策阈值写成可执行草稿，但不解除任何外部业务闸门。
+- **部分成立（海鲜货品来源）**：用户提供的 2026 年货品单已作为 `SM-01` 至 `SM-20` 的候选产品登记；表内数据不升级为本地可售库存、食品/冷链、价格或履约事实。
 
-详情：[SALES_FIRST_MASTER_PLAN.md](../strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](../strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](NEXT_ACTIONS.md)
+详情：[SALES_FIRST_MASTER_PLAN.md](docs/strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](docs/strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](docs/project/OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](docs/project/RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](docs/project/NEXT_ACTIONS.md)
 
 ## 协作机制状态摘要
 
@@ -46,7 +48,7 @@
 - **BLOCKED（工程 Phase 8）**：P08-01 的依赖已经解锁，但任务卡要求当前、获授权的真实供应链资料包及其来源/范围/版本证据。当前仍缺 SKU（商品编号）、价格、库存、资质、授权及履约资料，故状态为 `BLOCKED / real_supplier_data_missing（阻断 / 缺少真实供应链资料）`；不得以合成 fixture（测试模拟数据）替代，也不得启动外部动作。
 - **BLOCKED（外部业务）**：该规划不解除 SKU、价格、库存、主体/资质、账号、收款、履约或 TikTok 酒类边界的业务闸门；公开发布、报价、收款、下单和履约仍保持停止。
 
-详情：[COLLABORATION_STATUS.md](../collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md)
+详情：[COLLABORATION_STATUS.md](docs/collaboration/COLLABORATION_STATUS.md)｜[SOURCE_OF_TRUTH.md](docs/project/SOURCE_OF_TRUTH.md)
 
 ## 范围提醒
 

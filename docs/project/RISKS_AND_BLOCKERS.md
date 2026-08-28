@@ -13,6 +13,9 @@
 | SR-R05 | `BLOCKED / platform_policy_constraint` | WhatsApp 禁止酒类交易；Meta commerce channels 禁止酒类销售 | 不能把任意沟通/商业渠道等同成交路径 | 不在禁止通道交易；另选合规路径。 |
 | SR-R06 | `BLOCKED / privacy_and_contact_basis_missing` | DNC、保留/删除、联系人处理依据和数据 owner 缺失 | 不能做真实 CRM、B2B 联系或 Gmail 外联 | SR-6 前单独补齐。 |
 | SR-R07 | `RISK / overengineering` | 工程可能抢在 Offer、客户承接和履约前扩张 | 延迟学习并制造错误完成感 | 无漏斗/指标/人工基线即 `DEFER`。 |
+| SF-R01 | `BLOCKED / seafood_manifest_is_not_inventory` | 货品单被误解为尼泊尔现货或销售库存 | 可能导致错误报价、交期和履约承诺 | 仅作产品候选记录；取得当期库存/批次/owner 才能进入 Offer。 |
+| SF-R02 | `BLOCKED / food_and_cold_chain_unknown` | 食品/进口、标签、过敏原、温控、配送与异常责任未确认 | 不得报价、送样、接单或 B2C 配送 | SF-1 逐 SKU 补书面证据。 |
+| SF-R03 | `RISK / ai_visual_false_grounding` | AI 视频可能伪造包装、标签、顾客/门店、产地或食品事实 | 造成虚假宣传与合规风险 | 只用无标签镜头；真实素材需权利/事实锁；三层 QC。 |
 
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |
 |---|---|---|---|---|

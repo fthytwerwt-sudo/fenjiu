@@ -1,7 +1,7 @@
 # Git 状态｜GIT_STATE
 
 - 生成时分支：`main`
-- 生成时来源 commit：`8e03083be90f9d7e355787596a35598eb629a5e8`
+- 生成时来源 commit：`6b6657e2211d859b585ff6f8bd00d7dc3d5adb6d`
 - 远端：`unavailable`
 - 生成时工作区：`dirty`
 

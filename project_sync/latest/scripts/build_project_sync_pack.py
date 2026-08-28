@@ -54,6 +54,12 @@ ALLOWLIST = (
     "docs/strategy/SALES_EFFECT_SCORECARD.md",
     "docs/strategy/CURRENT_SYSTEM_REUSE_MATRIX.md",
     "docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md",
+    "docs/strategy/DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md",
+    "docs/strategy/DUAL_BUSINESS_LINE_KPI_SCORECARD.md",
+    "docs/strategy/fenjiu/FENJIU_EXECUTION_PLAYBOOK.md",
+    "docs/strategy/fenjiu/FENJIU_CONTENT_PLAYBOOK.md",
+    "docs/strategy/seafood/SEAFOOD_EXECUTION_PLAYBOOK.md",
+    "docs/strategy/seafood/SEAFOOD_CONTENT_PLAYBOOK.md",
     "docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md",
     "docs/implementation/FENJIU_SOURCE_CATALOG.md",
     "docs/implementation/SEAFOOD_SOURCE_CATALOG.md",
@@ -124,6 +130,7 @@ EXCLUDED_SUFFIXES = {
     ".zip",
 }
 TEXT_SUFFIXES = {".md", ".py", ".json", ".txt", ".yaml", ".yml", ".toml", ".ini", ".cfg"}
+MARKDOWN_LINK_PATTERN = re.compile(r"(?P<prefix>\]\()(?P<target>[^)]+)(?P<suffix>\))")
 LOCAL_ABSOLUTE_PATH_PATTERNS = (
     re.compile(r"(?<![A-Za-z0-9])/(?:Users|Volumes)(?:/|$)"),
     re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]"),
@@ -352,7 +359,14 @@ def render_project_context() -> str:
     )
     rendered = ["# 项目上下文｜PROJECT_CONTEXT", "", "本文件由同步包脚本生成，汇总最小必要上下文；完整规则仍以同包原文件为准。"]
     for title, path in sections:
-        rendered.extend(["", f"## {title}", "", read_text(path).strip()])
+        rendered.extend(
+            [
+                "",
+                f"## {title}",
+                "",
+                rewrite_flattened_markdown_links(path, read_text(path)).strip(),
+            ]
+        )
     return "\n".join(rendered) + "\n"
 
 
@@ -431,6 +445,34 @@ def render_sync_readme(timestamp: str, state: dict[str, str]) -> str:
     )
 
 
+def rewrite_flattened_markdown_links(source: Path, content: str) -> str:
+    """Keep links valid after selected documents are copied to package root."""
+
+    def replace(match: re.Match[str]) -> str:
+        target = match.group("target")
+        if target.startswith(("#", "/", "http://", "https://", "mailto:")):
+            return match.group(0)
+
+        path_part, separator, fragment = target.partition("#")
+        if not path_part:
+            return match.group(0)
+
+        resolved = (source.parent / path_part).resolve()
+        try:
+            relative = resolved.relative_to(ROOT)
+        except ValueError:
+            return match.group(0)
+        if not resolved.is_file():
+            return match.group(0)
+
+        rewritten = relative.as_posix()
+        if separator:
+            rewritten = f"{rewritten}#{fragment}"
+        return f"{match.group('prefix')}{rewritten}{match.group('suffix')}"
+
+    return MARKDOWN_LINK_PATTERN.sub(replace, content)
+
+
 def copy_allowlist(source_files: list[Path], destination: Path) -> None:
     # 将核心入口文件平铺到包根目录，方便非 GitHub 会话直接阅读；其余文件保留原相对路径。
     flattened = {
@@ -450,8 +492,14 @@ def copy_allowlist(source_files: list[Path], destination: Path) -> None:
         relative = source.relative_to(ROOT).as_posix()
         target = destination / (source.name if relative in flattened else relative)
         target.parent.mkdir(parents=True, exist_ok=True)
-        # copyfile 不复制扩展属性，避免外置盘生成 ._ AppleDouble 文件。
-        shutil.copyfile(source, target)
+        if relative in flattened and source.suffix.lower() == ".md":
+            target.write_text(
+                rewrite_flattened_markdown_links(source, read_text(source)),
+                encoding="utf-8",
+            )
+        else:
+            # copyfile 不复制扩展属性，避免外置盘生成 ._ AppleDouble 文件。
+            shutil.copyfile(source, target)
 
 
 def remove_system_metadata(directory: Path) -> None:
