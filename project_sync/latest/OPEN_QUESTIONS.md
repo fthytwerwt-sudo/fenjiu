@@ -1,6 +1,6 @@
 # 待确认事项｜OPEN_QUESTIONS
 
-## 2026-08-28 当前优先级（Sales-First 覆盖层）
+## 2026-08-29 当前优先级（Sales-First 覆盖层）
 
 下表为本轮 P0 生效后的当前待确认项，替代下方旧 `TikTok-only` 表述的优先级，但不删除历史问题。除非附有当前书面证据、日期和确认人，均为 `UNKNOWN`。
 
@@ -14,7 +14,7 @@
 | B | 尼泊尔酒类广告专项规则；B2B 联系人处理、DNC、保留/删除、数据 owner | 平台能力或公司网页不等于可接触/营销 | 官方/当地专业意见、合规责任人书面流程 |
 | C | 自动化/扩张的真实基线、单位经济和观察窗口 | 不应以想象 ROI 建系统 | 已验证的人工漏斗和业绩数据 |
 
-### Seafood SF-1 专属待确认项
+### Seafood 双 Workstream 专属待确认项
 
 | 优先级 | 待确认事项 | 为什么重要 | 需要的证据/责任人 |
 |---|---|---|---|
@@ -23,6 +23,9 @@
 | A | 食品/进口/产品登记、标签与责任主体 | 不能声明可售或合规 | 当地食品/进口责任人书面证据。 |
 | A | B2B/B2C 价格、MOQ、库存/补货、支付、售后 | 无法决定 B2B-first 的具体 Offer | 当前商业政策与履约 owner。 |
 | B | 已批准的包装/产品素材使用权 | AI 内容不得伪造产品包装/标签 | 品牌/供应链素材权利与版本。 |
+| A | 供应链 Lead 接收 owner、可接受 ICP/Product/Region 与结果反馈节奏 | 用户无法稳定 Handoff 或优化 Lead Quality | 供应链书面 owner、ACCEPT/REJECT 条件与反馈承诺。 |
+| A | 联系人处理依据、DNC/删除/保留、Route-specific 外联授权 | Search/Web 只能停在内部企业发现基线 | 数据/合规 owner 和用户 action-time authorization。 |
+| B | First ICP/Route 初始阈值是否需由供应链承接能力调整 | 当前阈值只是第一轮测试假设 | Supplier capacity、首轮 qualified/accepted 数据。 |
 
 除非未来条目附带日期、书面证据和确认人，下表均为 **UNKNOWN**。汾酒当前只做尼泊尔 TikTok、双方职责边界和海鲜独立性已确认，不再列为待确认事项。
 

@@ -6,7 +6,9 @@
 
 ## 当前阶段目标
 
-**CONFIRMED**：2026-08-28 用户 P0 已将项目调整为双业务线 `Sales-First`。汾酒当前处于 `FJ-1 / SR-1 Sellable Offer Ready`；海鲜当前处于 `SF-1 Seafood Offer & Cold-Chain Ready`，其 B2B-first 路线为 `RECOMMENDATION`。TikTok 不再是唯一长期中心，而是待政策/账号/授权核验后的候选内容触点之一。多渠道不自动启动，B2B 精准开发也不自动恢复。
+**CONFIRMED**：2026-08-28 用户 P0 已将项目调整为双业务线 `Sales-First`。汾酒当前处于 `FJ-1 / SR-1 Sellable Offer Ready`。2026-08-29 海鲜 P0 进一步改为 Supplier `SF-S1 IN_PROGRESS_REPORTED / NOT_READY` 与 User `SF-U1 Online Offer Pack Ready` 双工作流。TikTok 不再是默认主线，而是 SF-U2 Route Matrix 中的候选内容工具；多渠道不自动启动。
+
+**SUPERSEDED（海鲜范围，2026-08-29 P0）**：海鲜旧 `SF-2 B2B 人工采购闭环` 不再是用户主线。海鲜改为并行双 Workstream：供应链 `SF-S1` 负责商品、食品/进口、当地报价/样品/成交/收款/冷链/配送/售后；用户 `SF-U0–SF-U8` 负责 Online Acquisition、Qualified Lead、Supplier Handoff 和结果归因。供应链“正在推进”不等于任何业务闸门 READY。
 
 ## 当前成功定义
 
@@ -21,3 +23,5 @@
 任一条件缺失时，内部准备可继续，但对应公开传播、广告、真实销售、收款、订单和履约为 **BLOCKED**。`planning_ready`、`engineering_ready`、`business_ready`、`channel_ready`、`sales_loop_validated`、`automation_ready` 与 `scale_ready` 必须分开报告。
 
 海鲜另须为每一个 SKU 具备产品身份/标签/批次/过敏原、食品与进口责任、冷链/收货/异常、价格/库存/MOQ、收款/配送/售后与 owner 的当前书面证据；货品单本身只支持产品候选登记，不能替代这些条件。
+
+海鲜用户成功首先以 `qualified_lead → supplier_accepted` 衡量；`offered / won / lost / fulfilled` 是供应链负责执行、双方共同归因的最终结果。没有供应链结果反馈时标 `attribution_incomplete`，不得扩 Route 或自动化。

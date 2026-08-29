@@ -192,5 +192,5 @@ flowchart LR
 本文件保持 Sales-First 的共用顺序；具体业务线不得因为使用同一个 SR 编号而共享产品、客户、价格、合规、履约或渠道事实。
 
 - 汾酒当前对应 `FJ-1 Sellable Offer Ready`；详见 [FENJIU_EXECUTION_PLAYBOOK.md](fenjiu/FENJIU_EXECUTION_PLAYBOOK.md) 与 [FENJIU_CONTENT_PLAYBOOK.md](fenjiu/FENJIU_CONTENT_PLAYBOOK.md)。
-- 海鲜当前对应 `SF-1 Seafood Offer & Cold-Chain Ready`；B2B-first 是基于货品单结构和冷链未知项的 `RECOMMENDATION`，不是已验证结论；详见 [SEAFOOD_EXECUTION_PLAYBOOK.md](seafood/SEAFOOD_EXECUTION_PLAYBOOK.md) 与 [SEAFOOD_CONTENT_PLAYBOOK.md](seafood/SEAFOOD_CONTENT_PLAYBOOK.md)。
+- 海鲜自 2026-08-29 起使用 Supplier `SF-S1` + User `SF-U0–U8` 双 Workstream；旧 SF-2 已 `SUPERSEDED`。用户负责 Online Acquisition / Qualified Lead / Handoff，供应链负责当地销售/成交/履约；详见 [SEAFOOD_EXECUTION_PLAYBOOK.md](seafood/SEAFOOD_EXECUTION_PLAYBOOK.md)、[SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md](seafood/SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md) 与 [SEAFOOD_LEAD_HANDOFF_CONTRACT.md](seafood/SEAFOOD_LEAD_HANDOFF_CONTRACT.md)。
 - 两条线的当前动作、`NOT NOW`、渠道扩张、AI/CRM/自动化门槛及指标统一以 [DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md](DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md) 和 [DUAL_BUSINESS_LINE_KPI_SCORECARD.md](DUAL_BUSINESS_LINE_KPI_SCORECARD.md) 为准。

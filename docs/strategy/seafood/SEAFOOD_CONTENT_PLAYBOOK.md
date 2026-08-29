@@ -2,16 +2,23 @@
 
 > **业务线：** `seafood_nepal`
 > **制作方式：** AI 视频生成，目标为真实 `iPhone Natural Look`；不冒充实拍产品、门店、客户或当地履约。
-> **发布状态：** `publish_blocked_pending_business_gates`。B2B 卡须 SF-2 解锁，B2C 卡须 SF-6 解锁。
+> **发布状态：** `publish_blocked_pending_business_gates`。内容是候选 Acquisition Route；只有在 SF-U2 选中、SF-U3/U6 前置和 route-specific authorization 满足后才可进入外部测试。
 
 ## 1. 内容与销售路线必须分开
 
 | Route | 首要客户问题 | 内容的唯一工作 | 进入条件 |
 |---|---|---|---|
-| B2B（Primary） | 规格、包装、菜单适配、储存、收货、损耗、交接与供货事实是否清楚？ | 帮采购方提出正确核验问题，推动合格采购对话 | 已批准 SKU、食品/冷链/商业/履约事实与接触授权。 |
-| B2C（Secondary） | 怎样选择、储存、准备和使用已批准的冷冻海鲜？ | 建立真实产品/烹饪/服务信息的信任，导向合格询盘 | 已批准零售 SKU、标签、价格、库存、支付、配送、售后与外部授权。 |
+| B2B Organic Content（候选 Route C） | 规格、包装、菜单适配、储存、收货、损耗、交接与供货事实是否清楚？ | Trust、Education、Product awareness、Procurement education、Inbound Lead、Retargeting 与 Sales enablement | SF-U2 选中 Content Route；Online Offer Pack、平台/账号、事实/素材权、CTA/intake、归因和发布授权齐备。 |
+| B2C Organic Content（Later） | 怎样选择、储存、准备和使用已批准的冷冻海鲜？ | 建立真实产品/烹饪/服务信息的信任，导向 Qualified Lead | 已批准零售 SKU、标签、价格、库存、支付、配送、售后、内容 Route 和外部授权。 |
 
 产品卡中的 `SM-01` 至 `SM-20` 是货品单候选引用，不是可公开使用的品牌/产品资产。`asset_rights=UNKNOWN` 时，AI 不能复制包装、标签、产品图片或任何可辨认商标。
+
+### 1.1 当前 Route Decision
+
+- `Primary = Search / Web Prospecting`，不是内容；详见 [SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md](SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md)。
+- `Fallback = Digital Referral / Partner`。
+- `Organic B2B Content = LATER / SF-U6 second-route candidate`，除非真实证据使 SF-U2 重新选择。
+- 内容不能只停在 views/watch time；必须回链 `content_id → lead → qualified_lead → supplier_accepted → offered → won/lost`。断链为 `attribution_incomplete`。
 
 ## 2. 客群与内容支柱
 
@@ -143,8 +150,8 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 ## 5. Caption、CTA 与语言控制
 
 - **首发语言建议：** English，理由是面向尼泊尔市场的工作假设；Nepali 使用前必须 `native_review_required=true`；Chinese 只用于内部审核/供应链协作。
-- **B2B 可用 CTA（SF-2 后）：** `Request the approved product-information checklist.`、`Tell us your menu, receiving and storage questions.`
-- **B2C 可用 CTA（SF-6 后）：** `Ask for the verified product and storage information for your area.`
+- **B2B 可用 CTA（Content Route 被 SF-U2/U6 选中且获授权后）：** `Request the approved product-information checklist.`、`Tell us your menu, receiving and storage questions.`
+- **B2C 可用 CTA（B2C Offer、Content Route 和履约前置齐备后）：** `Ask for the verified product and storage information for your area.`
 - **未解锁前 CTA：** `Save this verification guide.`、`What product information would you want checked first?`
 - **绝对禁止：** 价格、即时库存、当天配送、温度/保质期数字、原产地、食品认证、过敏原、付款和下单 CTA，除非全部绑定有效的供应链事实。
 - **Pinned comment：** `Product availability, food documentation, storage guidance, price and delivery details are only shared after the approved local product record is in place.`
@@ -156,25 +163,25 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 ### 完整 B2B 卡 SF-C01｜采购虾仁，先别只问价格
 
 - **Target / objective / funnel：** 酒店/餐厅采购候选；把问题从价格转向规格/验收；`B2B discovery`。
-- **Platform / duration / opening：** SF-2 后的单一获准 B2B 信任触点；30 秒；“酒店厨房采购虾仁，真正影响出品稳定的往往不是价格。”
+- **Platform / duration / opening：** SF-U2/U6 选中的单一获准 B2B Content Route；30 秒；“酒店厨房采购虾仁，真正影响出品稳定的往往不是价格。”
 - **Full script / VO：** “价格当然重要，但它不能替代规格、净重、包装、批次、储存要求和收货标准。采购前先把这些问题问清楚，才能知道这款产品是否真的适合后厨。信息越完整，后面的沟通越有效。”
 - **Shot list / AI visual prompt：** 无标识后厨备料台、成人手写六项核验卡、空白冷冻包装轮廓、电子秤但不显示数字；手机手持视角、自然顶灯、锅具环境声；`prohibit=logos, labels, real hotel, fake product.`
 - **On-screen / caption / CTA：** `Spec. pack. batch. storage. receiving.` Caption：`For a kitchen, clarity is part of consistency.` CTA：`Save the procurement checklist.`
-- **Proof needed / compliance / recording / metric：** 不提任何 SKU；SF-2 前只内部。AI 后期字幕人工制作；指标为 `qualified_procurement_question`，无合格对话/无接触授权则 Stop。
+- **Proof needed / compliance / recording / metric：** 不提任何 SKU；Content Route 未解锁前只内部。AI 后期字幕人工制作；指标为 `qualified_lead` 与 `supplier_accepted_lead`，无合格商机/无发布授权则 Stop。
 
 ### 完整 B2B 卡 SF-C02｜菜单适配先问三件事
 
 - **Target / objective / funnel：** 中餐/火锅/海鲜餐厅候选；采购资格教育；`B2B discovery`。
 - **Duration / opening / script：** 25 秒；“一款冷冻海鲜能不能进菜单，先看三个地方。” VO：“第一，是菜单到底需要什么形态和规格。第二，是后厨有没有相应的储存和收货流程。第三，是供应链能否用当前资料把标签、批次、价格和交接说清楚。三个答案都在，才值得继续试。”
 - **Shot / text / caption / CTA：** 无品牌菜单、空白规格卡、冰箱门外观但不冒充冷库；`Menu. kitchen. facts.`；`A menu fit is a verified conversation, not a guess.`；`What would your kitchen verify first?`
-- **Proof / compliance / metric:** 需要 SF-1 的真实 SKU 才可替换通用表述；不说“适合火锅/餐厅”。测合格问题，政策/事实不全则不发布。
+- **Proof / compliance / metric:** 需要 `ONLINE_ACQUISITION_READY` Product Pack 才可替换通用表述；不说“适合火锅/餐厅”。测 Qualified Lead，政策/事实不全则不发布。
 
 ### 完整 B2B 卡 SF-C03｜收货窗口比你想的更重要
 
 - **Target / objective / funnel：** 酒店/批发候选；强调履约核验；`trust`。
 - **Duration / opening / script：** 30 秒；“采购一箱海鲜，先别跳过收货窗口。” VO：“产品能不能按时到，只是第一层。更重要的是谁收货、怎样验收、异常如何记录、温控和责任由谁确认。没有这些信息，‘可以配送’并不等于可履约。”
 - **Shot / text / caption / CTA：** 无标识收货台、成人核对表、时钟、空白箱体；`Receiving is part of the product.`；`A delivery claim needs an acceptance path.`；`Save the receiving questions.`
-- **Proof / compliance / metric：** 不说配送服务已存在；发布需 SF-1+SF-2；主指标为收货/履约类信息请求；无事实就回内部培训。
+- **Proof / compliance / metric：** 不说配送服务已存在；发布需 Offer Pack + Content Route + 授权；主指标为可进入 Qualification 的真实 Lead；无事实就回内部培训。
 
 ### 完整 B2B 卡 SF-C04｜标签不是最后一步
 
@@ -200,7 +207,7 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 ### 完整 B2C 卡 SF-C07｜买冷冻海鲜前，先看信息
 
 - **Target / objective / funnel：** 家庭聚餐假设人群；教育产品信息；`B2C discovery`。
-- **Platform / duration / opening：** SF-6 后的一个获准内容触点；25 秒；“买冷冻海鲜前，哪些信息不能只靠图片猜？”
+- **Platform / duration / opening：** B2C Offer、履约与 Content Route 后的一个获准触点；25 秒；“买冷冻海鲜前，哪些信息不能只靠图片猜？”
 - **Full script / VO：** “先看是什么产品、什么规格、净重和包装；再看标签上的储存、过敏原和日期信息；最后确认你的区域是否有已经批准的交接方式。好看的画面能给灵感，真实的信息才能帮助你决定。”
 - **Shot / AI prompt：** 无标签冷冻食材轮廓、家庭餐桌、空白信息卡；自然窗光、手机手持；不让 AI 生成食材包装文字。
 - **On-screen / caption / CTA：** `Picture. label. storage. handoff.` Caption：`A better dinner starts with a better product question.` CTA：`Save this check before you shop.`
@@ -247,7 +254,7 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 | ID | Route / target / opening | Script direction | AI shot / caption / CTA | Fact control / metric / stop |
 |---|---|---|---|---|
 | SF-C13 | B2B 酒店；“宴会厨房为什么不能只看单箱重量？” | 箱规、规格、收货、菜单与异常要一起问。 | 无标识箱体/空白验收单；`Weight is one question, not the answer.`；保存。 | 不推断重量=可用库存；看采购问题质量。 |
-| SF-C14 | B2B 批发；“MOQ 之前还有什么？” | 讲价格有效期、库存、冷链、结算和退换。 | 无数字报价单；`MOQ needs a full offer.`；请求清单。 | SF-2 后；无商业事实不发布。 |
+| SF-C14 | B2B 批发；“MOQ 之前还有什么？” | 讲价格有效期、库存、冷链、结算和退换。 | 无数字报价单；`MOQ needs a full offer.`；请求清单。 | Content Route 解锁后；无商业事实不发布。 |
 | SF-C15 | B2B 餐厅；“菜单适配不是一句‘适合’。” | 以菜单、形态、收货和损耗组成核验。 | 菜单与规格卡；`Fit is verified.`；留言。 | 无批准 SKU 不声称适配。 |
 | SF-C16 | B2B 冷链；“异常发生时，谁确认下一步？” | 讲 owner、记录和停售/隔离机制。 | 空白异常流程卡；`Escalate, do not guess.`；保存。 | 无冷链 SOP 仅内部。 |
 | SF-C17 | B2B 进口/渠道；“食品内容为什么需要版本？” | 标签、批次、有效期和负责人。 | 日期/版本卡；`Facts expire.`；资料 CTA。 | 不称已有进口资格；无权不触达。 |
@@ -259,13 +266,13 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 | SF-C23 | B2C 信息受众；“看不懂包装，该问什么？” | 三个可复制的客服问题。 | 手机备忘录；`Ask for verified information.`；保存。 | 由人工审核任何销售问询。 |
 | SF-C24 | Both；“内容的作用不是替代食品事实。” | 内容、产品卡、交接和数据各自的角色。 | AI 分镜 + 审核卡；`Content explains. Facts approve.`；保存。 | 不把视频当产品证据；看合格信息请求。 |
 
-## 7. 发布与审核 SOP（解锁后才执行）
+## 7. Content Route 发布与审核 SOP（被 SF-U2/U6 选中后才执行）
 
 `target segment → one hypothesis → fact/asset/policy lock → script → AI visual prompt → generation → technical QC → content QC → business QC → approval → publish → human reply → log → review → Keep/Improve/Stop`
 
 | Step | Owner | Required input | Output / Done when |
 |---|---|---|---|
-| Hypothesis | 用户 + 销售 owner | 一条路线、一个客户问题、一个变量 | `content_brief` 明确提升哪一个漏斗指标。 |
+| Route decision / Hypothesis | 用户 + acquisition owner | SF-U2/U6 的 Content Route 决定、一个客户问题、一个变量 | `content_brief` 明确提升 Lead/Qualified/Supplier Accepted 哪一步。 |
 | Fact lock | 供应链 + 审核人 | SKU、标签、批次、食品/冷链、价格/履约与素材权利 | 任一未知/过期/冲突则 STOP。 |
 | AI video | 内容制作人 | 审过的脚本与手机质感 Prompt | 内部候选；不含假标签/场景/人物。 |
 | QC | 内容/业务审核人 | 视频、字幕、CTA、当前事实 | technical + content + business QC 均通过。 |
@@ -274,6 +281,6 @@ no logos, no readable labels, no exaggerated seafood size, no text rendered by A
 
 ## 8. 海鲜内容数据合同
 
-所有内容记录：`content_id`、`business_line`、`route`、`product_ref`、`channel`、`publish_time`、`target_customer`、`pillar`、`hook_type`、`duration`、`cta_type`、`fact_lock_ref`、`asset_rights_ref`、`views`、`3s_hold`、`avg_watch_time`、`completion_rate`、`inquiry`、`qualified_inquiry`、`qualified_procurement_conversation`、`offer_request`、`offer`、`handoff`、`order`、`fulfilment_outcome`、`lost_reason`。
+所有内容记录：`content_id`、`business_line`、`route`、`product_ref`、`channel`、`publish_time`、`target_customer`、`pillar`、`hook_type`、`duration`、`cta_type`、`fact_lock_ref`、`asset_rights_ref`、`views`、`3s_hold`、`avg_watch_time`、`completion_rate`、`lead_id`、`lead`、`qualified_lead`、`supplier_handoff`、`supplier_accepted`、`supplier_follow_up`、`offer_created`、`won`、`lost`、`fulfilment_outcome`、`lost_reason`。
 
-无合法、可审计数据的字段填 `UNKNOWN`。B2B 首轮主指标是 `qualified_procurement_conversation_rate`；B2C 首轮主指标是 `qualified_household_inquiry_rate`、已核验交接和投诉/温控异常。播放量只用于定位 Hook 是否被看见，不能作为销售成功或扩渠道依据。
+无合法、可审计数据的字段填 `UNKNOWN`。Content Route 主指标是 `qualified_lead_rate`、`supplier_accept_rate` 和 `lead_to_offer_rate`；播放量只用于定位 Hook 是否被看见，不能作为销售成功或扩 Route 依据。供应链没有结果反馈时统一标 `attribution_incomplete`。

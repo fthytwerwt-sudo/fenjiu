@@ -1,6 +1,6 @@
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-28
+- **最近更新**：2026-08-29
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -13,6 +13,7 @@
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
 | 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
+| 海鲜 Online Acquisition 职责重构 | **CONFIRMED（P0 / 内部规划）** | 海鲜现为 Supplier SF-S1 + User SF-U0–U8；新增线上获客与 Lead Handoff/Feedback 合同。旧 SF-2 已 SUPERSEDED，未启动真实发现、发送、发布或销售。 |
 
 ## 安全与历史迁移审计
 

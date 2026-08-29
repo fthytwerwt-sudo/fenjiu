@@ -8,7 +8,8 @@
 - 供应链的主体/资质、产品、账号认证支持、收款与履约资料收集和书面确认；
 - 事实分级、状态、决策、风险、交接和同步包机制维护；
 - 海鲜资料线的独立保存与明确任务下的独立处理。
-- 海鲜独立的 Sales-First 准备：`SF-1` 的单 SKU 产品、食品/进口、冷链、商业与履约证据；在这些条件成立后再以 B2B-first 的人工采购闭环验证，B2C 后置至已验证履约之后。
+- 海鲜 Supplier Workstream：`SF-S1` 的商品、食品/进口、价格/库存、冷链、当地报价/样品/成交/收款/配送/售后；用户不代执行。
+- 海鲜 User Online Acquisition Workstream：`SF-U0–SF-U8` 的 Offer Pack、ICP/Route、线上获客测试、Lead Qualification、Supplier Handoff、结果归因、第二 Route、AI 与自动化；任何外部步骤仍逐 Route 受授权闸门约束。
 
 ## 当前不在范围内
 

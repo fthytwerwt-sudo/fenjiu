@@ -1,5 +1,13 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-29｜海鲜 Online Acquisition 双 Workstream 重构
+
+- **Goal / P0**：只修改海鲜线，把用户职责从混合的当地采购/样品/成交改为 Online Acquisition、Qualified Lead、Supplier Handoff 和结果归因；供应链独立负责尼泊尔当地商品、销售、成交与履约。汾酒路线不重写。
+- **事实与外部证据**：回读 `origin/main=cfb0cf6`、海鲜 execution/content、Targeting Spec 和 Source Catalog；当前 OSM/ODbL/Nominatim 仍只支持受限低频 discovery，Google Maps 名单抽取仍拒绝，Gmail/TikTok 技术能力不等于联系人处理或项目授权。
+- **设计决定**：旧 SF-2 标 `SUPERSEDED`；新增 SF-S1 + SF-U0–U8、Kathmandu Valley Chinese/Hotpot First ICP、Search/Web Primary、Digital Referral fallback、Organic B2B Content later，以及 Lead Handoff/Supplier Feedback/attribution contract。
+- **状态边界**：供应链“正在推进”仅为 P0 progress report，不升级任一 business gate；本轮不抓客户、不处理联系人、不发送、不发布、不投广告、不报价、不下单。
+- **待收口**：角色冲突/阶段/Route/Handoff/内容/汾酒 no-change、链接/敏感扫描、机制/同步包/回归、独立复审、commit/push/remote readback。
+
 ## 2026-08-28｜双业务线 Sales-First 执行化与 AI 手机质感内容设计
 
 - **Goal / Scope**：将既有 Sales-First 总规划落为汾酒与海鲜独立的执行/内容手册、阶段闸门和 KPI；不进行发布、外联、报价、收款、订单、履约或真实 AI 视频生成。

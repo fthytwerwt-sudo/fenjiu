@@ -21,6 +21,7 @@
 - **来源**：用户明确确认，2026-08-05
 - **背景**：线上运营和当地合法销售/履约需要明确边界，不能由模板替代责任确认。
 - **决定**：用户负责账号运营、TikTok 内容、商品展示/上架、客户沟通、订单转化和销售数据反馈；供应链负责当地合法销售主体、资质、产品、SKU/价格/库存、账号认证支持、当地收款、仓储配送、售后和结算。
+- **2026-08-29 scope note**：上述“订单转化”职责自 BD-0007 起只作为汾酒既有职责记录；海鲜用户职责已被 Online Acquisition / Qualified Lead / Supplier Handoff 取代，海鲜当地报价、成交、付款和履约属于供应链。
 - **影响**：供应链责任范围不等于已交付；每项实际资料和负责人仍须书面确认。
 - **后果**：用户不因本条自动获得当地销售、收款或履约权限。
 
@@ -309,3 +310,15 @@
 - **影响**：内容、渠道、CRM、AI 与自动化都被接入一个销售漏斗、人工 baseline 与 Keep/Improve/Stop 门槛；对外发布、报价、收款、订单、履约、外联仍需 action-time 授权和业务闸门。
 - **替代方案**：直接把货品单当库存并同步推进 B2B/B2C；未采用，因为缺冷链、食品、价格与履约事实。把 AI 生成包装/门店当手机实拍；未采用，因为会伪造产品和市场证据。一次性多平台运营；未采用，因为没有渠道许可且会破坏归因。
 - **状态边界**：本决定不确认任何商品在尼泊尔可售、现货、定价、许可、账号、内容发布、客户、订单、支付、配送或履约。
+
+### BD-0007：海鲜用户主线改为 Online Acquisition，并以 Handoff 连接供应链当地销售
+
+- **日期**：2026-08-29
+- **状态**：Accepted / CONFIRMED（用户 P0 与内部规划；外部获客仍阻断）
+- **来源**：用户本轮 P0、当前海鲜 execution/content playbook、Source Catalog、Customer Targeting Specification 与当前官方 OSM/Google/Gmail/TikTok 资料核验。
+- **背景**：旧 `SF-2` 把用户线上客户发现与尼泊尔当地采购、样品、报价、谈判、收款和履约混在同一阶段；用户不在尼泊尔，这一责任设计不可执行。
+- **决定**：以 `SF-S1 Supplier Product & Fulfilment Readiness` 和 `SF-U0–SF-U8 User Online Acquisition` 两条并行 Workstream 取代旧 SF-2。用户负责 Online Offer Pack、ICP/Route、线上获客、Qualified Lead、Supplier Handoff 和结果归因；供应链负责商品/食品/进口/价格/库存/冷链、当地报价/样品/成交/付款/配送/售后，并按 lead_id 反馈 Accepted/Offered/Won/Lost/Fulfilled。
+- **First decision**：`RECOMMENDED_FIRST_ICP=Kathmandu Valley Chinese/Hotpot Restaurants`；`Primary=Search/Web Prospecting`，`Fallback=Digital Referral/Partner`，`Later=Organic B2B Content`，`DEFER=Paid Ads/bulk Email/automated crawler`。这些是可测试建议，不是客户需求或渠道有效性事实。
+- **影响**：内容保留 Hook/Card/AI iPhone Natural Look/QC，但降为 Acquisition Route 之一；Crawler 降为 discovery/verification tool；没有 supplier feedback 时标 `attribution_incomplete`，不进入第二 Route、AI 或 scale。
+- **替代方案**：仅改旧 SF-2 措辞；未采用，因为阶段/KPI/内容仍冲突。新增获客手册同时保留旧主线；未采用，因为会留下两套当前责任。默认 TikTok；未采用，因为当前证据更支持可控、精准、低成本的 Search/Web 内部基线。
+- **状态边界**：本决定不确认供应链 READY、真实企业需求、联系人处理合法性、发送/发布/广告授权、Lead、Offer、订单、成交或履约。

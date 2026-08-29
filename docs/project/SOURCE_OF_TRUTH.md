@@ -4,7 +4,7 @@
 
 | 信息类型 | 当前事实源 | 状态与说明 |
 |---|---|---|
-| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围和职责来自用户 P0（2026-08-28）；供应链实际交付仍须原始书面证据 |
+| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围来自 P0（2026-08-28）；海鲜用户/供应链职责来自 P0（2026-08-29）；供应链实际交付仍须原始书面证据 |
 | 项目总览与路由 | docs/project/CURRENT_STATUS.md | 短摘要；不替代业务或协作详细状态 |
 | 协作、Git、同步包与远端回读 | docs/collaboration/COLLABORATION_STATUS.md | 远端 branch、commit、默认分支和 visibility 仅以最终回读为准 |
 | 协作规则与阅读顺序 | AGENTS.md、PROJECT_ENTRY.md | **CONFIRMED** 的仓库规则和导航 |
@@ -18,6 +18,8 @@
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
 | 双业务线执行/内容手册与阶段指标 | `docs/strategy/fenjiu/`、`docs/strategy/seafood/`、`DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md`、`DUAL_BUSINESS_LINE_KPI_SCORECARD.md` | **CONFIRMED（内部规划）**：明确阶段、内容、SOP、AI 视觉边界和初始测试阈值；不证明发布、销售、AI 生成、客户、订单或履约。 |
 | 海鲜 2026 第一批次货品清单 | 用户提供的 5 页货品单；执行手册中的 `SM-01` 至 `SM-20` 登记 | **CONFIRMED（来源记录）**：可记录表内产品候选、数量、重量、包装摘记；不证明当前库存、食品/进口合规、冷链、价格或履约。 |
+| 海鲜职责、双 Workstream、First ICP/Route 与用户日常获客 | `docs/strategy/seafood/SEAFOOD_EXECUTION_PLAYBOOK.md`、`SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md` | **CONFIRMED（P0 + 内部规划）**：用户主责线上获客，供应链主责当地销售/履约；First ICP/Route 为 `RECOMMENDATION`，不代表外部获客已授权或执行。 |
+| 海鲜 Lead Qualification、Supplier Handoff 与 outcome feedback | `docs/strategy/seafood/SEAFOOD_LEAD_HANDOFF_CONTRACT.md` | **CONFIRMED（内部合同）**：定义状态/字段/归因；不包含真实客户、联系人、报价、订单或销售结果。 |
 | 汾酒 20/30 公开产品研究 | `FENJIU_EXECUTION_PLAYBOOK.md` 的公开来源登记 | **部分成立（公开研究）**：可支持产品线有多公开变体；尼泊尔具体 SKU、价格、库存、授权、许可与可售性仍需供应链/当地书面证据。 |
 | 未来客户发现、评分与 CRM 准入标准 | `docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` | **CONFIRMED（内部规范）**：定义两条业务线各自的产品-客户匹配、城市/关键词、字段、评分、来源/DNC 与 CRM 准入规则；不代表真实获客、联系人处理、发送、供应链资料或合规已获授权。 |
 | 真实客户来源目录与机器配置 | `docs/implementation/FENJIU_SOURCE_CATALOG.md`、`docs/implementation/SEAFOOD_SOURCE_CATALOG.md`、`docs/implementation/source_catalogs/` | **CONFIRMED（来源研究）**：逐项记录来源 owner、入口、条款/访问证据、字段和 use decision（使用裁决）；只允许目录标明的最小企业发现动作，不代表联系人、CRM、外联、产品事实或合规已就绪。 |

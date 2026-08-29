@@ -60,6 +60,8 @@ ALLOWLIST = (
     "docs/strategy/fenjiu/FENJIU_CONTENT_PLAYBOOK.md",
     "docs/strategy/seafood/SEAFOOD_EXECUTION_PLAYBOOK.md",
     "docs/strategy/seafood/SEAFOOD_CONTENT_PLAYBOOK.md",
+    "docs/strategy/seafood/SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md",
+    "docs/strategy/seafood/SEAFOOD_LEAD_HANDOFF_CONTRACT.md",
     "docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md",
     "docs/implementation/FENJIU_SOURCE_CATALOG.md",
     "docs/implementation/SEAFOOD_SOURCE_CATALOG.md",

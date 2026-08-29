@@ -12,11 +12,12 @@
 
 - **当前正式范围**：汾酒采用 Sales-First：`business_gates → sellable offer → controlled channel touchpoint → unified inquiry → human-led sales → order handoff → feedback`。TikTok 是候选内容触点，不是自动获准的唯一销售渠道。
 - **当前阶段**：`SR-1 Sellable Offer Ready`，即供应链资料、合规、账号、收款与履约证据准备；不是已经公开销售或履约。
-- **用户负责**：渠道/账号运营、内容、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权。
-- **供应链负责**：当地合法销售与品牌/产品资质、SKU/规格/价格/库存、账号主体认证支持、当地收款、仓储配送、退换货、质量、售后和财务结算；这些均为确认的责任边界，不表示资料已交付。
+- **汾酒用户职责**：渠道/账号运营、内容、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权。
+- **海鲜用户职责（P0 2026-08-29）**：Online Acquisition & Traffic，包括线上企业发现、搜索/内容/网站/目录获客、Lead Qualification、Supplier Handoff 和基于供应链结果的渠道优化；不承担尼泊尔当地报价、样品、谈判、收款、配送或售后。
+- **供应链职责**：当地合法销售与产品/食品/进口资料、SKU/规格/价格/库存、冷链、当地报价/样品/谈判、收款、订单、仓储配送、售后和财务结算；这些均为确认的责任边界，不表示资料已 READY。
 - **当前最重要任务**：取得一个最小 Offer 的商品单、价格/有效期、库存/补货、主体/许可/授权、账号与认证支持、收款、配送售后及明确负责人；资料齐备后才决定渠道试点和询盘入口。
 - **不自动恢复的旧范围**：没有销售证据与单独授权的 B2B 接触、全平台同时运营、Facebook/Instagram 广告、YouTube/Viber、90 天试销、自动找客或自动外联。
-- **海鲜资料线**：独立业务线；可共享有限协作机制，不能直接用于汾酒事实或决策。
+- **海鲜当前阶段**：供应链为 `SF-S1 IN_PROGRESS_REPORTED / NOT_READY`；用户为 `SF-U1 Online Offer Pack Ready`。旧 SF-2 混合采购闭环已被双 Workstream 取代；真实发现、联系、发布和广告仍需 Route-specific 授权。
 
 ## 必读顺序
 
@@ -55,9 +56,9 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 业务项目状态｜BUSINESS_STATUS
 
-- **最近更新**：2026-08-28
+- **最近更新**：2026-08-29
 - **业务线**：汾酒尼泊尔主线
-- **状态来源**：用户明确确认，2026-08-05 与 Sales-First P0（2026-08-28）；以及当前仓库原始资料存在性审计。
+- **状态来源**：用户明确确认，2026-08-05、Sales-First P0（2026-08-28）与海鲜职责 P0（2026-08-29）；以及当前仓库原始资料存在性审计。
 
 ## 当前业务阶段
 
@@ -108,6 +109,14 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 **CONFIRMED**：尼泊尔海鲜为独立业务线，可有 B2B 与 B2C 范围。两条业务线可复用有限协作机制，但产品、客户、价格、资质、履约和业务结论不得互推；没有明确任务时，Agent 默认只处理汾酒主线。
 
+### 2026-08-29 海鲜职责与主线修正（P0）
+
+- **CONFIRMED**：用户不在尼泊尔，海鲜职责为 `Online Acquisition & Traffic`：企业发现、搜索/内容/网站/目录获客、Lead、Qualified Lead、Supplier Handoff 和渠道/ICP/内容优化。
+- **CONFIRMED**：供应链负责海鲜商品、食品/进口、当地合法销售、价格、库存、冷链、仓储、当地报价/样品/谈判、收款、订单、配送、售后和成交。
+- **CONFIRMED（P0 progress report）**：供应链正在推进当地商品和业务准备；这不证明任一事项 READY。当前逐项状态仍是 `UNKNOWN / BLOCKED`，直到有当前书面证据。
+- **SUPERSEDED**：旧 `SF-2 B2B 人工采购闭环` 不再要求用户参与当地采购/样品/成交。当前并行阶段为 Supplier `SF-S1 IN_PROGRESS_REPORTED / NOT_READY` 与 User `SF-U1 CURRENT / BLOCKED_BY_SUPPLIER_INPUTS`。
+- **BLOCKED**：真实企业发现、联系人处理、外联、内容发布和广告仍缺 Route-specific 来源/处理依据/DNC/平台/用户授权；本轮未启动任何外部获客。
+
 ## 2026-08-28 双业务线执行化状态
 
 - **CONFIRMED（规划）**：已形成汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行手册、内容手册、阶段闸门和指标计分表。它们包含 AI 视频的 `iPhone Natural Look` 标准、内部内容卡、客户资格问题、人工销售 SOP 与渠道扩张规则。
@@ -123,7 +132,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-28
+- **最近更新**：2026-08-29
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -136,6 +145,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
 - **CONFIRMED（执行设计层）**：汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行/内容手册、双线阶段闸门与 KPI 已形成。它们把内容脚本、AI iPhone 质感、渠道/询盘/跟进与决策阈值写成可执行草稿，但不解除任何外部业务闸门。
 - **部分成立（海鲜货品来源）**：用户提供的 2026 年货品单已作为 `SM-01` 至 `SM-20` 的候选产品登记；表内数据不升级为本地可售库存、食品/冷链、价格或履约事实。
+- **CONFIRMED（海鲜 P0 2026-08-29）**：用户海鲜主责已改为 Online Acquisition / Traffic / Lead Qualification / Supplier Handoff；供应链主责当地商品、报价、样品、成交、付款、冷链、配送和售后。旧 SF-2 混合采购路线已 `SUPERSEDED`。
+- **当前海鲜双阶段**：Supplier `SF-S1 IN_PROGRESS_REPORTED / NOT_READY`；User `SF-U1 Online Offer Pack Ready / BLOCKED_BY_SUPPLIER_INPUTS`。First ICP 推荐 Kathmandu Valley Chinese/Hotpot Restaurants；Primary Route 推荐 Search/Web Prospecting，真实 contact/outreach 仍 `BLOCKED`。
 
 详情：[SALES_FIRST_MASTER_PLAN.md](docs/strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](docs/strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](docs/project/OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](docs/project/RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](docs/project/NEXT_ACTIONS.md)
 
@@ -185,7 +196,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 | 信息类型 | 当前事实源 | 状态与说明 |
 |---|---|---|
-| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围和职责来自用户 P0（2026-08-28）；供应链实际交付仍须原始书面证据 |
+| 当前正式业务范围、阶段、职责、未知与业务阻断 | docs/project/BUSINESS_STATUS.md | **CONFIRMED** 的 Sales-First 范围来自 P0（2026-08-28）；海鲜用户/供应链职责来自 P0（2026-08-29）；供应链实际交付仍须原始书面证据 |
 | 项目总览与路由 | docs/project/CURRENT_STATUS.md | 短摘要；不替代业务或协作详细状态 |
 | 协作、Git、同步包与远端回读 | docs/collaboration/COLLABORATION_STATUS.md | 远端 branch、commit、默认分支和 visibility 仅以最终回读为准 |
 | 协作规则与阅读顺序 | AGENTS.md、PROJECT_ENTRY.md | **CONFIRMED** 的仓库规则和导航 |
@@ -199,6 +210,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 尼泊尔海鲜业务资料 | 海鲜原始资料线与对应供应链文件 | 独立资料线；不得自动用于汾酒结论 |
 | 双业务线执行/内容手册与阶段指标 | `docs/strategy/fenjiu/`、`docs/strategy/seafood/`、`DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md`、`DUAL_BUSINESS_LINE_KPI_SCORECARD.md` | **CONFIRMED（内部规划）**：明确阶段、内容、SOP、AI 视觉边界和初始测试阈值；不证明发布、销售、AI 生成、客户、订单或履约。 |
 | 海鲜 2026 第一批次货品清单 | 用户提供的 5 页货品单；执行手册中的 `SM-01` 至 `SM-20` 登记 | **CONFIRMED（来源记录）**：可记录表内产品候选、数量、重量、包装摘记；不证明当前库存、食品/进口合规、冷链、价格或履约。 |
+| 海鲜职责、双 Workstream、First ICP/Route 与用户日常获客 | `docs/strategy/seafood/SEAFOOD_EXECUTION_PLAYBOOK.md`、`SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md` | **CONFIRMED（P0 + 内部规划）**：用户主责线上获客，供应链主责当地销售/履约；First ICP/Route 为 `RECOMMENDATION`，不代表外部获客已授权或执行。 |
+| 海鲜 Lead Qualification、Supplier Handoff 与 outcome feedback | `docs/strategy/seafood/SEAFOOD_LEAD_HANDOFF_CONTRACT.md` | **CONFIRMED（内部合同）**：定义状态/字段/归因；不包含真实客户、联系人、报价、订单或销售结果。 |
 | 汾酒 20/30 公开产品研究 | `FENJIU_EXECUTION_PLAYBOOK.md` 的公开来源登记 | **部分成立（公开研究）**：可支持产品线有多公开变体；尼泊尔具体 SKU、价格、库存、授权、许可与可售性仍需供应链/当地书面证据。 |
 | 未来客户发现、评分与 CRM 准入标准 | `docs/implementation/NEPAL_CUSTOMER_TARGETING_SPECIFICATION.md` | **CONFIRMED（内部规范）**：定义两条业务线各自的产品-客户匹配、城市/关键词、字段、评分、来源/DNC 与 CRM 准入规则；不代表真实获客、联系人处理、发送、供应链资料或合规已获授权。 |
 | 真实客户来源目录与机器配置 | `docs/implementation/FENJIU_SOURCE_CATALOG.md`、`docs/implementation/SEAFOOD_SOURCE_CATALOG.md`、`docs/implementation/source_catalogs/` | **CONFIRMED（来源研究）**：逐项记录来源 owner、入口、条款/访问证据、字段和 use decision（使用裁决）；只允许目录标明的最小企业发现动作，不代表联系人、CRM、外联、产品事实或合规已就绪。 |
@@ -239,7 +252,8 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - 供应链的主体/资质、产品、账号认证支持、收款与履约资料收集和书面确认；
 - 事实分级、状态、决策、风险、交接和同步包机制维护；
 - 海鲜资料线的独立保存与明确任务下的独立处理。
-- 海鲜独立的 Sales-First 准备：`SF-1` 的单 SKU 产品、食品/进口、冷链、商业与履约证据；在这些条件成立后再以 B2B-first 的人工采购闭环验证，B2C 后置至已验证履约之后。
+- 海鲜 Supplier Workstream：`SF-S1` 的商品、食品/进口、价格/库存、冷链、当地报价/样品/成交/收款/配送/售后；用户不代执行。
+- 海鲜 User Online Acquisition Workstream：`SF-U0–SF-U8` 的 Offer Pack、ICP/Route、线上获客测试、Lead Qualification、Supplier Handoff、结果归因、第二 Route、AI 与自动化；任何外部步骤仍逐 Route 受授权闸门约束。
 
 ## 当前不在范围内
 
@@ -263,7 +277,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-28
+- **最近更新**：2026-08-29
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -276,6 +290,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
 | 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
+| 海鲜 Online Acquisition 职责重构 | **CONFIRMED（P0 / 内部规划）** | 海鲜现为 Supplier SF-S1 + User SF-U0–U8；新增线上获客与 Lead Handoff/Feedback 合同。旧 SF-2 已 SUPERSEDED，未启动真实发现、发送、发布或销售。 |
 
 ## 安全与历史迁移审计
 

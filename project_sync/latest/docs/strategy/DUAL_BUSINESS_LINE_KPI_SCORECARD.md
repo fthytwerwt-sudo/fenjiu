@@ -27,19 +27,29 @@
 | FJ-8 | AI 前后任务时间/QC 记录 | reply acceptance、漏项变化或下游内容质量 | AI Keep/Improve/Stop | 1 个重复任务的 before/after 对照 | 无净收益、事实失真或人工风险上升。 |
 | FJ-9 | 稳定 SOP、异常/回退记录 | order handoff、fulfilment、repeat（若合法记录） | 是否可扩张 | 连续稳定窗口由用户/供应链定义 | 任一合规、履约、投诉或质量异常。 |
 
-## 3. Seafood Scorecard
+## 3. Seafood Dual Workstream Scorecard
 
-| Stage | Output Metric | Funnel Metric | Decision Metric | Initial test threshold | Stop line |
+### Supplier Workstream
+
+| Stage | Output Metric | Funnel Metric | Decision Metric | Initial threshold | Stop line |
 |---|---|---|---|---|---|
-| SF-1 | 一个 SKU 的标签/批次/食品/冷链/商业/履约证据 | 不适用 | `food_cold_chain_ready` 是否成立 | 1 个 `SM-*` 的完整 Offer 包 | 任一食品、冷链、价格、库存、付款或交接字段未知。 |
-| SF-2 | 采购资格问题、fact recheck、owner/next action | qualified procurement conversation | B2B 手工采购路径是否可运行 | 5 个合格采购对话或观察窗口 | 食品/冷链/授权或数据依据失效。 |
-| SF-3 | 单一渠道/转介的可审计触点 | qualified procurement conversation rate | B2B 渠道 Keep/Improve/Stop | 10 次可审计触点 | 无合格对话、无法归因或来源不允许。 |
-| SF-4 | 规格/菜单/收货内容的单一变量记录 | content→procurement inquiry | 哪种信息促进采购对话 | 1 变量/周期 | 只有播放、没有采购对话。 |
-| SF-5 | next action、样品/报价前核验、lost reason | follow-up completion、stage aging | 是否需轻量 CRM | 2 个连续周记录 | 没有真实负担/数据依据。 |
-| SF-6 | 已批准 B2C 产品卡、交接 SOP、人工回复 | qualified household inquiry、safe handoff | B2C 是否能安全履约 | 10 个合格询盘或一个观察窗口 | 温控、食品、支付、配送、投诉/退款异常。 |
-| SF-7 | 第二渠道或新客群独立归因记录 | incremental qualified inquiry/conversation | 是否有增量 | 1 个完整测试周期 | 无增量/交接负载超限。 |
-| SF-8 | AI 前后时间、修改率、QC/跟进数据 | 事实通过率、missed follow-up 变化 | AI Keep/Improve/Stop | 1 个明确定义重复任务 | AI 伪造/遗漏事实或没有净收益。 |
-| SF-9 | SKU/区域扩展的事实与异常记录 | handoff、fulfilment、repeat、complaints | 是否稳定规模化 | 连续稳定窗口待真实 baseline 设定 | 食品、冷链、质量、回款或合规事故。 |
+| SF-S1 | Product/food/import/price/stock/cold-chain/local owner evidence；Lead ACK 与 outcome feedback | accepted→offered→won/lost→fulfilled | `Can supplier accept and close this Lead?` | 1 Online Offer Pack input + 1 supplier owner；真实 SLA 待确认 | 任一事实缺失/过期、无 owner、无结果反馈；“正在做”不等于 READY。 |
+
+### User Online Acquisition Workstream
+
+| Stage | Output Metric | Funnel Metric | Decision Metric | RECOMMENDED_INITIAL_TEST_THRESHOLD | Stop line |
+|---|---|---|---|---|---|
+| SF-U0 | 职责、handoff、feedback 文档 | 不适用 | `role_boundary_clear` | 当前主线角色冲突 0 命中 | 本地销售仍分配给用户。 |
+| SF-U1 | Online Offer Pack 完整字段 | 不适用 | `safe_for_lead_generation?` | 1 个 `ONLINE_ACQUISITION_READY` Product Pack | 产品/规格/素材权/询盘接受/owner 缺失。 |
+| SF-U2 | 1 Product + 1 ICP + 1 Region + 1 Route test brief | 不适用 | `first_test_authorizable?` | 1 个完整 brief | 多 ICP、多 Route、无 supplier owner。 |
+| SF-U3 | 20 observations、site verified、ICP-qualified、approved path candidates | reply、qualified lead、supplier accepted | Primary Route Keep/Improve/Stop | 10 business days；≤180 human minutes；目标 12 site-verified、8 ICP-qualified、5 path candidates；联系指标仅在另获授权后启用 | 来源/处理/DNC/授权缺失；<8 ICP-qualified 先改 ICP/source。 |
+| SF-U4 | qualified records、handoffs、supplier ACK | supplier_accept_rate、lead_to_supplier_conversation | `handoff_stable?` | 前 3 个 Qualified Lead 100% 有接收状态；ACK 1 business day 为建议 | 无 owner、ACK、basis，或私人资料要进入 Git。 |
+| SF-U5 | complete attribution、weekly review、cost record | lead_to_offer、lead_to_order、lost reason | best ICP/Route/Content | 前 5 个 supplier decisions；feedback completeness ≥80% 为建议 | `attribution_incomplete`，不扩量。 |
+| SF-U6 | 独立 second-route IDs 与成本 | incremental qualified/supplier-accepted leads | Second Route K/I/S | 1 个与 Primary 同口径完整窗口 | 无增量、无法归因、supplier capacity 不稳。 |
+| SF-U7 | before/after time、human decision、fact error | qualified lead quality 不劣化 | AI K/I/S | 20 units 或 2 完整批次 | 错误增加、节省很少、人工审核不可控。 |
+| SF-U8 | automation runs、override/fallback、capacity record | accepted lead 与 sales outcome | scale / rollback | 连续 2 个稳定周期 | ICP/Offer/Route/handoff/feedback 任一失稳。 |
+
+海鲜用户 KPI：`target_accounts_found`、`qualified_accounts`、`leads`、`qualified_leads`、`supplier_accept_rate`、`lead_to_offer_rate`、`cost_per_qualified_lead`、`cost_per_supplier_accepted_lead`。`won/revenue/fulfilled` 是联合结果，不能全部压成用户个人成交责任。
 
 ## 4. 指标使用规则
 

@@ -1,6 +1,6 @@
 # 风险与阻断｜RISKS_AND_BLOCKERS
 
-## 2026-08-28 当前优先级（Sales-First 覆盖层）
+## 2026-08-29 当前优先级（Sales-First 覆盖层）
 
 以下为本轮 P0 的当前风险排序；下方历史行保留可追溯性，但不得覆盖本节。工程/规划完成不降低业务、平台、法律或隐私闸门。
 
@@ -16,6 +16,10 @@
 | SF-R01 | `BLOCKED / seafood_manifest_is_not_inventory` | 货品单被误解为尼泊尔现货或销售库存 | 可能导致错误报价、交期和履约承诺 | 仅作产品候选记录；取得当期库存/批次/owner 才能进入 Offer。 |
 | SF-R02 | `BLOCKED / food_and_cold_chain_unknown` | 食品/进口、标签、过敏原、温控、配送与异常责任未确认 | 不得报价、送样、接单或 B2C 配送 | SF-1 逐 SKU 补书面证据。 |
 | SF-R03 | `RISK / ai_visual_false_grounding` | AI 视频可能伪造包装、标签、顾客/门店、产地或食品事实 | 造成虚假宣传与合规风险 | 只用无标签镜头；真实素材需权利/事实锁；三层 QC。 |
+| SF-R04 | `SUPERSEDED / role_conflict` | 旧 SF-2 把用户线上获客与供应链当地报价/样品/成交/履约混为一体 | 用户被错误要求承担尼泊尔本地销售动作 | 使用 SF-S1 + SF-U0–U8；旧路线只保留 Git history。 |
+| SF-R05 | `BLOCKED / lead_handoff_owner_missing` | 供应链未书面确认 Lead 接收 owner、接受状态和结果反馈 | Qualified Lead 无法交接，用户不能优化渠道 | SF-U4 前建立 Supplier Handoff/Feedback。 |
+| SF-R06 | `BLOCKED / route_specific_authorization_missing` | Search/Web 仅允许内部低频 discovery 设计，联系人处理、DNC、发送/发布/广告授权缺失 | 不能启动外部 acquisition test | 按 Route 单独补 policy/legal/project authorization。 |
+| SF-R07 | `RISK / attribution_incomplete` | Supplier 接收 Lead 后不回传 offered/won/lost/fulfilled | views/Lead 数无法判断商业质量 | 缺 feedback 不进入第二 Route、AI 或 scale。 |
 
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |
 |---|---|---|---|---|

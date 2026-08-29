@@ -1,6 +1,6 @@
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-28
+- **最近更新**：2026-08-29
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -13,6 +13,8 @@
 - **已确认（来源研究层）**：双业务线 Source Catalog 已形成并提供 machine-readable（机器可读）YAML；真实企业发现、联系人处理、CRM 和外联均尚未开始或未获授权，且仅是 SR-6 后置 B2B 小样本的输入。
 - **CONFIRMED（执行设计层）**：汾酒 `FJ-1` 与海鲜 `SF-1` 的独立执行/内容手册、双线阶段闸门与 KPI 已形成。它们把内容脚本、AI iPhone 质感、渠道/询盘/跟进与决策阈值写成可执行草稿，但不解除任何外部业务闸门。
 - **部分成立（海鲜货品来源）**：用户提供的 2026 年货品单已作为 `SM-01` 至 `SM-20` 的候选产品登记；表内数据不升级为本地可售库存、食品/冷链、价格或履约事实。
+- **CONFIRMED（海鲜 P0 2026-08-29）**：用户海鲜主责已改为 Online Acquisition / Traffic / Lead Qualification / Supplier Handoff；供应链主责当地商品、报价、样品、成交、付款、冷链、配送和售后。旧 SF-2 混合采购路线已 `SUPERSEDED`。
+- **当前海鲜双阶段**：Supplier `SF-S1 IN_PROGRESS_REPORTED / NOT_READY`；User `SF-U1 Online Offer Pack Ready / BLOCKED_BY_SUPPLIER_INPUTS`。First ICP 推荐 Kathmandu Valley Chinese/Hotpot Restaurants；Primary Route 推荐 Search/Web Prospecting，真实 contact/outreach 仍 `BLOCKED`。
 
 详情：[SALES_FIRST_MASTER_PLAN.md](docs/strategy/SALES_FIRST_MASTER_PLAN.md)｜[SALES_EXECUTION_PHASES.md](docs/strategy/SALES_EXECUTION_PHASES.md)｜[BUSINESS_STATUS.md](docs/project/BUSINESS_STATUS.md)｜[OPEN_QUESTIONS.md](docs/project/OPEN_QUESTIONS.md)｜[RISKS_AND_BLOCKERS.md](docs/project/RISKS_AND_BLOCKERS.md)｜[NEXT_ACTIONS.md](docs/project/NEXT_ACTIONS.md)
 

@@ -1,6 +1,6 @@
 # 下一步行动｜NEXT_ACTIONS
 
-## 2026-08-28 当前优先任务（双业务线互不替代）
+## 2026-08-29 当前优先任务（双业务线互不替代）
 
 **`SR-1 / Sellable Offer Evidence Contract`**：把一个候选汾酒 Offer 所需的供应链、合规、渠道、收款与履约证据整理为私有、可审计的 decision register；输出已批准/缺失/冲突/过期清单和负责人。不得导入 Git 真实数据、发布、报价、收款、下单或接触客户。
 
@@ -26,17 +26,25 @@
 3. **渠道与承接设计**：只核验候选触点的账号 owner、地区、酒类内容/广告/商品展示/消息边界与一个询盘承接方式；不发布、不投放、不自动发消息。WhatsApp 不得用作酒类交易，Meta commerce channels 不得用作酒类销售。
 4. **人工 Offer 决定**：由用户/供应链/必要合规责任人确认 `ready / blocked / missing / conflict / expired`，并记录 SR-2 是否可被用户另行授权。
 
-## Seafood SF-1 子任务（与汾酒 FJ-1 分开维护）
+## Seafood 双 Workstream 当前队列（与汾酒 FJ-1 分开维护）
 
-1. **指定一个首批 SKU**：从 `SM-01` 至 `SM-20` 选出一个可核验候选，而不是按货品单重量自行决定；补产品身份、物种/形态、净重、包装、原产地、批次、标签、保质期与过敏原。
-2. **补冷链与食品证据**：确认储存/运输要求、温控记录、冷库/配送、收货、冷链中断、食品/进口/产品登记和责任主体。未确认不自行填温度或“合规”。
-3. **补商业与履约证据**：确认 B2B/B2C 价格、MOQ、库存、补货、配送费用、损耗、支付、退换/售后与 owner。
-4. **人工路线决定**：仅在一个 SKU 的证据包 `READY` 后，用户决定是否单独授权 `SF-2` 的 B2B 人工采购闭环。B2C 仍后置至 SF-6。
+### Supplier SF-S1
+
+1. 供应链从 `SM-01` 至 `SM-20` 提供至少一个 SKU 的产品身份、物种/形态、规格、净重、包装、标签、批次、保质期、过敏原与素材权。
+2. 供应链确认该产品的 B2B/B2C 接受状态、价格处理规则、MOQ/库存状态、服务区域、食品/进口/冷链/仓储、当地报价/样品/成交/付款/配送/售后和 local owner。
+3. 所有资料仍逐项 `READY / MISSING / CONFLICT / EXPIRED`；“正在推进”不等于 READY。
+
+### User SF-U1（今天唯一海鲜用户动作）
+
+1. 只检查 `SM-03` 的新增供应链资料，更新 Online Offer Pack；不代供应链执行本地动作。
+2. 身份、规格、素材权、询盘接受状态、supplier owner 或有效期缺失时保持 `BLOCKED`。
+3. 可内部准备 First ICP（Kathmandu Valley Chinese/Hotpot Restaurants）与 Primary Route（Search/Web Prospecting），但不发现、联系、发送或发布。
+4. Product Pack `ONLINE_ACQUISITION_READY` 后才进入 SF-U2；旧 SF-2 人工采购闭环已 `SUPERSEDED`。
 
 ## 保持后置或关闭
 
 - `P08-01` 的真实资料导入仍是历史工程任务，不是当前业务队列；只有 SR-1 的业务证据和独立实现设计都满足时才能重新评估。
-- B2B 企业发现、真实 CRM/Gmail、crawler、视频 provider、Agent、自动化和规模化均等待对应 Sales-First 阶段的真实证据。
+- 海鲜企业发现、真实 CRM/Gmail、crawler、内容发布、广告、Agent、自动化和规模化均等待 SF-U 阶段、Route-specific 来源/处理/DNC/平台/用户授权和 Supplier Handoff/Feedback 准备；本轮不启动。
 - GitHub default branch/visibility/远端 CI 仍由具备管理权限的责任人单独核验；它们不替代业务闸门。
 - `external_execution_allowed=false`；不得发布、发送、报价、收款、下单、退款或发货。
 
