@@ -6,7 +6,9 @@
 - **事实与外部证据**：回读 `origin/main=cfb0cf6`、海鲜 execution/content、Targeting Spec 和 Source Catalog；当前 OSM/ODbL/Nominatim 仍只支持受限低频 discovery，Google Maps 名单抽取仍拒绝，Gmail/TikTok 技术能力不等于联系人处理或项目授权。
 - **设计决定**：旧 SF-2 标 `SUPERSEDED`；新增 SF-S1 + SF-U0–U8、Kathmandu Valley Chinese/Hotpot First ICP、Search/Web Primary、Digital Referral fallback、Organic B2B Content later，以及 Lead Handoff/Supplier Feedback/attribution contract。
 - **状态边界**：供应链“正在推进”仅为 P0 progress report，不升级任一 business gate；本轮不抓客户、不处理联系人、不发送、不发布、不投广告、不报价、不下单。
-- **待收口**：角色冲突/阶段/Route/Handoff/内容/汾酒 no-change、链接/敏感扫描、机制/同步包/回归、独立复审、commit/push/remote readback。
+- **验证**：角色冲突、SF-U0–U8 字段、First ICP/Route 唯一性、Handoff/Feedback、Content Route、旧 SF-2 supersession、链接和本轮 diff 路径扫描均通过；汾酒 strategy 文件及共享矩阵 Fenjiu section 与基线一致。GPT Project mechanism validation、48 文件 sync-pack build/verify 通过。`make regression` 通过两次 migration replay、31 类 SQL negative constraints、8 architecture、16 regression、8 local-runtime、16 control-plane、120 contract 与 35 ingestion tests；Docker 资源已清理。
+- **独立复审与修复**：初审无 Blocking/High，发现 2 项 Medium：顶层职责仍泛化“用户订单转化”，以及 SF-U3 未授权/已授权出口不闭合。已把顶层职责拆成汾酒/海鲜并限定 Scope；SF-U3 改为未授权 `internal_discovery_baseline_only / waiting_authorization` 不解锁、已授权且至少 1 Qualified Lead 才进入 SF-U4。复审结论 `APPROVE`，无剩余 Blocking/High/Medium。
+- **待收口**：最终 sync-pack、path-limited stage、Lore commit、push、remote HEAD/core-file readback。
 
 ## 2026-08-28｜双业务线 Sales-First 执行化与 AI 手机质感内容设计
 

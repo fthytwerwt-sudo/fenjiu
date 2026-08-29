@@ -76,8 +76,9 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 | 角色 | CONFIRMED 的责任边界 | 不能据此推断 |
 |---|---|---|
-| 用户 | 渠道与内容运营、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权 | 已获平台权限、已完成发布或已成交 |
-| 供应链 | 当地合法销售主体、进口/销售/品牌资质、产品合法可售、SKU/规格/价格/最低价/库存/补货、品牌素材、账号主体认证支持、当地收款、仓储发货配送、退换货、质量、售后和财务结算 | 任一资料已经提供、确认或可执行 |
+| 用户（汾酒主线） | 渠道与内容运营、商品展示、客户沟通、订单转化、销售数据和市场反馈，以及最终外部执行授权 | 已获平台权限、已完成发布或已成交 |
+| 用户（海鲜线） | Online Acquisition、Traffic、企业发现、内容/搜索/网站/目录获客、Lead Qualification、Supplier Handoff 与结果归因优化 | 负责尼泊尔当地报价、样品、谈判、付款、订单、配送或售后；已获外联/发布授权 |
+| 供应链（按业务线分别负责） | 当地合法销售主体、产品/食品/进口资质、SKU/规格/价格/库存/补货、品牌素材、当地报价/样品/成交、收款、仓储配送、退换货、质量、售后和财务结算 | 任一资料已经提供、确认或可执行 |
 
 ## 当前已完成的内部准备
 
@@ -248,7 +249,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 - 汾酒尼泊尔的 Sales-First 销售准备：供应链业务闸门 → 可售 Offer → 受控渠道触点 → 统一询盘承接 → 人工销售推进 → 订单交接 → 反馈；
 - `SR-1 Sellable Offer Ready`：供应链启动资料收集、商品字段核验、最小 Offer 决策输入与渠道/询盘/交接准备；
-- 用户的账号运营、内容、商品展示、客户沟通、订单转化和数据反馈准备；
+- 汾酒用户的账号运营、内容、商品展示、客户沟通、订单转化和数据反馈准备；该条不适用于海鲜当地成交/履约；
 - 供应链的主体/资质、产品、账号认证支持、收款与履约资料收集和书面确认；
 - 事实分级、状态、决策、风险、交接和同步包机制维护；
 - 海鲜资料线的独立保存与明确任务下的独立处理。
@@ -305,7 +306,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
 - **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
 - **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
-- **最近本地 bundle 验证日期**：2026-08-28；Sales-First allowlist 已纳入 14 份战略文件（含双线 execution/content playbook 与 stage/KPI matrix），build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；最近生成基线为 `6b6657e2211d859b585ff6f8bd00d7dc3d5adb6d`，文件数为 46。
+- **最近本地 bundle 验证日期**：2026-08-29；Sales-First allowlist 已纳入 16 份战略文件（新增 Seafood Online Acquisition Playbook 与 Lead Handoff Contract），build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；最终重建基线为 `788ea3a90b402d03a9374f7dcb29e3e3b3239888`，文件数为 48。最终提交后 source commit 与提交本身不同是正常的非自引用边界。
 - **CONFIRMED**：本文件本次回填后已重新生成并验证同步包；Manifest（清单）记录的 `source_commit` 是生成基线，不是随后提交同步包目录的 commit（提交）。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。

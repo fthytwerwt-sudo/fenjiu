@@ -81,7 +81,7 @@ product identity → specification / label / batch / food information
 | SF-U0 | 角色、交接与反馈边界清楚 | `COMPLETE_PLANNING` | 只维护职责与接口，不做外部动作 | SF-U1 |
 | SF-U1 | 1 个 `ONLINE_ACQUISITION_READY` Offer Pack | `CURRENT / BLOCKED_BY_SUPPLIER_INPUTS` | 检查新资料、更新 pack、列缺口、准备内部素材 | SF-U2 |
 | SF-U2 | 1 Product + 1 ICP + 1 Region + 1 Route | `PLANNING_READY / INPUT_DEPENDENT` | 锁定 First ICP、Primary/Fallback Route 和测试样本 | SF-U3 |
-| SF-U3 | 第一 Route 是否产生 Qualified Lead | `EXTERNAL_TEST_BLOCKED` | 单 Route、单 CTA、单窗口测试并记录成本 | SF-U4 |
+| SF-U3 | 第一 Route 是否产生可判定基线/Qualified Lead | `INTERNAL_BASELINE_ALLOWED / EXTERNAL_TEST_BLOCKED` | 单 Route、单 CTA、单窗口测试并记录成本；未授权只做内部 baseline | 未授权停留 waiting_authorization；已授权且有 Qualified Lead 才进入 SF-U4 |
 | SF-U4 | Qualified Lead 可低摩擦交给供应链 | `DEFER` | 资格判断、Handoff、确认 Supplier Accept | SF-U5 |
 | SF-U5 | 知道何种 ICP/Route/Content 产生销售价值 | `DEFER` | 连接 Lead 到 accepted/offered/won/lost/fulfilled | SF-U6 / SF-U7 |
 | SF-U6 | 第二 Route 的增量结论 | `DEFER` | 只增加一个新路线并单独归因 | SF-U7 / SF-U8 |

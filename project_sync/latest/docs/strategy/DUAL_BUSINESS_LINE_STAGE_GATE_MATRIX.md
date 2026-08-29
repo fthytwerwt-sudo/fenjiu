@@ -40,7 +40,7 @@
 | SF-U0 | 职责和接口清楚 | 固定 User Acquisition / Supplier Local Sales | 不获客/开发/发布 | role doc / 无 / boundary clear | 仍把本地销售交给用户 | SF-U1 |
 | SF-U1 | 1 个 Online Offer Pack | 检查 1 SKU 的事实、素材权、接受状态和 supplier owner | 不要求 20 SKU、不找客户 | ready pack / 无 / safe for lead gen? | 身份/规格/权利/owner/询盘接受缺失 | SF-U2 |
 | SF-U2 | 1 Product + 1 ICP + 1 Region + 1 Route | 锁 First ICP、Primary/Fallback、sample/window/cost | 不多 ICP/多 Route | test brief / 无 / authorizable? | 无 supplier owner 或 Route 边界 | SF-U3 |
-| SF-U3 | First Route 产生 Qualified Lead | Search/Web 单路线内部基线；获授权后人工联系 | 不并行内容/Ads/自动发送 | verified/qualified accounts / qualified lead / Route K-I-S | 来源/处理/DNC/授权缺失或样本不匹配 | SF-U4 |
+| SF-U3 | First Route 产生可判定基线；获授权后产生 Qualified Lead | Search/Web 单路线内部基线；获授权后人工联系 | 不并行内容/Ads/自动发送 | verified/qualified accounts / qualified lead / Route K-I-S | 来源/处理/DNC/授权缺失或样本不匹配 | 未授权：留在 SF-U3 waiting_authorization；已授权且 ≥1 Qualified Lead：SF-U4 |
 | SF-U4 | Qualified Lead 稳定交接 | qualification、handoff、Supplier Accept | 用户不报价/样品/谈判 | handoff/ack / supplier accepted / stable? | 无 owner、ACK、basis 或隐私边界 | SF-U5 |
 | SF-U5 | 获客连接销售结果 | 关联 accepted/offered/won/lost/fulfilled 和成本 | 不用 views/公司数代替价值 | attribution / offer/order outcome / best ICP+Route | feedback incomplete | SF-U6 / SF-U7 |
 | SF-U6 | 第二 Route 增量 | 只增加 Content 或另一个 Route | 不全平台并发 | independent route / incremental accepted leads / K-I-S | 无增量、无法归因、supplier capacity 不稳 | SF-U7 / SF-U8 |

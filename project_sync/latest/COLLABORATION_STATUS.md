@@ -28,7 +28,7 @@
 - **CONFIRMED**：allowlist、敏感扫描、SHA-256、ZIP 完整性、AppleDouble/.DS_Store 清理、latest 原子替换和 verify 路径是保留机制。
 - **同步包版本**：**CONFIRMED**；V2 Manifest schema 为 2，来源分支为 main，包含 BUSINESS_STATUS 和本文。
 - **同步包脚本版本**：**CONFIRMED**；以构建时 Manifest 的 `source_git.source_commit` 为准；该字段只表示生成基线，不预写随后提交的自身 commit。
-- **最近本地 bundle 验证日期**：2026-08-28；Sales-First allowlist 已纳入 14 份战略文件（含双线 execution/content playbook 与 stage/KPI matrix），build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；最近生成基线为 `6b6657e2211d859b585ff6f8bd00d7dc3d5adb6d`，文件数为 46。
+- **最近本地 bundle 验证日期**：2026-08-29；Sales-First allowlist 已纳入 16 份战略文件（新增 Seafood Online Acquisition Playbook 与 Lead Handoff Contract），build、`--verify`、ZIP 解压、SHA-256、路径/秘密扫描均通过；最终重建基线为 `788ea3a90b402d03a9374f7dcb29e3e3b3239888`，文件数为 48。最终提交后 source commit 与提交本身不同是正常的非自引用边界。
 - **CONFIRMED**：本文件本次回填后已重新生成并验证同步包；Manifest（清单）记录的 `source_commit` 是生成基线，不是随后提交同步包目录的 commit（提交）。
 - **规则**：manifest 的 source_commit 是生成时的 Git 基线，不是随后提交 project_sync/latest 的 commit；不得构造自我引用版本。
 - **规则**：包和 manifest 只可记录跨机器可用的信息；不得包含本机绝对路径、真实排除文件清单、秘密、私人联系资料或本地 ZIP 绝对路径。

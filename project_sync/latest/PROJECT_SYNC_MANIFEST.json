@@ -1,17 +1,17 @@
 {
   "schema_version": 2,
   "project": "fenjiu_nepal",
-  "generated_at": "2026-08-29T21:46:50+08:00",
+  "generated_at": "2026-08-29T21:55:36+08:00",
   "source_git": {
     "branch": "main",
-    "source_commit": "d3613b688438ac49309b512c102fba2922d64ab1",
-    "short_source_commit": "d3613b6",
+    "source_commit": "788ea3a90b402d03a9374f7dcb29e3e3b3239888",
+    "short_source_commit": "788ea3a",
     "worktree_status": "dirty",
     "remote_origin": "unavailable"
   },
   "sync_strategy": "strict_allowlist",
   "max_file_bytes": 1048576,
-  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260829_214650.zip",
+  "archive_relative_path": "dist/fenjiu_project_sync_pack_20260829_215536.zip",
   "files": [
     {
       "path": "AGENTS.md",
@@ -20,13 +20,13 @@
     },
     {
       "path": "BUSINESS_STATUS.md",
-      "bytes": 6606,
-      "sha256": "51caacf876b52b125f32066901ce386f1b41451f5a9c82f7d5eea3caa4708f9a"
+      "bytes": 6895,
+      "sha256": "404810bb2be24e438c2365d2756daf4598fc5a64338df3c5639d9f8c420feeb8"
     },
     {
       "path": "COLLABORATION_STATUS.md",
-      "bytes": 22322,
-      "sha256": "1f8778cff95f6288929f12b25c20f839c8f4907f4e741c64a98dcb1f2691c52b"
+      "bytes": 22417,
+      "sha256": "5aba363aa805c867a8a7b76460857e6682cfbba4c903545fcea6346f64ef7001"
     },
     {
       "path": "CURRENT_STATUS.md",
@@ -46,7 +46,7 @@
     {
       "path": "GIT_STATE.md",
       "bytes": 425,
-      "sha256": "0c8bd46c8d1021ff3fd1978cd7cab5b640aefaa38e3d92f6125b3a401a189a2f"
+      "sha256": "0a7c1178f9e328bd7c6a6e14ee00956bf192dc7465f90cd36524b227eef88498"
     },
     {
       "path": "NEXT_ACTIONS.md",
@@ -60,8 +60,8 @@
     },
     {
       "path": "PROJECT_CONTEXT.md",
-      "bytes": 70174,
-      "sha256": "ccc0d789e947cb09dc10dc2bc15d4591a5fa6dbbdefe69af6f4d7f9a09d1416d"
+      "bytes": 70610,
+      "sha256": "5d7f9d960560b516abb7d2e035edd8c778be61fce591aef8953364f215f1275c"
     },
     {
       "path": "PROJECT_ENTRY.md",
@@ -71,7 +71,7 @@
     {
       "path": "PROJECT_SYNC_README.md",
       "bytes": 1282,
-      "sha256": "453148b517f4a80cf14450d39155c1aea71b8611d37c8ec8d9cfb9d4973ce429"
+      "sha256": "0b466f1c628a82da757c605f5237fc47e7f9eaf8654cf53b5bc05d62740dbc95"
     },
     {
       "path": "README.md",
@@ -95,8 +95,8 @@
     },
     {
       "path": "docs/collaboration/EXECUTION_HISTORY.md",
-      "bytes": 54954,
-      "sha256": "f2c2a3daf2a6e4660cf4a0953b135fe954a7587a578882f1dd2957b644bbb536"
+      "bytes": 55880,
+      "sha256": "fd357226bb0287108d46c8bdedc389ec2c8a71a3ceaec4b7126ab73e2de2781a"
     },
     {
       "path": "docs/collaboration/EXECUTION_REPORT_TEMPLATE.md",
@@ -155,8 +155,8 @@
     },
     {
       "path": "docs/project/SCOPE_AND_BOUNDARIES.md",
-      "bytes": 2843,
-      "sha256": "f810f82fd00011b3b4209d07bf90bb6565b167c2db89b7a2f6441842167803d5"
+      "bytes": 2895,
+      "sha256": "2f5f1aeb8317d9258dcb236fda34eaa94c4dcdb4bb2cf69ebf1cff84cf7f9df0"
     },
     {
       "path": "docs/strategy/CHANNEL_ROLE_MATRIX.md",
@@ -180,8 +180,8 @@
     },
     {
       "path": "docs/strategy/DUAL_BUSINESS_LINE_STAGE_GATE_MATRIX.md",
-      "bytes": 8064,
-      "sha256": "44e82f3f055b8b6e8c3908505d2352812d1fb26f4eb3a03fcee85ed09424292d"
+      "bytes": 8184,
+      "sha256": "eec3157e9e940280e0928035de5241297874d431f35fe5f4aa5bed009e9d3a11"
     },
     {
       "path": "docs/strategy/EXTERNAL_POLICY_AND_AUTHORIZATION_MATRIX.md",
@@ -225,8 +225,8 @@
     },
     {
       "path": "docs/strategy/seafood/SEAFOOD_EXECUTION_PLAYBOOK.md",
-      "bytes": 14189,
-      "sha256": "14feff3ee5c0a588c2b4efec519e3edc410604924f366bc5045ba95a01126787"
+      "bytes": 14346,
+      "sha256": "2977cb405d626bd7ea7b26d78a17bb254539daf8f6b3f7bdc12984f60ea44eca"
     },
     {
       "path": "docs/strategy/seafood/SEAFOOD_LEAD_HANDOFF_CONTRACT.md",
@@ -235,8 +235,8 @@
     },
     {
       "path": "docs/strategy/seafood/SEAFOOD_ONLINE_ACQUISITION_PLAYBOOK.md",
-      "bytes": 19697,
-      "sha256": "ac5be357fd6038df1ea8cf642ba725d82abf09b8e3f7522e0a4b902cf71ef22e"
+      "bytes": 19933,
+      "sha256": "964dc3f0c7d9521df38d96cc36e384de5e3805db8369fc3697b5f10e4fc16375"
     },
     {
       "path": "docs/sync/README.md",
@@ -267,7 +267,7 @@
     {
       "category": "git_internal",
       "reason": "Git 内部数据不属于可交接项目上下文",
-      "count": 5018,
+      "count": 5040,
       "file_size_range_bytes": {
         "min": 6,
         "max": 282455
@@ -276,7 +276,7 @@
     {
       "category": "local_runtime_or_cache",
       "reason": "本地运行、缓存或派生产物不进入同步包",
-      "count": 935,
+      "count": 939,
       "file_size_range_bytes": {
         "min": 82,
         "max": 25982812
@@ -285,7 +285,7 @@
     {
       "category": "media_binary_or_archive",
       "reason": "媒体、二进制或压缩产物不进入同步包",
-      "count": 123,
+      "count": 127,
       "file_size_range_bytes": {
         "min": 45825,
         "max": 6532770
@@ -321,7 +321,7 @@
     {
       "category": "system_metadata",
       "reason": "系统元数据会破坏跨机器可移植性",
-      "count": 341,
+      "count": 345,
       "file_size_range_bytes": {
         "min": 4096,
         "max": 4096

@@ -204,7 +204,9 @@ Primary 只允许：`SEA-OSM-POI-NP` 低频发现 → company-owned website veri
 - **Initial Threshold：** 20 observations / 10 business days / ≤180 human minutes / paid media 0；目标 12 site-verified、8 ICP-qualified、5 path candidates。只有另获发送授权后才启用 5 contacts、2 replies、1 qualified、1 supplier accepted。
 - **Stop：** 来源/归因/处理依据/DNC/授权缺失；<8 ICP-qualified 时先改 ICP/source；不得加抓取量。
 - **NOT NOW：** 不用 TikTok/Meta/Ads 做并行测试；不猜邮箱、不自动发送。
-- **Done / Next：** 有可审计结论和至少 1 Qualified Lead；进入 SF-U4。未获外联授权时最高结论为 `internal_discovery_baseline_only`。
+- **Done / Next（双出口）：**
+  - 未获外联授权：完成 20 observations、12 site-verified、8 ICP-qualified、5 contact-path candidates 的内部基线后，状态为 `SF-U3 / internal_discovery_baseline_only / waiting_authorization`；不进入 SF-U4。
+  - 已获 Route-specific 处理/DNC/发送授权：至少 1 个 Qualified Lead 且 Handoff 前置完整，才进入 SF-U4。
 
 ### SF-U4｜Lead Qualification & Supplier Handoff
 
