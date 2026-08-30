@@ -8,6 +8,7 @@
 !/PROJECT_ENTRY.md
 !/.env.example
 !/Makefile
+!/videoctl
 !/docker-compose.yml
 !/docs/
 !/docs/**

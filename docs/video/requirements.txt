@@ -1,0 +1,3 @@
+# Optional runtime dependencies for Aidge VideoGeneration and private OSS assets.
+alibabacloud_aidge20260428==5.3.1
+oss2>=2.19,<3

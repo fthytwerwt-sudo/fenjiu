@@ -1,4 +1,4 @@
-"""Fake-only video adapter contracts with no provider SDK or media rendering."""
+"""Synthetic video contracts plus the explicit runtime composition root."""
 
 from adapters.video.contracts import (
     LegacyCapability,
@@ -17,6 +17,7 @@ from adapters.video.contracts import (
     build_legacy_probe_baseline,
 )
 from adapters.video.fake import FakeVideoProvider
+from adapters.video.runtime import VideoRuntimeAdapter
 
 __all__ = [
     "FakeVideoProvider",
@@ -33,5 +34,6 @@ __all__ = [
     "VideoManifest",
     "VideoPort",
     "VideoPortBoundaryError",
+    "VideoRuntimeAdapter",
     "build_legacy_probe_baseline",
 ]

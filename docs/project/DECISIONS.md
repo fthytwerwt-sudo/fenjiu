@@ -322,3 +322,14 @@
 - **影响**：内容保留 Hook/Card/AI iPhone Natural Look/QC，但降为 Acquisition Route 之一；Crawler 降为 discovery/verification tool；没有 supplier feedback 时标 `attribution_incomplete`，不进入第二 Route、AI 或 scale。
 - **替代方案**：仅改旧 SF-2 措辞；未采用，因为阶段/KPI/内容仍冲突。新增获客手册同时保留旧主线；未采用，因为会留下两套当前责任。默认 TikTok；未采用，因为当前证据更支持可控、精准、低成本的 Search/Web 内部基线。
 - **状态边界**：本决定不确认供应链 READY、真实企业需求、联系人处理合法性、发送/发布/广告授权、Lead、Offer、订单、成交或履约。
+
+### ADR-0024：Video Orchestrator 以 capability-first 路由真实 runtime，并保留 P07 fake-only 边界
+
+- **日期**：2026-08-31
+- **状态**：Accepted / CONFIRMED（工程机制；Aidge 真实 probe 仍阻断）
+- **来源**：用户本轮 P0、当前仓库架构/P07 合同、MiniMax Nepali TTS 物理实测与 Alibaba/Aidge 当前官方 SDK/API。
+- **背景**：历史视频能力分散在模型和 legacy 脚本层，上层必须手工选择 Provider；现有 P07 `VideoPort` 又固定 synthetic refs 与 `external_call_count=0`，不能直接承载真实调用。
+- **决定**：新增 application-layer Video Orchestrator、独立 `VideoRuntimePort`、机器 registry、capability router、provider adapters、preset runner 与 `videoctl`。上层只调用 `product_ad/story_video/voice/translate/asr/lip-sync/final-assembly/pipeline`；模型留在 adapter。MiniMax `speech-2.8-hd` 是 Nepali TTS primary；Aidge 是 product-ad primary，Wan3 是经单独 fallback/费用批准的 fallback。
+- **安全约束**：默认 plan-only；真实执行要求显式费用批准，本地上传、fallback 和最大费用单独批准；本地输入/输出、endpoint、远端 URL 和下载主机均走白名单；结果固定进入 `HUMAN_REVIEW_REQUIRED`。
+- **影响**：Video Orchestrator 可统一调用现有能力，但不改变商品事实、素材权、平台授权或业务状态。Aidge SDK/request contract 已验证；目标仓库缺 AccessKey/OSS 时保持 `BLOCKED_AIDGE_CREDENTIALS_ABSENT`。
+- **替代方案**：新建平行 `src/video_orchestrator` 或把真实调用塞入旧 P07 `VideoPort`；未采用，因为会复制架构或破坏 fake-only/no-publish 合同。

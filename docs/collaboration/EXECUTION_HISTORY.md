@@ -1,5 +1,16 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-31｜Video Orchestrator 统一能力层与 Aidge 受控接入
+
+- **Goal / P0**：把 Aidge、Wan3、HappyHorse、MiniMax、Qwen-MT、Paraformer、VideoRetalk 和 FFmpeg 收敛成 capability-first 总控；上层不暴露 Model ID。本轮要求 Aidge 正确实现、最小物理 probe 或精确外部阻断，不改变 Sales-First 业务状态。
+- **实现设计**：保留 `modules/content_video` 与 P07 fake-only `VideoPort`；在 `core/application/video_orchestrator` 新增 registry/router/error/preset/runtime port，在 `adapters/video` 新增真实 provider composition，在 `apps/videoctl.py` 和 `videoctl` 提供统一命令。真实调用默认关闭，须显式费用、素材上传与 fallback/provider/max-cost 授权。
+- **Provider 状态**：MiniMax Nepali TTS=`PROBE_PASSED`；VideoRetalk/Paraformer/HappyHorse=`PREVIOUSLY_TESTED`；FFmpeg=`CURRENTLY_AVAILABLE`；Wan3/Prime、Qwen-MT、MiniMax Turbo=`PROBE_REQUIRED`。Aidge `VideoGeneration` 使用官方 SDK `alibabacloud_aidge20260428==5.3.1`，SDK import/request model、1–6 图、5–15 秒、9:16、720p/1080p、`aidge:VideoGeneration` 与 5 秒 720p 约人民币 7 元均已核验。
+- **Aidge 阻断**：目标仓库当前没有 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET` 和 private OSS endpoint/bucket；`videoctl probe-aidge --execute --approve-cost --max-cost-cny 7` 在发请求前返回 `AUTH_REQUIRED`，故付费调用数为 0、无输出媒体。不得借用其他项目密钥或自动开通/充值。
+- **意外 MiniMax 调用**：代码复审为验证成本闸门，误执行 1 次 `MiniMax/speech-2.8-hd` TTS（7 个输入字符，未使用克隆声音）。公开刊例估算为人民币 `0.00245` 元，实际账单待验证；本地 `outputs/video_orchestrator/voice.mp3` 为 21,300 bytes、1.184219 秒、mono MP3，ffprobe/ffmpeg 技术验证可解码。该媒体受 Git ignore 保护，不进入提交；技术通过不等于内容试听或业务验收。
+- **安全修复**：独立复审发现的本地任意文件上传、endpoint override、任意输出覆盖、付费 fallback 与 SSRF 风险已通过输入/输出根目录、媒体签名/大小、阿里 endpoint/下载主机、DNS 私网拦截、显式 upload/fallback/provider/max-cost 授权和 pipeline 累计预算修复；VideoRetalk 本地链与 Paraformer transcript wait 已补齐。最终安全复审无 Blocking/High/Medium。
+- **验证**：Video Orchestrator 专项 49 项、完整 contracts 169 项、architecture 8 项通过；`make regression` 进一步通过双次 migration replay、16 regression、8 local-runtime、16 control-plane、169 contracts 与 35 ingestion。Python 编译、`git diff --check` 通过。`pip check` 仅报现有 `grpcio 1.78.1 is not supported on this platform`，依赖 CVE 数据库审计待验证。最终 path-limited stage、Lore commit、push main、remote HEAD 与核心文件 readback 由本轮执行回报收口。
+- **状态边界**：这是工程能力与本地执行入口，不证明商品、素材权、Aidge 开通、视频已生成、发布、平台允许、销售或履约成立；所有媒体仍须技术 QC 和人工复审。
+
 ## 2026-08-29｜海鲜 Online Acquisition 双 Workstream 重构
 
 - **Goal / P0**：只修改海鲜线，把用户职责从混合的当地采购/样品/成交改为 Online Acquisition、Qualified Lead、Supplier Handoff 和结果归因；供应链独立负责尼泊尔当地商品、销售、成交与履约。汾酒路线不重写。

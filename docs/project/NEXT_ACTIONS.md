@@ -48,6 +48,13 @@
 - GitHub default branch/visibility/远端 CI 仍由具备管理权限的责任人单独核验；它们不替代业务闸门。
 - `external_execution_allowed=false`；不得发布、发送、报价、收款、下单、退款或发货。
 
+## Video Orchestrator 工程后续（不替代当前业务队列）
+
+1. 用户仅在本地 `.env` 配置已有、合法的 Aidge AccessKey 与 private OSS；不得提交或复制其他项目密钥。
+2. 运行 `./videoctl doctor`，确认 `aidge_video_generation` 与 `alibaba_oss_asset_bridge` 不再 `BLOCKED`。
+3. 在明确同意最高约人民币 7 元后，只运行一次 `./videoctl probe-aidge --execute --approve-cost --max-cost-cny 7`；输出必须通过 ffprobe/解码并进入人审。
+4. 未完成上述动作前，Aidge 保持 `BLOCKED_AIDGE_CREDENTIALS_ABSENT`；Wan3/Qwen-MT/MiniMax Turbo 保持 `PROBE_REQUIRED`，不得写成当前可用。
+
 ## 每项完成证据
 
 - 有可回读的来源、日期、责任人和书面确认；
