@@ -12,7 +12,7 @@
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
-| Video Orchestrator | **PARTIAL / BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY** | 用户授权的唯一 5 秒、720p Aidge 任务已被接受并 completed，证明 credentials/权限/上游生成成立。Provider 输出 URL 未通过本地 credential-free HTTPS policy，MP4 未落盘；task ID 未 checkpoint，ActionTrail 无事件，浏览器缺登录态。本轮付费生成数为 1，不得自动重提；未做媒体 QC 或人审。 |
+| Video Orchestrator | **PROBE_PASSED / HUMAN_REVIEW_REQUIRED** | Aidge 5 秒、720p、9:16 replacement task 已完成、下载并通过 ffprobe/完整解码；task checkpoint、官方输出 HTTPS 归一化、redirect 重验和北京/上海 OSS proxy allowlist 已通过 178 contracts 与安全复审。总 Aidge 生成调用数为 2；媒体留本地 ignored 输出，未人审、未发布、未形成业务证据。 |
 | 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
 | 海鲜 Online Acquisition 职责重构 | **CONFIRMED（P0 / 内部规划）** | 海鲜现为 Supplier SF-S1 + User SF-U0–U8；新增线上获客与 Lead Handoff/Feedback 合同。旧 SF-2 已 SUPERSEDED，未启动真实发现、发送、发布或销售。 |
 

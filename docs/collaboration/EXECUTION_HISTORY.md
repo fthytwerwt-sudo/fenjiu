@@ -1,5 +1,14 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-31｜Aidge replacement probe 恢复成功与技术 QC 通过
+
+- **恢复修复**：为防止再次丢失收费任务，先按 TDD 增加 submit 后立即 checkpoint（只保存 task ID/status/output hash）、官方 Alibaba output HTTP→HTTPS 归一化、userinfo 禁止和每一跳 redirect 的 host/DNS 重验。checkpoint symlink 越界由既有 `Path.resolve()` 闸门拒绝并有负测锁定。
+- **安全证据**：Codex benchmark proxy 例外只允许阿里官方示例精确主机和北京/上海 OSS service-specific 后缀；literal IP、userinfo、未知 Alibaba service 与非 Alibaba redirect 均拒绝。两轮独立安全复审最终无 Blocking/High/Medium。178 contracts 与完整 regression 通过。
+- **Provider 实测**：用户要求直接解决后，提交 1 次同规格 replacement task。任务 checkpoint 立即落盘；上游 completed 后首次下载显示实际主机为上海 OSS 官方 service host，补精确 allowlist 后从同一 task 续传下载，未生成第三个任务。
+- **媒体验证**：`outputs/video_orchestrator/aidge_probe_replacement_20260831.mp4` 存在，1,086,323 bytes、5.000000 秒、720×1280、30fps、H.264、AAC stereo；`video-metadata-probe`、ffprobe 和 `ffmpeg -v error` 完整解码全部通过。SHA-256=`2c1cf25699856dd9317e66338d7e8b5b6ff8bcc312a2129ffd26cba9e67b5391`。
+- **调用与成本边界**：Aidge 生成调用总数为 2；每次均为 5 秒、720p、9:16，单次安全上限人民币 7 元。控制台在 replacement 前显示「电商视频生成已用 50%」，但未回读 replacement 后实际账单，不把免费额度或实付金额写为已确认。
+- **状态边界**：当前为 `PROBE_PASSED / TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`。输入为官方示例图；本轮不确认商品、素材权、发布、投放、询盘、销售或履约。
+
 ## 2026-08-31｜Aidge 单次授权物理 probe：上游完成，本地下载阻断
 
 - **用户授权**：用户明确同意 1 次 Aidge 5 秒、720p、9:16 probe，最高费用人民币 7 元。输入为阿里官方示例图，不是真实客户或业务素材。

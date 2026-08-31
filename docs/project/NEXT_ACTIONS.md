@@ -50,10 +50,10 @@
 
 ## Video Orchestrator 工程后续（不替代当前业务队列）
 
-1. 禁止自动重新提交 Aidge 收费任务；本次授权已消耗于唯一一次 5 秒、720p 调用。
-2. 用户在 Codex 已保留的 Chrome Aidge 「任务管理」页登录阿里云后，告知 Codex“已登录”；Codex 只回读刚才同一任务，不新建任务。
-3. 取得同一 task ID/输出 URL 的安全形态后，先修复 credential-free HTTPS 下载合同和 task checkpoint，然后续传同一 task 输出并运行 ffprobe/解码检查。
-4. 在 MP4 下载和技术 QC 前，保持 `BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY`；内容人审与业务验收仍未完成。
+1. 人工查看 `outputs/video_orchestrator/aidge_probe_replacement_20260831.mp4`，只判断画面、声音和内容是否可接受；技术 QC 已通过。
+2. 没有新的精确用户授权时，不再提交 Aidge/Wan/HappyHorse 付费生成。
+3. 保留 `aidge_probe_state.json` 恢复 checkpoint 与 178 项 contract regression；后续 Aidge 调用必须 submit 后立即 checkpoint，重定向每一跳重验。
+4. `PROBE_PASSED` 仅证明技术能力；未确认商品、素材权、发布、投放、询盘或销售。
 
 ## 每项完成证据
 
