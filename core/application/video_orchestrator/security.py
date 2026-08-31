@@ -18,7 +18,10 @@ _OUTPUT_SUFFIXES = {".mp4", ".mov", ".webm", ".mp3", ".wav", ".aac", ".flac", ".
 _TRUSTED_OUTPUT_SUFFIXES = (".aliyuncs.com", ".alibabacloud.com")
 _CODEX_BENCHMARK_PROXY_NETWORK = ipaddress.ip_network("198.18.0.0/15")
 _TRUSTED_CODEX_PROXY_HOSTS = {"help-static-aliyun-doc.aliyuncs.com"}
-_TRUSTED_CODEX_PROXY_SUFFIXES = (".oss-cn-beijing.aliyuncs.com",)
+_TRUSTED_CODEX_PROXY_SUFFIXES = (
+    ".oss-cn-beijing.aliyuncs.com",
+    ".oss-cn-shanghai.aliyuncs.com",
+)
 
 
 def validate_remote_url(

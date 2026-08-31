@@ -59,6 +59,11 @@ class VideoOrchestratorSecurityTests(unittest.TestCase):
             validate_remote_url(trusted, provider="test", resolver=proxy_dns),
             trusted,
         )
+        shanghai_output = "https://result.oss-cn-shanghai.aliyuncs.com/video.mp4"
+        self.assertEqual(
+            validate_remote_url(shanghai_output, provider="test", resolver=proxy_dns),
+            shanghai_output,
+        )
         with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PERMISSION_DENIED.value):
             validate_remote_url(
                 "https://untrusted.example/sample.png",
