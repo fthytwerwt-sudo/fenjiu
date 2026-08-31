@@ -69,7 +69,7 @@ Machine-readable registry：`core/application/video_orchestrator/capabilities.js
 - 官方 SDK：`alibabacloud_aidge20260428==5.3.1`，SDK import 与 request model 已验证。
 - 输入：1–6 个公网图片 URL、商品标题；当前输出 gate 为 5–15 秒、9:16、720p/1080p。
 - 费用：720p 为人民币 1.4 元/秒；最小 5 秒 probe 的刊例价上限为人民币 7 元。当前公开免费额度表未列出电商视频生成。
-- 当前阻断：目标仓库没有 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET`，没有 OSS endpoint/bucket，所以没有提交收费任务。
+- 当前阻断：本地 `.env` 已配置 `cn-beijing`、北京 OSS 公网 Endpoint、Bucket 与 object prefix，但两个 AccessKey 仍是待填占位符。Aidge/OSS 当前都仅因 credentials absent 阻断，Bucket 存在性、地域和 RAM 权限待用户填 Key 后验证。
 - Asset Bridge：只使用 private OSS object + 30–60 分钟 signed GET URL；绝不自动改 public bucket。
 - 本地商品图只允许来自 `inputs/video_orchestrator/`，并要求 `--approve-media-upload`；输出只允许写入 `outputs/video_orchestrator/`。
 

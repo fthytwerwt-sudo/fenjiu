@@ -105,6 +105,29 @@ class VideoOrchestratorRuntimeTests(unittest.TestCase):
         self.assertNotIn("secret-value", rendered)
         self.assertNotIn("UNRELATED_PRIVATE_VALUE", rendered)
 
+    def test_runtime_config_treats_documented_access_key_placeholders_as_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / ".env"
+            path.write_text(
+                "DASHSCOPE_API_KEY=LOCAL_ONLY_PLACEHOLDER_NOT_USED\n"
+                "ALIBABA_CLOUD_ACCESS_KEY_ID=FILL_ME\n"
+                "ALIBABA_CLOUD_ACCESS_KEY_SECRET=FILL_ME\n"
+                "ALIBABA_CLOUD_SECURITY_TOKEN=LOCAL_ONLY_PLACEHOLDER_NOT_USED\n"
+                "AIDGE_REGION_ID=cn-beijing\n"
+                "ALIBABA_OSS_ENDPOINT=https://oss-cn-beijing.aliyuncs.com\n"
+                "ALIBABA_OSS_BUCKET=synthetic-bucket\n",
+                encoding="utf-8",
+            )
+            config = VideoRuntimeConfig.from_environment(env_file=path)
+        self.assertEqual(config.alibaba_access_key_id, "")
+        self.assertEqual(config.alibaba_access_key_secret, "")
+        self.assertEqual(config.alibaba_security_token, "")
+        self.assertEqual(config.dashscope_api_key, "")
+        self.assertFalse(config.safe_summary()["alibaba_access_key_present"])
+        self.assertTrue(config.safe_summary()["oss_endpoint_configured"])
+        self.assertTrue(config.safe_summary()["oss_bucket_configured"])
+        self.assertFalse(config.safe_summary()["oss_configured"])
+
     def test_orchestrator_falls_back_only_for_allowed_primary_failure(self) -> None:
         runtime = _FallbackRuntime(ErrorCode.PROVIDER_NOT_ENABLED)
         result = VideoOrchestrator(runtime=runtime).execute(self.product_request())

@@ -18,6 +18,7 @@ from adapters.video.providers import (
     Wan3VideoAdapter,
 )
 from core.application.video_orchestrator import ErrorCode, ProviderAdapterError
+from core.application.video_orchestrator.config import VideoRuntimeConfig
 
 
 class VideoOrchestratorAdapterTests(unittest.TestCase):
@@ -68,6 +69,18 @@ class VideoOrchestratorAdapterTests(unittest.TestCase):
         self.assertFalse(bridge.doctor().credential_present)
         with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.AUTH_REQUIRED.value):
             bridge.upload("asset:synthetic")
+
+    def test_oss_doctor_distinguishes_waiting_credentials_from_missing_config(self) -> None:
+        bridge = OssAssetBridge(
+            VideoRuntimeConfig(
+                oss_endpoint="https://oss-cn-beijing.aliyuncs.com",
+                oss_bucket="synthetic-bucket",
+            )
+        )
+        report = bridge.doctor()
+        self.assertFalse(report.available)
+        self.assertEqual(report.probe_status, "BLOCKED_OSS_CREDENTIALS_ABSENT")
+        self.assertEqual(report.error_code, ErrorCode.AUTH_REQUIRED)
 
     def test_wan_and_happyhorse_model_selection(self) -> None:
         self.assertEqual(Wan3VideoAdapter(prime=False).model_id, "wan3.0-video")

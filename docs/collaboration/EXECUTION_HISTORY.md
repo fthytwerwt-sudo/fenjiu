@@ -1,5 +1,14 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-31｜Aidge 本地运行环境就绪（等待用户填两个 Key）
+
+- **Goal / P0**：用户只填 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET`；Codex 自动建立其余 Aidge/OSS 本地配置、依赖、权限与 doctor 入口。本轮明确禁止收费 `VideoGeneration`。
+- **本地私有配置**：ignored `.env` 已保留原有 DashScope Key，新增两个 `FILL_ME`、`cn-beijing`、SDK 自动 Aidge Endpoint、北京 OSS 公网 Endpoint、用户确认 Bucket 和 `video-orchestrator` prefix。`.env` 未跟踪且未进入本提交。
+- **代码修复**：补上 placeholder credential 解析的 fail-closed 逻辑，并让 OSS doctor 区分 `BLOCKED_OSS_CREDENTIALS_ABSENT`、缺配置、endpoint 非法与 SDK 缺失，避免把 `FILL_ME` 误报为真实凭据。
+- **当前状态**：Aidge/OSS SDK 均可 import，region/endpoint/bucket/prefix 已配置并通过本地安全规则；`doctor` 两项均仅因 credentials absent 阻断。Bucket 存在性、地域和 RAM 权限需用户填 Key 后做无敏感小测试。
+- **验证**：placeholder 解析与 OSS doctor 状态均按 TDD 先复现失败再修复；171 contracts、8 architecture 与完整 `make regression` 通过，SDK import/版本、Aidge SDK 自动 endpoint、OSS SDK 构造、`.env` ignore/未跟踪和 doctor 脱敏输出通过。外置盘 exFAT/noowners 将 `chmod 600` 表现为 `0700`，但 group/other 均无权限。当前 `pip check` 仍报 `grpcio 1.78.1 is not supported on this platform`，不影响本轮两个 SDK import，也未擅自升级其他依赖。
+- **边界**：本轮没有调用 Aidge `VideoGeneration`、没有上传业务素材、没有修改 RAM/开通产品/充值，不改变业务状态。
+
 ## 2026-08-31｜Video Orchestrator 统一能力层与 Aidge 受控接入
 
 - **Goal / P0**：把 Aidge、Wan3、HappyHorse、MiniMax、Qwen-MT、Paraformer、VideoRetalk 和 FFmpeg 收敛成 capability-first 总控；上层不暴露 Model ID。本轮要求 Aidge 正确实现、最小物理 probe 或精确外部阻断，不改变 Sales-First 业务状态。

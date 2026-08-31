@@ -42,16 +42,33 @@ class OssAssetBridge:
         credential_present = bool(
             self.config.alibaba_access_key_id and self.config.alibaba_access_key_secret
         )
+        endpoint_configured = bool(self.config.oss_endpoint)
+        bucket_configured = bool(self.config.oss_bucket)
         endpoint_ok = endpoint_allowed(self.config.oss_endpoint, service="oss")
-        configured = credential_present and endpoint_ok and bool(self.config.oss_endpoint and self.config.oss_bucket)
         sdk_present = importlib.util.find_spec("oss2") is not None
+        if not credential_present:
+            error_code = ErrorCode.AUTH_REQUIRED
+            status = "BLOCKED_OSS_CREDENTIALS_ABSENT"
+        elif not endpoint_configured or not bucket_configured:
+            error_code = ErrorCode.INVALID_INPUT
+            status = "BLOCKED_OSS_CONFIG"
+        elif not endpoint_ok:
+            error_code = ErrorCode.PERMISSION_DENIED
+            status = "BLOCKED_OSS_ENDPOINT_NOT_ALLOWED"
+        elif not sdk_present:
+            error_code = ErrorCode.PROVIDER_NOT_ENABLED
+            status = "BLOCKED_OSS_SDK_MISSING"
+        else:
+            error_code = None
+            status = "AVAILABLE"
+        available = credential_present and endpoint_configured and bucket_configured and endpoint_ok and sdk_present
         return ProviderDoctorReport(
             provider=self.provider_id,
-            available=configured and sdk_present,
+            available=available,
             credential_present=credential_present,
             sdk_present=sdk_present,
-            probe_status="AVAILABLE" if configured and sdk_present else "BLOCKED_OSS_CONFIG",
-            error_code=None if configured and sdk_present else ErrorCode.AUTH_REQUIRED,
+            probe_status=status,
+            error_code=error_code,
         )
 
     def upload(

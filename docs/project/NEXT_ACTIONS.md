@@ -50,10 +50,10 @@
 
 ## Video Orchestrator 工程后续（不替代当前业务队列）
 
-1. 用户仅在本地 `.env` 配置已有、合法的 Aidge AccessKey 与 private OSS；不得提交或复制其他项目密钥。
-2. 运行 `./videoctl doctor`，确认 `aidge_video_generation` 与 `alibaba_oss_asset_bridge` 不再 `BLOCKED`。
-3. 在明确同意最高约人民币 7 元后，只运行一次 `./videoctl probe-aidge --execute --approve-cost --max-cost-cny 7`；输出必须通过 ffprobe/解码并进入人审。
-4. 未完成上述动作前，Aidge 保持 `BLOCKED_AIDGE_CREDENTIALS_ABSENT`；Wan3/Qwen-MT/MiniMax Turbo 保持 `PROBE_REQUIRED`，不得写成当前可用。
+1. 用户只在本地 `.env` 将 `ALIBABA_CLOUD_ACCESS_KEY_ID` 和 `ALIBABA_CLOUD_ACCESS_KEY_SECRET` 的 `FILL_ME` 替换为已有、合法的当前账号凭据；不得提交或复制其他项目密钥。
+2. 用户告知 Codex“填好了”后，由 Codex 运行 `./videoctl doctor` 与极小 synthetic OSS `put → signed GET URL → delete` 验证，不上传业务素材。
+3. 仅在 OSS 与 Aidge 验权状态明确、且用户另行同意最高约人民币 7 元时，再单独运行一次 `./videoctl probe-aidge --execute --approve-cost --max-cost-cny 7`；本轮禁止该付费 probe。
+4. 未填 Key 前，Aidge/OSS 分别保持 `BLOCKED_AIDGE_CREDENTIALS_ABSENT` / `BLOCKED_OSS_CREDENTIALS_ABSENT`；Wan3/Qwen-MT/MiniMax Turbo 保持 `PROBE_REQUIRED`，不得写成当前可用。
 
 ## 每项完成证据
 
