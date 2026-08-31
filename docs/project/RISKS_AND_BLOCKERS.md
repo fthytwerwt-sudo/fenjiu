@@ -20,7 +20,7 @@
 | SF-R05 | `BLOCKED / lead_handoff_owner_missing` | 供应链未书面确认 Lead 接收 owner、接受状态和结果反馈 | Qualified Lead 无法交接，用户不能优化渠道 | SF-U4 前建立 Supplier Handoff/Feedback。 |
 | SF-R06 | `BLOCKED / route_specific_authorization_missing` | Search/Web 仅允许内部低频 discovery 设计，联系人处理、DNC、发送/发布/广告授权缺失 | 不能启动外部 acquisition test | 按 Route 单独补 policy/legal/project authorization。 |
 | SF-R07 | `RISK / attribution_incomplete` | Supplier 接收 Lead 后不回传 offered/won/lost/fulfilled | views/Lead 数无法判断商业质量 | 缺 feedback 不进入第二 Route、AI 或 scale。 |
-| VO-R01 | `BLOCKED / aidge_credentials_missing_oss_auth_unverified` | 本地 Aidge region、private OSS 公网 Endpoint、Bucket 与 prefix 已配置，两个 AccessKey 仍为待填占位符 | Aidge `VideoGeneration` 不能验证账号/权限；OSS Bucket 存在性、地域与 RAM 权限尚无法验证 | 用户只替换 `.env` 中两个 `FILL_ME`，然后由 Codex 运行 `videoctl doctor` 和无敏感的 OSS put/sign/delete 验证；本轮不执行收费视频生成。 |
+| VO-R01 | `BLOCKED / aidge_video_generation_permission_unverified` | Aidge credentials/endpoint 已通过只读查询预检，OSS Bucket/地域/put/sign/get/delete 已验证 | 当前证据不能单独证明 RAM 具有 `aidge:VideoGeneration`，也不证明收费视频能成功产出 | 保持 `AIDGE_PROBE_REQUIRED`；只在用户另行同意最高约人民币 7 元后，再做单次 5 秒、720p 物理 probe。 |
 | VO-R02 | `RISK / generated_media_not_business_evidence` | Orchestrator 技术通过可能被误写成商品、素材权、发布或销售就绪 | 造成业务状态升级和外部传播越界 | 所有 provider 输出必须技术 QC 后进入 `HUMAN_REVIEW_REQUIRED`；无供应链/素材权/平台授权不发布。 |
 
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |

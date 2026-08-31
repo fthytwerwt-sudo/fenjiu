@@ -12,7 +12,7 @@
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
-| Video Orchestrator | **PARTIAL / LOCAL_VALIDATED** | capability-first application/runtime/CLI/presets 与 8 类 provider adapter 已通过专项和完整回归；Aidge/OSS 的本地非敏感配置已就绪，两个 AccessKey 占位符会 fail-closed 解析为 absent，当前状态为 `WAITING_FOR_USER_ACCESSKEY`。Aidge 没有付费调用或媒体提交。代码复审误触发 1 次 MiniMax TTS，已单独记录且不作为新能力证据。 |
+| Video Orchestrator | **PARTIAL / AIDGE_PROBE_REQUIRED** | capability-first application/runtime/CLI/presets 与 8 类 provider adapter 已通过回归；Aidge/OSS 本地配置已就绪，OSS Bucket/北京地域/put/sign/get/delete 已验证，Aidge credentials/endpoint 已被只读查询预检接受。`aidge:VideoGeneration` 仍未物理验证，本轮没有 Aidge 付费调用或媒体提交。代码复审误触发 1 次 MiniMax TTS，已单独记录且不作为新能力证据。 |
 | 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
 | 海鲜 Online Acquisition 职责重构 | **CONFIRMED（P0 / 内部规划）** | 海鲜现为 Supplier SF-S1 + User SF-U0–U8；新增线上获客与 Lead Handoff/Feedback 合同。旧 SF-2 已 SUPERSEDED，未启动真实发现、发送、发布或销售。 |
 
