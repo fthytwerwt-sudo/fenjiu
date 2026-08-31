@@ -58,14 +58,14 @@ class VideoOrchestratorAdapterTests(unittest.TestCase):
 
     def test_aidge_doctor_reports_missing_credentials_without_reading_values(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
-            report = AidgeVideoGenerationAdapter().doctor()
+            report = AidgeVideoGenerationAdapter(VideoRuntimeConfig()).doctor()
         self.assertFalse(report.credential_present)
         self.assertEqual(report.error_code, ErrorCode.AUTH_REQUIRED)
         self.assertNotIn("access_key", str(report.safe_summary()).lower())
 
     def test_oss_bridge_requires_private_config_and_never_returns_url_in_summary(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
-            bridge = OssAssetBridge.from_environment()
+            bridge = OssAssetBridge(VideoRuntimeConfig())
         self.assertFalse(bridge.doctor().credential_present)
         with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.AUTH_REQUIRED.value):
             bridge.upload("asset:synthetic")

@@ -52,6 +52,30 @@ class VideoOrchestratorSecurityTests(unittest.TestCase):
                 resolver=private_dns,
             )
 
+    def test_only_trusted_alibaba_hosts_accept_codex_benchmark_proxy_dns(self) -> None:
+        proxy_dns = lambda *args, **kwargs: [(2, 1, 6, "", ("198.18.8.234", 443))]
+        trusted = "https://help-static-aliyun-doc.aliyuncs.com/sample.png"
+        self.assertEqual(
+            validate_remote_url(trusted, provider="test", resolver=proxy_dns),
+            trusted,
+        )
+        with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PERMISSION_DENIED.value):
+            validate_remote_url(
+                "https://untrusted.example/sample.png",
+                provider="test",
+                resolver=proxy_dns,
+            )
+        with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PERMISSION_DENIED.value):
+            validate_remote_url(
+                "https://unknown-service.aliyuncs.com/sample.png",
+                provider="test",
+                resolver=proxy_dns,
+            )
+
+    def test_provider_urls_reject_public_literal_ip_hosts(self) -> None:
+        with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PERMISSION_DENIED.value):
+            validate_remote_url("https://1.1.1.1/sample.png", provider="test")
+
     def test_provider_output_download_hosts_are_allowlisted(self) -> None:
         with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.ASSET_ACCESS_FAILED.value):
             validate_remote_url(

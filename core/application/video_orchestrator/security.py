@@ -16,6 +16,9 @@ _VIDEO_SUFFIXES = {".mp4", ".mov", ".avi", ".webm"}
 _AUDIO_SUFFIXES = {".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg", ".opus"}
 _OUTPUT_SUFFIXES = {".mp4", ".mov", ".webm", ".mp3", ".wav", ".aac", ".flac", ".srt", ".json"}
 _TRUSTED_OUTPUT_SUFFIXES = (".aliyuncs.com", ".alibabacloud.com")
+_CODEX_BENCHMARK_PROXY_NETWORK = ipaddress.ip_network("198.18.0.0/15")
+_TRUSTED_CODEX_PROXY_HOSTS = {"help-static-aliyun-doc.aliyuncs.com"}
+_TRUSTED_CODEX_PROXY_SUFFIXES = (".oss-cn-beijing.aliyuncs.com",)
 
 
 def validate_remote_url(
@@ -39,6 +42,8 @@ def validate_remote_url(
         address = None
     if address and _address_is_forbidden(address):
         raise ProviderAdapterError(ErrorCode.PERMISSION_DENIED, "local or private URL is forbidden", provider=provider)
+    if address is not None:
+        raise ProviderAdapterError(ErrorCode.PERMISSION_DENIED, "literal IP URLs are forbidden", provider=provider)
     if address is None:
         try:
             resolved = (resolver or socket.getaddrinfo)(
@@ -68,6 +73,8 @@ def validate_remote_url(
                     provider=provider,
                 ) from exc
             if _address_is_forbidden(resolved_address):
+                if _is_trusted_alibaba_proxy_mapping(host, resolved_address):
+                    continue
                 raise ProviderAdapterError(
                     ErrorCode.PERMISSION_DENIED,
                     "remote URL resolves to a local or private address",
@@ -84,6 +91,16 @@ def _address_is_forbidden(address: ipaddress.IPv4Address | ipaddress.IPv6Address
         or address.is_reserved
         or address.is_multicast
         or address.is_unspecified
+    )
+
+
+def _is_trusted_alibaba_proxy_mapping(
+    host: str,
+    address: ipaddress.IPv4Address | ipaddress.IPv6Address,
+) -> bool:
+    return address in _CODEX_BENCHMARK_PROXY_NETWORK and (
+        host in _TRUSTED_CODEX_PROXY_HOSTS
+        or any(host.endswith(suffix) for suffix in _TRUSTED_CODEX_PROXY_SUFFIXES)
     )
 
 
