@@ -1,5 +1,14 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-31｜10 秒冰冻海鲜 Aidge 视频生成与 QC
+
+- **P0 / 设计**：用户选择推荐方案并要求直接生成；目标为 10 秒、720P、9:16 高端冰冻海鲜展示，强调流畅运镜。禁止品牌、价格、库存、功效或履约承诺。
+- **合成输入**：使用 built-in imagegen 生成无品牌/无文字的冰冻龙虾、帝王蟹腿、大虾、扇贝和青口棚拍图，保存为 ignored `inputs/video_orchestrator/frozen_seafood_premium.png`，941×1672，SHA-256=`d5d8ffbec3735b34a82843cec8acada10ef87515b221abc7dea3a9926fdce452`。
+- **Aidge 执行**：通过 private OSS signed URL 提交一次 10 秒、720p、9:16 `VideoGeneration`，费用安全上限人民币 14 元。submit 后 task ID 立即写入 ignored checkpoint。SDK 首次轮询达 15 分钟 timeout，随后用 checkpoint 查询同一 task 已 `COMPLETED`，直接恢复下载；没有提交第二个海鲜 task。OSS 临时输入已清理。
+- **技术 QC**：`outputs/video_orchestrator/aidge_frozen_seafood_10s.mp4` 为 3,932,622 bytes、10.000000 秒、720×1280、30fps、H.264、AAC stereo；video-metadata-probe、ffprobe 与 `ffmpeg -v error` 完整解码通过。SHA-256=`800ef2bce3f07591c7b71c028696a3de3078277354a7df6467ea0cf9ae3b5438`。
+- **流畅度线索**：以 0.5fps 抽取 5 帧联系表，各帧保持同一冰冻海鲜拼盘主体；scene threshold 0.35 检出 2 次明显过渡，未观察到主体跳变。该结果是内部视觉线索，不替代用户实际播放判断。
+- **边界**：视频与联系表均保留本地 ignored 目录，未进入 Git、未发布、未发送客户，当前为 `TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`。
+
 ## 2026-08-31｜Aidge replacement probe 恢复成功与技术 QC 通过
 
 - **恢复修复**：为防止再次丢失收费任务，先按 TDD 增加 submit 后立即 checkpoint（只保存 task ID/status/output hash）、官方 Alibaba output HTTP→HTTPS 归一化、userinfo 禁止和每一跳 redirect 的 host/DNS 重验。checkpoint symlink 越界由既有 `Path.resolve()` 闸门拒绝并有负测锁定。
