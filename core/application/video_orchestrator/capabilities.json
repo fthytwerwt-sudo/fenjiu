@@ -5,7 +5,7 @@
       "capability_id": "product_video",
       "provider": "Alibaba Cloud Aidge",
       "model_or_api": "Aidge/2026-04-28:VideoGeneration",
-      "status": "CONNECTED_NOT_AUTH_VERIFIED",
+      "status": "AUTH_VERIFIED",
       "input_types": ["product_image_url", "product_title"],
       "output_types": ["video"],
       "supported_duration": [5, 15],
@@ -15,7 +15,7 @@
       "supports_nepali": false,
       "cost_status": "PAID_1.4_CNY_PER_SECOND_720P",
       "credential_status": "RUNTIME_CHECK",
-      "current_probe_status": "BLOCKED_AIDGE_CREDENTIALS_ABSENT",
+      "current_probe_status": "BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY",
       "primary_adapter": "aidge_video_generation",
       "fallback": "wan3_video"
     },

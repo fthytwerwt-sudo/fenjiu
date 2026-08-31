@@ -50,10 +50,10 @@
 
 ## Video Orchestrator 工程后续（不替代当前业务队列）
 
-1. Aidge/OSS 本地环境、credentials 与 OSS 实际小测已完成；不再需要用户填写其他配置。
-2. Aidge 继续保持 `AIDGE_PROBE_REQUIRED`；只读查询验证了 credentials/endpoint，未验证 `aidge:VideoGeneration` 精确权限。
-3. 仅在用户另行同意最高约人民币 7 元后，再单独运行一次 `./videoctl probe-aidge --execute --approve-cost --max-cost-cny 7`；输出必须经 ffprobe/解码与人审。
-4. Wan3/Qwen-MT/MiniMax Turbo 保持 `PROBE_REQUIRED`，不得因 DashScope Key 存在写成已物理验证。
+1. 禁止自动重新提交 Aidge 收费任务；本次授权已消耗于唯一一次 5 秒、720p 调用。
+2. 用户在 Codex 已保留的 Chrome Aidge 「任务管理」页登录阿里云后，告知 Codex“已登录”；Codex 只回读刚才同一任务，不新建任务。
+3. 取得同一 task ID/输出 URL 的安全形态后，先修复 credential-free HTTPS 下载合同和 task checkpoint，然后续传同一 task 输出并运行 ffprobe/解码检查。
+4. 在 MP4 下载和技术 QC 前，保持 `BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY`；内容人审与业务验收仍未完成。
 
 ## 每项完成证据
 

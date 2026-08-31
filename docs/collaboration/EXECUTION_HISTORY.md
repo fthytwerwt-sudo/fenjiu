@@ -1,5 +1,15 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-08-31｜Aidge 单次授权物理 probe：上游完成，本地下载阻断
+
+- **用户授权**：用户明确同意 1 次 Aidge 5 秒、720p、9:16 probe，最高费用人民币 7 元。输入为阿里官方示例图，不是真实客户或业务素材。
+- **调用结果**：`VideoGeneration` 被受理，同一 SDK 进程持续轮询约 13 分钟；随后进入 output download 代码路径，证明任务 completed 且有输出 URL。生成调用数为 1，未重试。
+- **本地阻断**：Provider 输出 URL 被 `provider_output_download` 以 `INVALID_INPUT / only credential-free HTTPS URLs are allowed` 拒绝，本地 MP4 未写入。CLI 未在 submit 后 checkpoint task ID，因此进程结束后不能用当前 API 无损继传。
+- **恢复检查**：本地输出不存在；ActionTrail 近 3 小时按 ServiceName/EventName 均无 Aidge 事件；内置浏览器和 Chrome 的 Aidge 任务管理均要求登录。已保留 Chrome 任务管理页供用户登录后回读同一任务。
+- **成本与质量**：官方刊例上限为人民币 7 元，实际账单待控制台回读。无本地媒体，故 metadata/decodability/audio/content 均未验证，不能写 `PROBE_PASSED`。
+- **工程预防**：收费前先以 TDD 修复 Codex benchmark DNS 误拦截，代理例外仅允许官方示例精确主机和北京 OSS 服务后缀，公网 literal IP 全部禁止；173 contracts、完整 regression 和独立安全复审通过。
+- **当前状态**：`AUTH_VERIFIED / PROVIDER_GENERATION_COMPLETED / BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY / HUMAN_REVIEW_NOT_STARTED`。禁止无新授权重新生成。
+
 ## 2026-08-31｜Aidge 本地运行环境就绪（等待用户填两个 Key）
 
 - **Goal / P0**：用户只填 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET`；Codex 自动建立其余 Aidge/OSS 本地配置、依赖、权限与 doctor 入口。本轮明确禁止收费 `VideoGeneration`。

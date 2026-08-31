@@ -20,7 +20,7 @@
 | SF-R05 | `BLOCKED / lead_handoff_owner_missing` | 供应链未书面确认 Lead 接收 owner、接受状态和结果反馈 | Qualified Lead 无法交接，用户不能优化渠道 | SF-U4 前建立 Supplier Handoff/Feedback。 |
 | SF-R06 | `BLOCKED / route_specific_authorization_missing` | Search/Web 仅允许内部低频 discovery 设计，联系人处理、DNC、发送/发布/广告授权缺失 | 不能启动外部 acquisition test | 按 Route 单独补 policy/legal/project authorization。 |
 | SF-R07 | `RISK / attribution_incomplete` | Supplier 接收 Lead 后不回传 offered/won/lost/fulfilled | views/Lead 数无法判断商业质量 | 缺 feedback 不进入第二 Route、AI 或 scale。 |
-| VO-R01 | `BLOCKED / aidge_video_generation_permission_unverified` | Aidge credentials/endpoint 已通过只读查询预检，OSS Bucket/地域/put/sign/get/delete 已验证 | 当前证据不能单独证明 RAM 具有 `aidge:VideoGeneration`，也不证明收费视频能成功产出 | 保持 `AIDGE_PROBE_REQUIRED`；只在用户另行同意最高约人民币 7 元后，再做单次 5 秒、720p 物理 probe。 |
+| VO-R01 | `BLOCKED / aidge_output_download_url_policy_and_checkpoint_missing` | 单次授权 `VideoGeneration` 已被 Aidge 接受并 completed，但 Provider 输出 URL 被本地 HTTPS/userinfo policy 拒绝；CLI 没有在轮询前持久化 task ID | 无法在不新增付费任务的情况下通过 API 继续下载和 ffprobe | 禁止自动重提。先由用户在已保留的 Aidge 任务管理页登录，回读同一任务的 task ID/结果；根据真实 URL 形态修复下载 policy 并增加 submit 后 checkpoint，只恢复同一 task。 |
 | VO-R02 | `RISK / generated_media_not_business_evidence` | Orchestrator 技术通过可能被误写成商品、素材权、发布或销售就绪 | 造成业务状态升级和外部传播越界 | 所有 provider 输出必须技术 QC 后进入 `HUMAN_REVIEW_REQUIRED`；无供应链/素材权/平台授权不发布。 |
 
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |

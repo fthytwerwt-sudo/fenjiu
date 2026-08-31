@@ -49,7 +49,7 @@ blocked_if_missing: [credential, permission, provider_enablement, asset_access, 
 
 | Capability | Primary | Status | Fallback |
 |---|---|---|---|
-| `product_video` | Aidge `VideoGeneration` | `BLOCKED_AIDGE_CREDENTIALS_ABSENT` | Wan3.0 |
+| `product_video` | Aidge `VideoGeneration` | `BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY` | Wan3.0 |
 | `story_video` | `wan3.0-video` | `PROBE_REQUIRED` | — |
 | `fast_story_video` | `wan3.0-video-prime` | `PROBE_REQUIRED` | Wan3.0 |
 | `short_reference_video` | HappyHorse 1.1 t2v/i2v/r2v | `PREVIOUSLY_TESTED` | Wan3.0 |
@@ -69,7 +69,7 @@ Machine-readable registry：`core/application/video_orchestrator/capabilities.js
 - 官方 SDK：`alibabacloud_aidge20260428==5.3.1`，SDK import 与 request model 已验证。
 - 输入：1–6 个公网图片 URL、商品标题；当前输出 gate 为 5–15 秒、9:16、720p/1080p。
 - 费用：720p 为人民币 1.4 元/秒；最小 5 秒 probe 的刊例价上限为人民币 7 元。当前公开免费额度表未列出电商视频生成。
-- 当前状态：本地 `.env` 已配置 `cn-beijing`、北京 OSS 公网 Endpoint、Bucket 与 object prefix。AccessKey 已被 OSS 和 Aidge 服务端接受；OSS Bucket 存在、地域为北京，synthetic `put → signed GET → delete` 通过。Aidge 只读异步查询预检已到达服务端，但 `aidge:VideoGeneration` 精确权限仍须通过后续单次付费 probe 确认，当前为 `AIDGE_PROBE_REQUIRED`。
+- 当前状态：用户已授权并完成 1 次 5 秒、720p、9:16 物理 probe。Aidge 接受任务，轮询进入 completed 且返回输出 URL，因此 credentials、`aidge:VideoGeneration` 权限和上游生成均已验证。但 Provider 输出 URL 不满足本地 credential-free HTTPS policy，下载在写入 MP4 前被拒绝；本地无输出，未做 ffprobe/解码/内容验收。当前为 `BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY`。
 - Asset Bridge：只使用 private OSS object + 30–60 分钟 signed GET URL；绝不自动改 public bucket。
 - 本地商品图只允许来自 `inputs/video_orchestrator/`，并要求 `--approve-media-upload`；输出只允许写入 `outputs/video_orchestrator/`。
 
