@@ -4,9 +4,15 @@ from __future__ import annotations
 
 from io import StringIO
 import json
+import os
+from pathlib import Path
+from types import SimpleNamespace
+import tempfile
 import unittest
+from unittest.mock import patch
 
-from apps.videoctl import main
+from apps.videoctl import _write_aidge_probe_state, main
+from core.application.video_orchestrator import ErrorCode, ProviderAdapterError, ProviderExecutionResult
 
 
 class VideoCtlTests(unittest.TestCase):
@@ -75,6 +81,69 @@ class VideoCtlTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(result["execution"], "PLAN_ONLY")
         self.assertEqual(result["request"]["duration"], 5)
+
+    def test_aidge_probe_checkpoints_task_id_before_polling(self) -> None:
+        class FakeAidge:
+            def doctor(self):
+                return SimpleNamespace(available=True, error_code=None, probe_status="PROBE_REQUIRED")
+
+            def build_request(self, **kwargs):
+                return {"synthetic": True}
+
+            def submit(self, request):
+                return ProviderExecutionResult(
+                    "aidge_video_generation",
+                    "SUBMITTED",
+                    task_id="synthetic-checkpoint-task",
+                )
+
+            def wait(self, task_id):
+                raise ProviderAdapterError(
+                    ErrorCode.PROVIDER_TIMEOUT,
+                    "synthetic polling timeout",
+                    provider="aidge_video_generation",
+                )
+
+        class FakeRuntime:
+            aidge = FakeAidge()
+
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                with patch("apps.videoctl.VideoRuntimeAdapter", return_value=FakeRuntime()):
+                    code, result = self.run_cli(
+                        "probe-aidge",
+                        "--execute",
+                        "--approve-cost",
+                        "--max-cost-cny",
+                        "7",
+                    )
+                self.assertEqual(code, 2)
+                self.assertEqual(result["error"]["code"], ErrorCode.PROVIDER_TIMEOUT.value)
+                state_path = Path("outputs/video_orchestrator/aidge_probe_state.json")
+                self.assertTrue(state_path.is_file())
+                state = json.loads(state_path.read_text(encoding="utf-8"))
+                self.assertEqual(state["task_id"], "synthetic-checkpoint-task")
+                self.assertEqual(state["status"], "SUBMITTED")
+            finally:
+                os.chdir(previous)
+
+    def test_aidge_probe_checkpoint_rejects_symlink_destination(self) -> None:
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                outside = Path("outside.json")
+                outside.write_text("preserve-me\n", encoding="utf-8")
+                state_path = Path("outputs/video_orchestrator/aidge_probe_state.json")
+                state_path.parent.mkdir(parents=True)
+                state_path.symlink_to(outside.resolve())
+                with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PERMISSION_DENIED.value):
+                    _write_aidge_probe_state(task_id="synthetic-task", status="SUBMITTED")
+                self.assertEqual(outside.read_text(encoding="utf-8"), "preserve-me\n")
+            finally:
+                os.chdir(previous)
 
     def test_translate_asr_and_final_assembly_commands_are_executable_as_plans(self) -> None:
         code, translated = self.run_cli("translate", "--text", "你好")

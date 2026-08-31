@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
+import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -19,6 +22,7 @@ from adapters.video.providers import (
 )
 from core.application.video_orchestrator import ErrorCode, ProviderAdapterError
 from core.application.video_orchestrator.config import VideoRuntimeConfig
+from adapters.video.providers import common as provider_common
 
 
 class VideoOrchestratorAdapterTests(unittest.TestCase):
@@ -133,6 +137,93 @@ class VideoOrchestratorAdapterTests(unittest.TestCase):
         result = adapter.wait("synthetic-task", timeout_seconds=1, poll_interval=1)
         self.assertEqual(result.status, "GENERATED")
         self.assertEqual(result.output_text, "你好，世界。")
+
+    def test_output_download_upgrades_trusted_alibaba_http_url_to_https(self) -> None:
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def read(self):
+                return b"synthetic-video"
+
+        captured = {}
+
+        class FakeOpener:
+            def open(self, request, timeout):
+                captured["url"] = request.full_url
+                return FakeResponse()
+
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                destination = Path("video.mp4")
+                with patch.object(
+                    provider_common.urllib.request,
+                    "build_opener",
+                    return_value=FakeOpener(),
+                ):
+                    try:
+                        provider_common.download_binary(
+                            "http://result.oss-cn-beijing.aliyuncs.com/video.mp4",
+                            destination,
+                        )
+                    except ProviderAdapterError as exc:
+                        self.fail(f"trusted provider output should normalize safely: {exc.code.value}")
+                self.assertEqual(captured["url"], "https://result.oss-cn-beijing.aliyuncs.com/video.mp4")
+                self.assertEqual(destination.read_bytes(), b"synthetic-video")
+            finally:
+                os.chdir(previous)
+
+    def test_output_download_does_not_upgrade_untrusted_or_userinfo_url(self) -> None:
+        for value in (
+            "http://untrusted.example/video.mp4",
+            "https://user:password@result.oss-cn-beijing.aliyuncs.com/video.mp4",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(ProviderAdapterError):
+                    provider_common.download_binary(value, Path("unused.mp4"))
+
+    def test_output_download_revalidates_redirect_target(self) -> None:
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def read(self):
+                return b"synthetic-video"
+
+        class FakeOpener:
+            def open(self, request, timeout):
+                return FakeResponse()
+
+        captured = {}
+
+        def fake_build_opener(handler):
+            captured["handler"] = handler
+            return FakeOpener()
+
+        with patch.object(provider_common.urllib.request, "build_opener", side_effect=fake_build_opener):
+            with patch.object(provider_common.urllib.request, "urlopen", return_value=FakeResponse()):
+                provider_common.download_binary(
+                    "https://result.oss-cn-beijing.aliyuncs.com/video.mp4",
+                    Path("redirect-test.mp4"),
+                )
+        self.assertIn("handler", captured)
+        with self.assertRaises(ProviderAdapterError):
+            captured["handler"].redirect_request(
+                SimpleNamespace(full_url="https://result.oss-cn-beijing.aliyuncs.com/video.mp4"),
+                None,
+                302,
+                "Found",
+                {},
+                "https://untrusted.example/video.mp4",
+            )
 
     def test_ffmpeg_doctor_reports_installed_binary(self) -> None:
         report = FfmpegAssemblyAdapter().doctor()

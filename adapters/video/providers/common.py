@@ -8,6 +8,7 @@ import time
 from typing import Any
 import urllib.error
 import urllib.request
+from urllib.parse import urljoin, urlparse, urlunparse
 
 from core.application.video_orchestrator.contracts import (
     ErrorCode,
@@ -142,10 +143,34 @@ def poll_dashscope_task(
     )
 
 
+def normalize_provider_output_url(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.username or parsed.password:
+        raise ProviderAdapterError(
+            ErrorCode.INVALID_INPUT,
+            "provider output URL userinfo is forbidden",
+            provider="provider_output_download",
+        )
+    if parsed.scheme == "http":
+        url = urlunparse(parsed._replace(scheme="https"))
+    return validate_remote_url(url, provider="provider_output_download", trusted_output=True)
+
+
+class ValidatingRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        safe_url = normalize_provider_output_url(urljoin(req.full_url, newurl))
+        return super().redirect_request(req, fp, code, msg, headers, safe_url)
+
+
+def _open_provider_output(url: str):
+    opener = urllib.request.build_opener(ValidatingRedirectHandler())
+    return opener.open(urllib.request.Request(url, method="GET"), timeout=120)
+
+
 def download_binary(url: str, destination: Path) -> None:
-    validate_remote_url(url, provider="provider_output_download", trusted_output=True)
+    url = normalize_provider_output_url(url)
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, method="GET"), timeout=120) as response:
+        with _open_provider_output(url) as response:
             data = response.read()
     except (urllib.error.HTTPError, urllib.error.URLError) as exc:
         raise ProviderAdapterError(ErrorCode.ASSET_ACCESS_FAILED, "output download failed") from exc
@@ -156,9 +181,9 @@ def download_binary(url: str, destination: Path) -> None:
 
 
 def download_json(url: str) -> dict[str, Any]:
-    validate_remote_url(url, provider="provider_output_download", trusted_output=True)
+    url = normalize_provider_output_url(url)
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, method="GET"), timeout=120) as response:
+        with _open_provider_output(url) as response:
             data = response.read()
     except (urllib.error.HTTPError, urllib.error.URLError) as exc:
         raise ProviderAdapterError(ErrorCode.ASSET_ACCESS_FAILED, "JSON output download failed") from exc

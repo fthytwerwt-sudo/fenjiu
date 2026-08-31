@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from typing import Sequence, TextIO
 
@@ -184,7 +185,14 @@ def main(argv: Sequence[str] | None = None, *, stdout: TextIO | None = None) -> 
                     quality="720p",
                 )
                 submitted = runtime.aidge.submit(request_map)
-                completed = runtime.aidge.wait(submitted.task_id or "")
+                task_id = submitted.task_id or ""
+                _write_aidge_probe_state(task_id=task_id, status="SUBMITTED")
+                completed = runtime.aidge.wait(task_id)
+                _write_aidge_probe_state(
+                    task_id=task_id,
+                    status=completed.status,
+                    output_ref=safe_ref(completed.output_url),
+                )
                 output = resolve_output_path(args.output, provider="aidge_video_generation")
                 download_binary(completed.output_url or "", output)
                 media_qc = runtime.ffmpeg.validate_media(output)
@@ -352,6 +360,35 @@ def _parse_step_costs(values: Sequence[str]) -> dict[str, float]:
             raise ValueError("step cost must use a positive amount")
         result[capability] = amount
     return result
+
+
+def _write_aidge_probe_state(
+    *,
+    task_id: str,
+    status: str,
+    output_ref: str | None = None,
+) -> None:
+    state_path = resolve_output_path("aidge_probe_state.json", provider="aidge_video_generation")
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "video_orchestrator.aidge_probe_state.v1",
+                "provider": "aidge_video_generation",
+                "task_id": task_id,
+                "status": status,
+                "output_ref": output_ref,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    try:
+        os.chmod(state_path, 0o600)
+    except OSError:
+        pass
 
 
 if __name__ == "__main__":
