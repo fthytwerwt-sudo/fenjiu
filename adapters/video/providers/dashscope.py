@@ -50,6 +50,7 @@ class Wan3VideoAdapter(_DashScopeAdapter):
         ratio: str = "9:16",
         audio: bool = True,
         prompt_extend: bool = True,
+        watermark: bool = False,
     ) -> dict[str, Any]:
         if not prompt and not media:
             raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "Wan3 requires prompt or media", provider=self.provider_id)
@@ -74,6 +75,7 @@ class Wan3VideoAdapter(_DashScopeAdapter):
                 "duration": duration,
                 "audio": audio,
                 "prompt_extend": prompt_extend,
+                "watermark": watermark,
             },
         }
 
@@ -115,6 +117,7 @@ class HappyHorseVideoAdapter(Wan3VideoAdapter):
         ratio: str = "9:16",
         audio: bool = True,
         prompt_extend: bool = True,
+        watermark: bool = False,
     ) -> dict[str, Any]:
         if duration not in range(3, 16):
             raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "HappyHorse duration must be 3 to 15 seconds", provider=self.provider_id)
@@ -126,12 +129,15 @@ class HappyHorseVideoAdapter(Wan3VideoAdapter):
             ratio=ratio,
             audio=audio,
             prompt_extend=prompt_extend,
+            watermark=watermark,
         )
         payload["model"] = self.model_id
         if self.mode == "i2v" and not any(item.get("type") in {"first_frame", "reference_image"} for item in media):
             raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "HappyHorse i2v requires an image", provider=self.provider_id)
-        if self.mode in {"r2v", "video_edit"} and not any(item.get("type") == "reference_video" for item in media):
-            raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "HappyHorse reference/video-edit requires video input", provider=self.provider_id)
+        if self.mode == "r2v" and not any(item.get("type") == "reference_image" for item in media):
+            raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "HappyHorse r2v requires reference images", provider=self.provider_id)
+        if self.mode == "video_edit" and not any(item.get("type") == "reference_video" for item in media):
+            raise ProviderAdapterError(ErrorCode.INVALID_INPUT, "HappyHorse video-edit requires video input", provider=self.provider_id)
         return payload
 
 
@@ -291,6 +297,7 @@ class ParaformerAsrAdapter(_DashScopeAdapter):
                     raise ProviderAdapterError(ErrorCode.OUTPUT_INVALID, "ASR completed without transcript URL", provider=self.provider_id)
                 transcript_payload = self.transcript_fetcher(transcript_url)
                 transcript = _collect_transcript_text(transcript_payload)
+                transcript_segments = _collect_transcript_segments(transcript_payload)
                 if not transcript:
                     raise ProviderAdapterError(ErrorCode.OUTPUT_INVALID, "ASR transcript is empty", provider=self.provider_id)
                 return ProviderExecutionResult(
@@ -298,7 +305,10 @@ class ParaformerAsrAdapter(_DashScopeAdapter):
                     "GENERATED",
                     task_id=task_id,
                     output_text=transcript,
-                    usage=output.get("task_metrics") if isinstance(output.get("task_metrics"), dict) else {},
+                    usage={
+                        **(output.get("task_metrics") if isinstance(output.get("task_metrics"), dict) else {}),
+                        "transcript_segments": transcript_segments,
+                    },
                 )
             if status in {"FAILED", "CANCELED", "UNKNOWN"}:
                 raw_code = str(output.get("code") or status)
@@ -326,6 +336,41 @@ def _collect_transcript_text(value: Any) -> str:
             if nested:
                 texts.append(nested)
     return "\n".join(text for text in texts if text)
+
+
+def _collect_transcript_segments(value: Any) -> list[dict[str, Any]]:
+    segments: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        sentences = value.get("sentences")
+        if isinstance(sentences, list):
+            for sentence in sentences:
+                if not isinstance(sentence, dict):
+                    continue
+                text = sentence.get("text")
+                start = sentence.get("begin_time")
+                end = sentence.get("end_time")
+                if (
+                    isinstance(text, str)
+                    and text.strip()
+                    and isinstance(start, (int, float))
+                    and not isinstance(start, bool)
+                    and isinstance(end, (int, float))
+                    and not isinstance(end, bool)
+                ):
+                    segments.append(
+                        {
+                            "start_ms": int(start),
+                            "end_ms": int(end),
+                            "text": text.strip(),
+                        }
+                    )
+        else:
+            for item in value.values():
+                segments.extend(_collect_transcript_segments(item))
+    elif isinstance(value, list):
+        for item in value:
+            segments.extend(_collect_transcript_segments(item))
+    return segments
 
 
 class VideoRetalkAdapter(_DashScopeAdapter):

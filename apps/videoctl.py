@@ -70,6 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     asr = sub.add_parser("asr")
     asr.add_argument("--source", required=True)
     asr.add_argument("--approve-media-upload", action="store_true")
+    asr.add_argument("--checkpoint")
     _add_execution_flags(asr)
 
     lip_sync = sub.add_parser("lip-sync")
@@ -119,6 +120,9 @@ def _add_generation_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--approve-fallback", action="store_true")
     parser.add_argument("--approved-provider", action="append", default=[])
     parser.add_argument("--fallback-estimated-cost-cny", type=float)
+    parser.add_argument("--checkpoint")
+    parser.add_argument("--no-audio", action="store_true")
+    parser.add_argument("--no-prompt-extend", action="store_true")
     _add_execution_flags(parser)
 
 
@@ -284,6 +288,7 @@ def _request_from_args(args: argparse.Namespace) -> OrchestratorRequest:
                 "media_upload_approved": args.approve_media_upload,
                 "estimated_provider_cost_cny": args.estimated_cost_cny,
                 "max_cost_cny": args.max_cost_cny,
+                "task_checkpoint_path": args.checkpoint,
             },
         )
     if args.command == "lip-sync":
@@ -330,14 +335,18 @@ def _request_from_args(args: argparse.Namespace) -> OrchestratorRequest:
             "max_cost_cny": args.max_cost_cny,
             "estimated_provider_cost_cny": args.estimated_cost_cny,
             "fallback_estimated_cost_cny": args.fallback_estimated_cost_cny,
+            "task_checkpoint_path": args.checkpoint,
+            "output_audio": not args.no_audio,
+            "prompt_extend": not args.no_prompt_extend,
         }
     )
+    images = tuple(args.image)
     return OrchestratorRequest(
         task=task,
-        product_images=tuple(args.image),
+        product_images=images if task is TaskType.PRODUCT_AD else (),
         product_title=args.title,
         prompt=args.prompt,
-        reference_images=tuple(args.image),
+        reference_images=() if task is TaskType.PRODUCT_AD else images,
         reference_videos=tuple(args.reference_video),
         duration=args.duration,
         ratio=args.ratio,

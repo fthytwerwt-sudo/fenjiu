@@ -133,7 +133,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-29
+- **最近更新**：2026-09-01
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -162,6 +162,9 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 - **CONFIRMED（工程历史层）**：`docs/implementation/` 保留 AI Native Sales OS 的 Phase 0–8 技术蓝图、依赖图和任务卡；自 2026-08-28 起它们不再是业务优先队列，销售顺序以 `docs/strategy/SALES_EXECUTION_PHASES.md` 为准。
 - **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；任何未来技术实施必须先由 Sales-First 阶段证明其必要性，再按独立任务卡推进。
+- **CONFIRMED（Video Orchestrator 本地工程）**：已新增 capability-first 的视频 application layer、机器可读 registry、runtime provider adapters、三个 preset 与 `videoctl`；默认只输出脱敏计划，真实调用必须显式费用/素材授权，结果固定进入 `HUMAN_REVIEW_REQUIRED`。MiniMax Nepali TTS 记录为 `PROBE_PASSED`，VideoRetalk/Paraformer/HappyHorse 为 `PREVIOUSLY_TESTED`，Wan3/Qwen-MT 为 `PROBE_REQUIRED`；这些状态不解除业务或发布闸门。
+- **CONFIRMED（20 秒 Nepali 海鲜 Reference Recreation / 待人审）**：Wan3 text-only recovery 已生成 20.000000 秒、720×1280、30fps 的全新手机手持海鲜画面，MiniMax Nepali 音轨与 Nepali-only 字幕已组装；ffprobe、完整解码、五帧水印检查和 visual verdict 93/100 通过。Qwen-MT 因账号 `FreeTierOnly` 被拒，Nepali 文本为 fallback draft；最终状态为 `TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`，不确认商品、素材权、发布、销售或履约。
+- **CONFIRMED（Aidge 物理 probe 通过 / 待内容人审）**：Aidge credentials、`aidge:VideoGeneration` 权限、异步轮询、官方输出 URL 恢复、本地下载和 ffprobe/完整解码已通过。最终媒体为 5.0 秒、720×1280、H.264、30fps、AAC stereo、1,086,323 bytes，SHA-256=`2c1cf25699856dd9317e66338d7e8b5b6ff8bcc312a2129ffd26cba9e67b5391`。媒体仅留本地 ignored `outputs/video_orchestrator/`，未进入 Git。总 Aidge 生成调用数为 2（首次上游完成但未落盘；replacement 完整通过）；当前为 `PROBE_PASSED / HUMAN_REVIEW_REQUIRED`，不证明商品、素材权、发布或业务上线。
 - **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行 P00 default/`--all-files` 扫描；`make regression` 的 compile step 已显式跳过 AppleDouble metadata，但后续任务仍须在新建、干净的独立 task worktree 中启动。
 - **CONFIRMED（工程 Phase 1）**：P01-01 至 P01-03 已在 `main` 远端回读：模块化单体 skeleton、synthetic-only fixture metadata、local-only Docker Compose / Make、静态 typed settings / FeatureFlagPort、liveness/readiness 与 JSON 脱敏日志合同均已建立。所有敏感 flags 默认 false，broker/provider/real configuration 不存在时 `/ready` 返回 HTTP 503；日志只保留结构化安全码并 fail-closed 脱敏自由文本、URL、DSN、Cookie、secret 和绝对路径。当前通过 8 项 architecture、14 项 regression、8 项 local-runtime 与 16 项 control-plane 测试；未接入应用数据库连接、外部网络、模型、SDK 或真实业务资料。GitHub Actions workflow 因当前凭据缺少 `workflow` scope 未写入远端；Phase 2 仍须在新建干净 task worktree 中逐卡推进。
 - **CONFIRMED（工程 Phase 2 / P02-01）**：`main` 的 P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`：stdlib scope/source/version metadata contracts、local PostgreSQL schema migration 与 compound scope/lineage constraints 已建立。默认 `make regression` fail-closed 地执行隔离 PostgreSQL migration replay（两次）与五类负向约束，再运行既有测试；本轮总计 54 项 Python 测试通过，临时容器与 volumes 已清理。
@@ -231,6 +234,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | P05-02 合成线索、CRM、DNC 与受控导出 | `core/contracts/leads_crm.py`、`modules/leads/domain.py`、`modules/crm/domain.py`、`migrations/0004_leads_crm_dnc_export.sql`、`tests/contracts/test_leads_crm_domain.py`、`docs/implementation/P05-02_LEADS_CRM_DNC_EXPORT_REPORT.md` | **CONFIRMED（工程）**：控制器已保留 P06/P07 合同并从远端 `main` `35d6e1f12ad6ed2e4bfa86a2c9f70463f9dcacb9` 回读。只证明 local synthetic 的审查线索→CRM、DNC、同意/来源、可解释去重/人工合并与只含内部引用的导出；迁移序列 `0001/0002/0003/0004` 在双次重放中精确验证。它不代表真实联系人、客户、外联、发送、生产 CRM 或任何外部执行成立 |
 | P06-01 会话、消息、隐私与人工转交合同 | `modules/customer_service/contracts.py`、`migrations/0003_support_conversations_messages_privacy.sql`、`tests/contracts/test_customer_service_conversation_contracts.py`、`docs/implementation/P06-01_CONVERSATION_CONTRACTS_AND_PRIVACY_REPORT.md` | **CONFIRMED（工程）**：控制器已保留 P05-01 并从远端 `main` `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4` 回读。只证明 local synthetic 的会话、消息、意图、草稿、人工转交与未知范围隔离；外部标识均转换为不透明引用，未知范围不生成 scoped record（范围记录）。它不代表真实客户、渠道、身份、模型、发送、生产存储或任何外部执行成立 |
 | P07-01 内容、素材与政策事实锁 | `modules/content_video/contracts.py`、`fixtures/content_video/synthetic_policy_vectors.json`、`tests/contracts/test_content_video_contracts.py`、`docs/implementation/P07-01_CONTENT_VIDEO_CONTRACTS_AND_FACT_LOCK_REPORT.md` | **CONFIRMED（工程）**：控制器已在保留 P06 隐私合同的前提下从远端 `main` `f02360d7e386f61b6b39cf2d8f3051e59fe21bc4` 回读。只证明 local synthetic 的 content brief、asset 与 policy lock；缺失、过期、撤销、跨范围或任何外部开关均被停止。它不代表真实内容素材、视频生成、供应商调用、导出、发布或任何外部执行成立 |
+| Video Orchestrator 统一能力、路由、adapter 与 CLI | `core/application/video_orchestrator/`、`adapters/video/providers/`、`adapters/video/runtime.py`、`apps/videoctl.py`、`docs/video/VIDEO_ORCHESTRATOR.md` | **CONFIRMED（工程）**：能力/路由/请求/错误/成本/素材安全合同与本地 CLI 已由专项和完整回归验证；Aidge SDK contract 已验证但真实 probe 因当前目标仓库 AccessKey/OSS 缺失而 `BLOCKED`。不代表视频已生成、可发布或业务上线。 |
 | 派生产物 | outputs、交付物、qa、渲染和媒体 | 仅作结果或质量线索；必须回读源数据与脚本 |
 | 本地私有配置和线索 | 本地受控资料 | 不进入 Git 或同步包；不能当作对外联系授权或共享事实源 |
 
@@ -278,7 +282,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 
 # 协作机制状态｜COLLABORATION_STATUS
 
-- **最近更新**：2026-08-29
+- **最近更新**：2026-08-31
 - **用途**：记录仓库协作、脱敏、Git 与同步包状态；不替代 BUSINESS_STATUS 中的业务事实。
 
 ## 入口与协作规则
@@ -290,6 +294,7 @@ GPT Project 配合机制包位于 `GPT项目资料同步包_gpt_project_mechanis
 | 业务/协作状态分离 | **CONFIRMED** | BUSINESS_STATUS 记录业务，CURRENT_STATUS 仅作路由，本文记录协作与远端状态 |
 | 交接模板与执行历史 | **CONFIRMED** | 已要求新会话先复述范围、事实分级、阻断和完成标准 |
 | Sales-First 规划入口 | **CONFIRMED（规划）** | `docs/strategy/` 已将业务北极星从系统完成度改为可售 Offer、受控触点、人工销售、订单交接和反馈；不表示已可执行外部销售 |
+| Video Orchestrator | **PROBE_PASSED / HUMAN_REVIEW_REQUIRED** | Aidge 5 秒、720p、9:16 replacement task 已完成、下载并通过 ffprobe/完整解码；task checkpoint、官方输出 HTTPS 归一化、redirect 重验和北京/上海 OSS proxy allowlist 已通过 178 contracts 与安全复审。总 Aidge 生成调用数为 2；媒体留本地 ignored 输出，未人审、未发布、未形成业务证据。 |
 | 双业务线执行化手册 | **CONFIRMED（内部规划）** | 已增加汾酒/海鲜独立执行与内容手册、阶段/KPI 矩阵；AI 视频仅为内部 iPhone Natural Look 草稿，不解除产品、平台或外部动作闸门。 |
 | 海鲜 Online Acquisition 职责重构 | **CONFIRMED（P0 / 内部规划）** | 海鲜现为 Supplier SF-S1 + User SF-U0–U8；新增线上获客与 Lead Handoff/Feedback 合同。旧 SF-2 已 SUPERSEDED，未启动真实发现、发送、发布或销售。 |
 

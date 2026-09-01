@@ -52,7 +52,7 @@ blocked_if_missing: [credential, permission, provider_enablement, asset_access, 
 | `product_video` | Aidge `VideoGeneration` | `PROBE_PASSED` | Wan3.0 |
 | `story_video` | `wan3.0-video` | `PROBE_REQUIRED` | — |
 | `fast_story_video` | `wan3.0-video-prime` | `PROBE_REQUIRED` | Wan3.0 |
-| `short_reference_video` | HappyHorse 1.1 t2v/i2v/r2v | `PREVIOUSLY_TESTED` | Wan3.0 |
+| `short_reference_video` | HappyHorse 1.1 t2v/i2v/r2v（r2v 仅参考图片） | `PREVIOUSLY_TESTED` | Wan3.0（参考视频） |
 | `nepali_tts` | `MiniMax/speech-2.8-hd` | `PROBE_PASSED` | — |
 | `fast_nepali_tts` | `MiniMax/speech-2.8-turbo` | `PROBE_REQUIRED` | — |
 | `translate_nepali` | `qwen-mt-flash` | `PROBE_REQUIRED` | — |
@@ -87,6 +87,8 @@ Machine-readable registry：`core/application/video_orchestrator/capabilities.js
 ./videoctl final-assembly --video inputs/video_orchestrator/source.mp4 --output final.mp4
 ./videoctl pipeline --preset nepali_talking_video
 ```
+
+当前官方边界：`happyhorse-1.1-r2v` 接收 1–9 张 `reference_image`，不是完整 `reference_video`。传入参考视频的短场景会路由到 `wan3.0-video`。付费 Wan/Paraformer 任务可使用 `--checkpoint outputs/video_orchestrator/<run>/state.json`；task ID 在轮询前落盘，重复命令会恢复同一任务而不是隐式重新提交。Wan 可用 `--no-audio --no-prompt-extend` 关闭生成音轨和 prompt 扩写，Provider watermark 始终显式设为 `false`。
 
 Aidge 最小 probe 先看计划和费用：
 

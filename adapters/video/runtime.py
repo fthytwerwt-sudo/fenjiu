@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -126,18 +127,46 @@ class VideoRuntimeAdapter:
                     self.oss.cleanup(asset)
         if adapter_id in {"wan3_video", "wan3_video_prime"}:
             adapter = self.wan_prime if adapter_id.endswith("prime") else self.wan
+            checkpoint = _load_provider_task_checkpoint(request, provider=adapter_id)
+            if checkpoint is not None:
+                completed = adapter.poll(checkpoint["task_id"])
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=checkpoint["task_id"],
+                    status=completed.status,
+                )
+                return self._materialize(completed, request)
             media, bridged_assets = self._bridge_reference_media(request, provider=adapter_id)
             try:
-                submitted = adapter.submit(
-                    adapter.build_request(
-                        prompt=request.prompt or request.product_title,
-                        media=media,
-                        duration=request.duration or 5,
-                        resolution=(request.quality or "720p").upper(),
-                        ratio=request.ratio or "9:16",
-                    )
+                payload = adapter.build_request(
+                    prompt=request.prompt or request.product_title,
+                    media=media,
+                    duration=request.duration or 5,
+                    resolution=(request.quality or "720p").upper(),
+                    ratio=request.ratio or "9:16",
                 )
-                return self._materialize(adapter.poll(submitted.task_id or ""), request)
+                parameters = payload.get("parameters")
+                if isinstance(parameters, dict):
+                    parameters["audio"] = request.metadata.get("output_audio") is not False
+                    parameters["prompt_extend"] = request.metadata.get("prompt_extend") is not False
+                    parameters["watermark"] = False
+                submitted = adapter.submit(payload)
+                task_id = submitted.task_id or ""
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=task_id,
+                    status=submitted.status,
+                )
+                completed = adapter.poll(task_id)
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=task_id,
+                    status=completed.status,
+                )
+                return self._materialize(completed, request)
             finally:
                 for asset in bridged_assets:
                     self.oss.cleanup(asset)
@@ -188,6 +217,16 @@ class VideoRuntimeAdapter:
             return ProviderExecutionResult(adapter_id, "GENERATED", output_text=translated)
         if adapter_id == "paraformer_asr":
             source = request.source_audio or request.source_video or ""
+            checkpoint = _load_provider_task_checkpoint(request, provider=adapter_id)
+            if checkpoint is not None:
+                completed = self.paraformer.wait(checkpoint["task_id"])
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=checkpoint["task_id"],
+                    status=completed.status,
+                )
+                return completed
             bridged_asset = None
             try:
                 if not source.startswith(("https://", "oss://")):
@@ -209,7 +248,21 @@ class VideoRuntimeAdapter:
                     bridged_asset = self.oss.upload(source, asset_kind=kind)
                     source = bridged_asset.signed_url
                 submitted = self.paraformer.submit(self.paraformer.build_request(source))
-                return self.paraformer.wait(submitted.task_id or "")
+                task_id = submitted.task_id or ""
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=task_id,
+                    status=submitted.status,
+                )
+                completed = self.paraformer.wait(task_id)
+                _write_provider_task_checkpoint(
+                    request,
+                    provider=adapter_id,
+                    task_id=task_id,
+                    status=completed.status,
+                )
+                return completed
             finally:
                 if bridged_asset is not None:
                     self.oss.cleanup(bridged_asset)
@@ -320,3 +373,89 @@ class VideoRuntimeAdapter:
             raw_provider_code=result.raw_provider_code,
             usage=usage,
         )
+
+
+def _checkpoint_path(request: OrchestratorRequest, *, provider: str) -> Path | None:
+    value = request.metadata.get("task_checkpoint_path")
+    if value in (None, ""):
+        return None
+    if not isinstance(value, str):
+        raise ProviderAdapterError(
+            ErrorCode.INVALID_INPUT,
+            "provider task checkpoint path must be a string",
+            provider=provider,
+        )
+    return resolve_output_path(value, provider=provider)
+
+
+def _load_provider_task_checkpoint(
+    request: OrchestratorRequest,
+    *,
+    provider: str,
+) -> dict[str, str] | None:
+    path = _checkpoint_path(request, provider=provider)
+    if path is None or not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProviderAdapterError(
+            ErrorCode.OUTPUT_INVALID,
+            "provider task checkpoint is unreadable",
+            provider=provider,
+        ) from exc
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema_version") != "video_orchestrator.provider_task.v1"
+        or payload.get("provider") != provider
+        or not isinstance(payload.get("task_id"), str)
+        or not payload["task_id"]
+    ):
+        raise ProviderAdapterError(
+            ErrorCode.OUTPUT_INVALID,
+            "provider task checkpoint is invalid",
+            provider=provider,
+        )
+    if payload.get("status") in {"FAILED", "CANCELED", "UNKNOWN"}:
+        raise ProviderAdapterError(
+            ErrorCode.PROVIDER_FAILED,
+            "provider task checkpoint is terminal and cannot be resubmitted implicitly",
+            provider=provider,
+        )
+    return {"task_id": payload["task_id"], "status": str(payload.get("status") or "SUBMITTED")}
+
+
+def _write_provider_task_checkpoint(
+    request: OrchestratorRequest,
+    *,
+    provider: str,
+    task_id: str,
+    status: str,
+) -> None:
+    path = _checkpoint_path(request, provider=provider)
+    if path is None:
+        return
+    if not task_id:
+        raise ProviderAdapterError(
+            ErrorCode.OUTPUT_INVALID,
+            "provider did not return a task ID for checkpointing",
+            provider=provider,
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(
+            {
+                "schema_version": "video_orchestrator.provider_task.v1",
+                "provider": provider,
+                "task_id": task_id,
+                "status": status,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)

@@ -1,6 +1,6 @@
 # 当前项目总览｜CURRENT_STATUS
 
-- **最近更新**：2026-08-29
+- **最近更新**：2026-09-01
 - **用途**：本页只提供业务与协作的短摘要和路由；详细事实以链接文件为准。
 
 ## 业务状态摘要
@@ -29,6 +29,9 @@
 
 - **CONFIRMED（工程历史层）**：`docs/implementation/` 保留 AI Native Sales OS 的 Phase 0–8 技术蓝图、依赖图和任务卡；自 2026-08-28 起它们不再是业务优先队列，销售顺序以 `docs/strategy/SALES_EXECUTION_PHASES.md` 为准。
 - **部分成立**：本摘要不表示已创建可连接数据库的业务服务、队列、CRM、客服、视频服务或真实资料导入；任何未来技术实施必须先由 Sales-First 阶段证明其必要性，再按独立任务卡推进。
+- **CONFIRMED（Video Orchestrator 本地工程）**：已新增 capability-first 的视频 application layer、机器可读 registry、runtime provider adapters、三个 preset 与 `videoctl`；默认只输出脱敏计划，真实调用必须显式费用/素材授权，结果固定进入 `HUMAN_REVIEW_REQUIRED`。MiniMax Nepali TTS 记录为 `PROBE_PASSED`，VideoRetalk/Paraformer/HappyHorse 为 `PREVIOUSLY_TESTED`，Wan3/Qwen-MT 为 `PROBE_REQUIRED`；这些状态不解除业务或发布闸门。
+- **CONFIRMED（20 秒 Nepali 海鲜 Reference Recreation / 待人审）**：Wan3 text-only recovery 已生成 20.000000 秒、720×1280、30fps 的全新手机手持海鲜画面，MiniMax Nepali 音轨与 Nepali-only 字幕已组装；ffprobe、完整解码、五帧水印检查和 visual verdict 93/100 通过。Qwen-MT 因账号 `FreeTierOnly` 被拒，Nepali 文本为 fallback draft；最终状态为 `TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`，不确认商品、素材权、发布、销售或履约。
+- **CONFIRMED（Aidge 物理 probe 通过 / 待内容人审）**：Aidge credentials、`aidge:VideoGeneration` 权限、异步轮询、官方输出 URL 恢复、本地下载和 ffprobe/完整解码已通过。最终媒体为 5.0 秒、720×1280、H.264、30fps、AAC stereo、1,086,323 bytes，SHA-256=`2c1cf25699856dd9317e66338d7e8b5b6ff8bcc312a2129ffd26cba9e67b5391`。媒体仅留本地 ignored `outputs/video_orchestrator/`，未进入 Git。总 Aidge 生成调用数为 2（首次上游完成但未落盘；replacement 完整通过）；当前为 `PROBE_PASSED / HUMAN_REVIEW_REQUIRED`，不证明商品、素材权、发布或业务上线。
 - **CONFIRMED（工程 Phase 0）**：P00-01、P00-02 与 P00-03 已完成远端回读；P00-03 在干净独立 task worktree 通过 12 项回归和两种扫描模式。外置盘根目录存在既有 ignored 禁入路径，故不得在该根目录运行 P00 default/`--all-files` 扫描；`make regression` 的 compile step 已显式跳过 AppleDouble metadata，但后续任务仍须在新建、干净的独立 task worktree 中启动。
 - **CONFIRMED（工程 Phase 1）**：P01-01 至 P01-03 已在 `main` 远端回读：模块化单体 skeleton、synthetic-only fixture metadata、local-only Docker Compose / Make、静态 typed settings / FeatureFlagPort、liveness/readiness 与 JSON 脱敏日志合同均已建立。所有敏感 flags 默认 false，broker/provider/real configuration 不存在时 `/ready` 返回 HTTP 503；日志只保留结构化安全码并 fail-closed 脱敏自由文本、URL、DSN、Cookie、secret 和绝对路径。当前通过 8 项 architecture、14 项 regression、8 项 local-runtime 与 16 项 control-plane 测试；未接入应用数据库连接、外部网络、模型、SDK 或真实业务资料。GitHub Actions workflow 因当前凭据缺少 `workflow` scope 未写入远端；Phase 2 仍须在新建干净 task worktree 中逐卡推进。
 - **CONFIRMED（工程 Phase 2 / P02-01）**：`main` 的 P02-01 代码已远端回读至 `b08722a703f37a0cfcce0c928fec8c01c4596357`：stdlib scope/source/version metadata contracts、local PostgreSQL schema migration 与 compound scope/lineage constraints 已建立。默认 `make regression` fail-closed 地执行隔离 PostgreSQL migration replay（两次）与五类负向约束，再运行既有测试；本轮总计 54 项 Python 测试通过，临时容器与 volumes 已清理。

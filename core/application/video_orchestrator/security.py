@@ -21,6 +21,7 @@ _TRUSTED_CODEX_PROXY_HOSTS = {"help-static-aliyun-doc.aliyuncs.com"}
 _TRUSTED_CODEX_PROXY_SUFFIXES = (
     ".oss-cn-beijing.aliyuncs.com",
     ".oss-cn-shanghai.aliyuncs.com",
+    ".oss-accelerate.aliyuncs.com",
 )
 
 

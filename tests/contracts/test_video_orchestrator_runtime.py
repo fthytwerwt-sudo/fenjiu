@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -313,6 +314,165 @@ class VideoOrchestratorRuntimeTests(unittest.TestCase):
         self.assertEqual(bridge.uploads, [("inputs/video_orchestrator/product.png", "image")])
         self.assertEqual(wan.media, ({"type": "reference_image", "url": FakeAsset.signed_url},))
         self.assertEqual(bridge.cleanups, 1)
+
+    def test_wan_task_id_is_checkpointed_before_poll_timeout(self) -> None:
+        class FakeAsset:
+            signed_url = "https://assets.example/reference.mp4"
+
+        class FakeBridge:
+            def upload(self, path, *, asset_kind="image"):
+                return FakeAsset()
+
+            def cleanup(self, asset):
+                return None
+
+        class FakeWan:
+            def build_request(self, **kwargs):
+                return {"synthetic": True}
+
+            def submit(self, payload):
+                return ProviderExecutionResult("wan3_video", "SUBMITTED", task_id="saved-wan-task")
+
+            def poll(self, task_id):
+                raise ProviderAdapterError(
+                    ErrorCode.PROVIDER_TIMEOUT,
+                    "synthetic timeout",
+                    provider="wan3_video",
+                )
+
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                runtime = VideoRuntimeAdapter(VideoRuntimeConfig())
+                runtime.oss = FakeBridge()
+                runtime.wan = FakeWan()
+                request = OrchestratorRequest(
+                    task=TaskType.STORY_VIDEO,
+                    prompt="Synthetic story",
+                    reference_videos=("inputs/video_orchestrator/reference.mp4",),
+                    duration=4,
+                    metadata={
+                        "media_upload_approved": True,
+                        "task_checkpoint_path": "outputs/video_orchestrator/run/shot_01_state.json",
+                        "output_audio": False,
+                        "prompt_extend": False,
+                    },
+                )
+                with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PROVIDER_TIMEOUT.value):
+                    runtime.execute(request, "wan3_video")
+                state_path = Path("outputs/video_orchestrator/run/shot_01_state.json")
+                self.assertTrue(state_path.is_file())
+                state = json.loads(state_path.read_text(encoding="utf-8"))
+                self.assertEqual(state["task_id"], "saved-wan-task")
+                self.assertEqual(state["status"], "SUBMITTED")
+                self.assertEqual(state["provider"], "wan3_video")
+            finally:
+                os.chdir(previous)
+
+    def test_wan_execution_resumes_checkpoint_without_resubmitting(self) -> None:
+        class FakeWan:
+            def __init__(self):
+                self.submits = 0
+                self.polled = []
+
+            def build_request(self, **kwargs):
+                return {"synthetic": True}
+
+            def submit(self, payload):
+                self.submits += 1
+                return ProviderExecutionResult("wan3_video", "SUBMITTED", task_id="new-task")
+
+            def poll(self, task_id):
+                self.polled.append(task_id)
+                return ProviderExecutionResult("wan3_video", "SUCCEEDED", task_id=task_id)
+
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                state_path = Path("outputs/video_orchestrator/run/shot_01_state.json")
+                state_path.parent.mkdir(parents=True)
+                state_path.write_text(
+                    json.dumps(
+                        {
+                            "schema_version": "video_orchestrator.provider_task.v1",
+                            "provider": "wan3_video",
+                            "task_id": "existing-wan-task",
+                            "status": "SUBMITTED",
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                runtime = VideoRuntimeAdapter(VideoRuntimeConfig())
+                wan = FakeWan()
+                runtime.wan = wan
+                result = runtime.execute(
+                    OrchestratorRequest(
+                        task=TaskType.STORY_VIDEO,
+                        prompt="Synthetic story",
+                        duration=4,
+                        metadata={"task_checkpoint_path": str(state_path)},
+                    ),
+                    "wan3_video",
+                )
+                self.assertEqual(result.status, "SUCCEEDED")
+                self.assertEqual(wan.submits, 0)
+                self.assertEqual(wan.polled, ["existing-wan-task"])
+                saved = json.loads(state_path.read_text(encoding="utf-8"))
+                self.assertEqual(saved["status"], "SUCCEEDED")
+            finally:
+                os.chdir(previous)
+
+    def test_paraformer_task_id_is_checkpointed_before_wait_timeout(self) -> None:
+        class FakeAsset:
+            signed_url = "https://assets.example/reference.wav"
+
+        class FakeBridge:
+            def upload(self, path, *, asset_kind="image"):
+                return FakeAsset()
+
+            def cleanup(self, asset):
+                return None
+
+        class FakeParaformer:
+            def build_request(self, source):
+                return {"synthetic": True}
+
+            def submit(self, payload):
+                return ProviderExecutionResult("paraformer_asr", "SUBMITTED", task_id="saved-asr-task")
+
+            def wait(self, task_id):
+                raise ProviderAdapterError(
+                    ErrorCode.PROVIDER_TIMEOUT,
+                    "synthetic timeout",
+                    provider="paraformer_asr",
+                )
+
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                runtime = VideoRuntimeAdapter(VideoRuntimeConfig())
+                runtime.oss = FakeBridge()
+                runtime.paraformer = FakeParaformer()
+                request = OrchestratorRequest(
+                    task=TaskType.SOURCE_ASR,
+                    source_audio="outputs/video_orchestrator/reference.wav",
+                    metadata={
+                        "media_upload_approved": True,
+                        "task_checkpoint_path": "outputs/video_orchestrator/run/asr_state.json",
+                    },
+                )
+                with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.PROVIDER_TIMEOUT.value):
+                    runtime.execute(request, "paraformer_asr")
+                state = json.loads(
+                    Path("outputs/video_orchestrator/run/asr_state.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(state["task_id"], "saved-asr-task")
+                self.assertEqual(state["status"], "SUBMITTED")
+            finally:
+                os.chdir(previous)
 
 
 if __name__ == "__main__":

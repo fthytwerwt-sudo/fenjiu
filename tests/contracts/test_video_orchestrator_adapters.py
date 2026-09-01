@@ -94,6 +94,39 @@ class VideoOrchestratorAdapterTests(unittest.TestCase):
         self.assertEqual(HappyHorseVideoAdapter(mode="r2v").model_id, "happyhorse-1.1-r2v")
         self.assertEqual(HappyHorseVideoAdapter(mode="video_edit").model_id, "happyhorse-1.0-video-edit")
 
+    def test_wan_request_explicitly_disables_provider_watermark_and_audio(self) -> None:
+        payload = Wan3VideoAdapter().build_request(
+            prompt="Synthetic reference recreation",
+            media=({"type": "reference_video", "url": "https://assets.example/reference.mp4"},),
+            duration=4,
+            resolution="720P",
+            ratio="9:16",
+            audio=False,
+            prompt_extend=False,
+        )
+        self.assertIs(payload["parameters"]["watermark"], False)
+        self.assertIs(payload["parameters"]["audio"], False)
+        self.assertIs(payload["parameters"]["prompt_extend"], False)
+
+    def test_happyhorse_r2v_accepts_reference_images_and_rejects_reference_video(self) -> None:
+        adapter = HappyHorseVideoAdapter(mode="r2v")
+        payload = adapter.build_request(
+            prompt="Synthetic image reference",
+            media=({"type": "reference_image", "url": "https://assets.example/reference.jpg"},),
+            duration=4,
+            resolution="720P",
+            ratio="9:16",
+        )
+        self.assertEqual(payload["model"], "happyhorse-1.1-r2v")
+        with self.assertRaisesRegex(ProviderAdapterError, ErrorCode.INVALID_INPUT.value):
+            adapter.build_request(
+                prompt="Synthetic video reference",
+                media=({"type": "reference_video", "url": "https://assets.example/reference.mp4"},),
+                duration=4,
+                resolution="720P",
+                ratio="9:16",
+            )
+
     def test_minimax_nepali_request_uses_auto_language_boost(self) -> None:
         payload = MiniMaxSpeechAdapter().build_request("नमस्कार", language="ne")
         self.assertEqual(payload["model"], "MiniMax/speech-2.8-hd")
@@ -131,12 +164,29 @@ class VideoOrchestratorAdapterTests(unittest.TestCase):
                 }
 
         adapter = ParaformerAsrAdapter(
-            transcript_fetcher=lambda url: {"transcripts": [{"text": "你好，世界。"}]}
+            transcript_fetcher=lambda url: {
+                "transcripts": [
+                    {
+                        "text": "你好，世界。",
+                        "sentences": [
+                            {"begin_time": 120, "end_time": 980, "text": "你好，"},
+                            {"begin_time": 1000, "end_time": 1800, "text": "世界。"},
+                        ],
+                    }
+                ]
+            }
         )
         adapter.client = FakeClient()
         result = adapter.wait("synthetic-task", timeout_seconds=1, poll_interval=1)
         self.assertEqual(result.status, "GENERATED")
         self.assertEqual(result.output_text, "你好，世界。")
+        self.assertEqual(
+            result.usage["transcript_segments"],
+            [
+                {"start_ms": 120, "end_ms": 980, "text": "你好，"},
+                {"start_ms": 1000, "end_ms": 1800, "text": "世界。"},
+            ],
+        )
 
     def test_output_download_upgrades_trusted_alibaba_http_url_to_https(self) -> None:
         class FakeResponse:

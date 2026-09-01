@@ -1,5 +1,63 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-09-01｜20 秒 Nepali 海鲜 Reference Recreation 与 Orchestrator 恢复修复
+
+- **P0 / 费用边界**：用户授权本次 Provider 总费用最高人民币 19 元；目标为 20 秒、720×1280、9:16、手机实拍感、Nepali-only、无抖音/TikTok 平台层的新生成海鲜视频。禁止原片直接入成片和任何本地去水印。
+- **参考分析**：原片为 50.875011 秒、720×1280、30fps 的长手持卖货展示；动作顺序为鱼堆/冷库建立、拿鱼、看颜色/鱼鳃、红柄剪刀处理、肉质收束，约 47.8 秒后进入平台结束页。Paraformer 返回 8 段时间码；末尾“抖音”被排除。
+- **生成恢复**：首个 4 秒 Wan3 `reference_video` 结果复制了原片中文字幕，按 `FAIL_IF_WATERMARK_PRESENT` 拒绝且未本地修复。随后根据参考分析以 text-only prompt 生成一条全新 20 秒连续手持 Wan3 画面；五帧/20 帧审查未见 Logo、账号、搜索框、平台 UI 或随机文字，visual verdict 为 93/100。
+- **Nepali**：Qwen-MT 因账号 `AllocationQuota.FreeTierOnly` 被拒绝，未擅自修改账号全局计费开关；使用明确标记为 fallback draft 的五句 Nepali 文本，MiniMax `speech-2.8-hd` 生成系统音色，未 Voice Clone、未 VideoRetalk。字幕由本机 Devanagari CoreText 卡烧录，最终仍为 `HUMAN_REVIEW_REQUIRED`。
+- **最终媒体**：ignored `outputs/video_orchestrator/nepali_reference_recreation/final_nepali_reference_video.mp4` 为 20.000000 秒、720×1280、30fps、H.264、AAC mono 48kHz、17,776,951 bytes，SHA-256=`6b81f0d1b9f907fdb0b11b2edc8b34cf038bff032b70450cb6aff96964d259df`；mean/max volume 为 -24.0/-3.6 dB，ffprobe、完整解码和水印抽帧通过。
+- **调用/成本**：Paraformer 1 次；Qwen-MT 1 次被拒；MiniMax 7 次同步尝试（含 1 次 incomplete response 与时长替换）；Wan3 2 次、共 24 秒输出。按公开单价估算合计人民币 14.52695 元，低于 19 元上限；实际账单未回读，保持 `UNKNOWN`。
+- **工程修复**：Wan/Paraformer 任务支持 poll 前 checkpoint 与同 task 恢复；Wan 显式 `watermark=false` 并支持关闭生成音频/prompt extend；Paraformer 返回句级时间码；官方 OSS accelerate Codex proxy 映射加入精确 allowlist；HappyHorse 1.1 r2v 修正为参考图片输入，参考视频短场景改由 Wan3 路由。媒体未进入 Git，业务/发布状态未升级。
+
+## 2026-08-31｜10 秒冰冻海鲜 Aidge 视频生成与 QC
+
+- **P0 / 设计**：用户选择推荐方案并要求直接生成；目标为 10 秒、720P、9:16 高端冰冻海鲜展示，强调流畅运镜。禁止品牌、价格、库存、功效或履约承诺。
+- **合成输入**：使用 built-in imagegen 生成无品牌/无文字的冰冻龙虾、帝王蟹腿、大虾、扇贝和青口棚拍图，保存为 ignored `inputs/video_orchestrator/frozen_seafood_premium.png`，941×1672，SHA-256=`d5d8ffbec3735b34a82843cec8acada10ef87515b221abc7dea3a9926fdce452`。
+- **Aidge 执行**：通过 private OSS signed URL 提交一次 10 秒、720p、9:16 `VideoGeneration`，费用安全上限人民币 14 元。submit 后 task ID 立即写入 ignored checkpoint。SDK 首次轮询达 15 分钟 timeout，随后用 checkpoint 查询同一 task 已 `COMPLETED`，直接恢复下载；没有提交第二个海鲜 task。OSS 临时输入已清理。
+- **技术 QC**：`outputs/video_orchestrator/aidge_frozen_seafood_10s.mp4` 为 3,932,622 bytes、10.000000 秒、720×1280、30fps、H.264、AAC stereo；video-metadata-probe、ffprobe 与 `ffmpeg -v error` 完整解码通过。SHA-256=`800ef2bce3f07591c7b71c028696a3de3078277354a7df6467ea0cf9ae3b5438`。
+- **流畅度线索**：以 0.5fps 抽取 5 帧联系表，各帧保持同一冰冻海鲜拼盘主体；scene threshold 0.35 检出 2 次明显过渡，未观察到主体跳变。该结果是内部视觉线索，不替代用户实际播放判断。
+- **边界**：视频与联系表均保留本地 ignored 目录，未进入 Git、未发布、未发送客户，当前为 `TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`。
+
+## 2026-08-31｜Aidge replacement probe 恢复成功与技术 QC 通过
+
+- **恢复修复**：为防止再次丢失收费任务，先按 TDD 增加 submit 后立即 checkpoint（只保存 task ID/status/output hash）、官方 Alibaba output HTTP→HTTPS 归一化、userinfo 禁止和每一跳 redirect 的 host/DNS 重验。checkpoint symlink 越界由既有 `Path.resolve()` 闸门拒绝并有负测锁定。
+- **安全证据**：Codex benchmark proxy 例外只允许阿里官方示例精确主机和北京/上海 OSS service-specific 后缀；literal IP、userinfo、未知 Alibaba service 与非 Alibaba redirect 均拒绝。两轮独立安全复审最终无 Blocking/High/Medium。178 contracts 与完整 regression 通过。
+- **Provider 实测**：用户要求直接解决后，提交 1 次同规格 replacement task。任务 checkpoint 立即落盘；上游 completed 后首次下载显示实际主机为上海 OSS 官方 service host，补精确 allowlist 后从同一 task 续传下载，未生成第三个任务。
+- **媒体验证**：`outputs/video_orchestrator/aidge_probe_replacement_20260831.mp4` 存在，1,086,323 bytes、5.000000 秒、720×1280、30fps、H.264、AAC stereo；`video-metadata-probe`、ffprobe 和 `ffmpeg -v error` 完整解码全部通过。SHA-256=`2c1cf25699856dd9317e66338d7e8b5b6ff8bcc312a2129ffd26cba9e67b5391`。
+- **调用与成本边界**：Aidge 生成调用总数为 2；每次均为 5 秒、720p、9:16，单次安全上限人民币 7 元。控制台在 replacement 前显示「电商视频生成已用 50%」，但未回读 replacement 后实际账单，不把免费额度或实付金额写为已确认。
+- **状态边界**：当前为 `PROBE_PASSED / TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`。输入为官方示例图；本轮不确认商品、素材权、发布、投放、询盘、销售或履约。
+
+## 2026-08-31｜Aidge 单次授权物理 probe：上游完成，本地下载阻断
+
+- **用户授权**：用户明确同意 1 次 Aidge 5 秒、720p、9:16 probe，最高费用人民币 7 元。输入为阿里官方示例图，不是真实客户或业务素材。
+- **调用结果**：`VideoGeneration` 被受理，同一 SDK 进程持续轮询约 13 分钟；随后进入 output download 代码路径，证明任务 completed 且有输出 URL。生成调用数为 1，未重试。
+- **本地阻断**：Provider 输出 URL 被 `provider_output_download` 以 `INVALID_INPUT / only credential-free HTTPS URLs are allowed` 拒绝，本地 MP4 未写入。CLI 未在 submit 后 checkpoint task ID，因此进程结束后不能用当前 API 无损继传。
+- **恢复检查**：本地输出不存在；ActionTrail 近 3 小时按 ServiceName/EventName 均无 Aidge 事件；内置浏览器和 Chrome 的 Aidge 任务管理均要求登录。已保留 Chrome 任务管理页供用户登录后回读同一任务。
+- **成本与质量**：官方刊例上限为人民币 7 元，实际账单待控制台回读。无本地媒体，故 metadata/decodability/audio/content 均未验证，不能写 `PROBE_PASSED`。
+- **工程预防**：收费前先以 TDD 修复 Codex benchmark DNS 误拦截，代理例外仅允许官方示例精确主机和北京 OSS 服务后缀，公网 literal IP 全部禁止；173 contracts、完整 regression 和独立安全复审通过。
+- **当前状态**：`AUTH_VERIFIED / PROVIDER_GENERATION_COMPLETED / BLOCKED_AIDGE_OUTPUT_DOWNLOAD_URL_POLICY / HUMAN_REVIEW_NOT_STARTED`。禁止无新授权重新生成。
+
+## 2026-08-31｜Aidge 本地运行环境就绪（等待用户填两个 Key）
+
+- **Goal / P0**：用户只填 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET`；Codex 自动建立其余 Aidge/OSS 本地配置、依赖、权限与 doctor 入口。本轮明确禁止收费 `VideoGeneration`。
+- **本地私有配置**：ignored `.env` 已保留原有 DashScope Key，新增两个 `FILL_ME`、`cn-beijing`、SDK 自动 Aidge Endpoint、北京 OSS 公网 Endpoint、用户确认 Bucket 和 `video-orchestrator` prefix。`.env` 未跟踪且未进入本提交。
+- **代码修复**：补上 placeholder credential 解析的 fail-closed 逻辑，并让 OSS doctor 区分 `BLOCKED_OSS_CREDENTIALS_ABSENT`、缺配置、endpoint 非法与 SDK 缺失，避免把 `FILL_ME` 误报为真实凭据。
+- **当前状态**：Aidge/OSS SDK 均可 import，region/endpoint/bucket/prefix 已配置。OSS Bucket 存在且地域为北京，极小 synthetic object 的 put、30 分钟 signed GET、内容回读与 delete 全部通过。Aidge 只读 `QueryAsyncTaskResult` 以随机不存在 task ID 到达服务端并返回 `InvalidParameter`，证明 credentials/endpoint 被接受；不证明 `aidge:VideoGeneration` 权限或付费生成成功。
+- **验证**：placeholder 解析与 OSS doctor 状态均按 TDD 先复现失败再修复；171 contracts、8 architecture 与完整 `make regression` 通过，SDK import/版本、Aidge SDK 自动 endpoint、OSS SDK 构造、`.env` ignore/未跟踪和 doctor 脱敏输出通过。外置盘 exFAT/noowners 将 `chmod 600` 表现为 `0700`，但 group/other 均无权限。当前 `pip check` 仍报 `grpcio 1.78.1 is not supported on this platform`，不影响本轮两个 SDK import，也未擅自升级其他依赖。
+- **边界**：本轮没有调用 Aidge `VideoGeneration`、没有上传业务素材、没有修改 RAM/开通产品/充值，不改变业务状态。当前最终工程状态为 `OSS_AVAILABLE / AIDGE_PROBE_REQUIRED`。
+
+## 2026-08-31｜Video Orchestrator 统一能力层与 Aidge 受控接入
+
+- **Goal / P0**：把 Aidge、Wan3、HappyHorse、MiniMax、Qwen-MT、Paraformer、VideoRetalk 和 FFmpeg 收敛成 capability-first 总控；上层不暴露 Model ID。本轮要求 Aidge 正确实现、最小物理 probe 或精确外部阻断，不改变 Sales-First 业务状态。
+- **实现设计**：保留 `modules/content_video` 与 P07 fake-only `VideoPort`；在 `core/application/video_orchestrator` 新增 registry/router/error/preset/runtime port，在 `adapters/video` 新增真实 provider composition，在 `apps/videoctl.py` 和 `videoctl` 提供统一命令。真实调用默认关闭，须显式费用、素材上传与 fallback/provider/max-cost 授权。
+- **Provider 状态**：MiniMax Nepali TTS=`PROBE_PASSED`；VideoRetalk/Paraformer/HappyHorse=`PREVIOUSLY_TESTED`；FFmpeg=`CURRENTLY_AVAILABLE`；Wan3/Prime、Qwen-MT、MiniMax Turbo=`PROBE_REQUIRED`。Aidge `VideoGeneration` 使用官方 SDK `alibabacloud_aidge20260428==5.3.1`，SDK import/request model、1–6 图、5–15 秒、9:16、720p/1080p、`aidge:VideoGeneration` 与 5 秒 720p 约人民币 7 元均已核验。
+- **Aidge 阻断**：目标仓库当前没有 `ALIBABA_CLOUD_ACCESS_KEY_ID/SECRET` 和 private OSS endpoint/bucket；`videoctl probe-aidge --execute --approve-cost --max-cost-cny 7` 在发请求前返回 `AUTH_REQUIRED`，故付费调用数为 0、无输出媒体。不得借用其他项目密钥或自动开通/充值。
+- **意外 MiniMax 调用**：代码复审为验证成本闸门，误执行 1 次 `MiniMax/speech-2.8-hd` TTS（7 个输入字符，未使用克隆声音）。公开刊例估算为人民币 `0.00245` 元，实际账单待验证；本地 `outputs/video_orchestrator/voice.mp3` 为 21,300 bytes、1.184219 秒、mono MP3，ffprobe/ffmpeg 技术验证可解码。该媒体受 Git ignore 保护，不进入提交；技术通过不等于内容试听或业务验收。
+- **安全修复**：独立复审发现的本地任意文件上传、endpoint override、任意输出覆盖、付费 fallback 与 SSRF 风险已通过输入/输出根目录、媒体签名/大小、阿里 endpoint/下载主机、DNS 私网拦截、显式 upload/fallback/provider/max-cost 授权和 pipeline 累计预算修复；VideoRetalk 本地链与 Paraformer transcript wait 已补齐。最终安全复审无 Blocking/High/Medium。
+- **验证**：Video Orchestrator 专项 49 项、完整 contracts 169 项、architecture 8 项通过；`make regression` 进一步通过双次 migration replay、16 regression、8 local-runtime、16 control-plane、169 contracts 与 35 ingestion。Python 编译、`git diff --check` 通过。`pip check` 仅报现有 `grpcio 1.78.1 is not supported on this platform`，依赖 CVE 数据库审计待验证。最终 path-limited stage、Lore commit、push main、remote HEAD 与核心文件 readback 由本轮执行回报收口。
+- **状态边界**：这是工程能力与本地执行入口，不证明商品、素材权、Aidge 开通、视频已生成、发布、平台允许、销售或履约成立；所有媒体仍须技术 QC 和人工复审。
+
 ## 2026-08-29｜海鲜 Online Acquisition 双 Workstream 重构
 
 - **Goal / P0**：只修改海鲜线，把用户职责从混合的当地采购/样品/成交改为 Online Acquisition、Qualified Lead、Supplier Handoff 和结果归因；供应链独立负责尼泊尔当地商品、销售、成交与履约。汾酒路线不重写。

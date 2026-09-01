@@ -1,5 +1,15 @@
 # 执行历史｜EXECUTION_HISTORY
 
+## 2026-09-01｜20 秒 Nepali 海鲜 Reference Recreation 与 Orchestrator 恢复修复
+
+- **P0 / 费用边界**：用户授权本次 Provider 总费用最高人民币 19 元；目标为 20 秒、720×1280、9:16、手机实拍感、Nepali-only、无抖音/TikTok 平台层的新生成海鲜视频。禁止原片直接入成片和任何本地去水印。
+- **参考分析**：原片为 50.875011 秒、720×1280、30fps 的长手持卖货展示；动作顺序为鱼堆/冷库建立、拿鱼、看颜色/鱼鳃、红柄剪刀处理、肉质收束，约 47.8 秒后进入平台结束页。Paraformer 返回 8 段时间码；末尾“抖音”被排除。
+- **生成恢复**：首个 4 秒 Wan3 `reference_video` 结果复制了原片中文字幕，按 `FAIL_IF_WATERMARK_PRESENT` 拒绝且未本地修复。随后根据参考分析以 text-only prompt 生成一条全新 20 秒连续手持 Wan3 画面；五帧/20 帧审查未见 Logo、账号、搜索框、平台 UI 或随机文字，visual verdict 为 93/100。
+- **Nepali**：Qwen-MT 因账号 `AllocationQuota.FreeTierOnly` 被拒绝，未擅自修改账号全局计费开关；使用明确标记为 fallback draft 的五句 Nepali 文本，MiniMax `speech-2.8-hd` 生成系统音色，未 Voice Clone、未 VideoRetalk。字幕由本机 Devanagari CoreText 卡烧录，最终仍为 `HUMAN_REVIEW_REQUIRED`。
+- **最终媒体**：ignored `outputs/video_orchestrator/nepali_reference_recreation/final_nepali_reference_video.mp4` 为 20.000000 秒、720×1280、30fps、H.264、AAC mono 48kHz、17,776,951 bytes，SHA-256=`6b81f0d1b9f907fdb0b11b2edc8b34cf038bff032b70450cb6aff96964d259df`；mean/max volume 为 -24.0/-3.6 dB，ffprobe、完整解码和水印抽帧通过。
+- **调用/成本**：Paraformer 1 次；Qwen-MT 1 次被拒；MiniMax 7 次同步尝试（含 1 次 incomplete response 与时长替换）；Wan3 2 次、共 24 秒输出。按公开单价估算合计人民币 14.52695 元，低于 19 元上限；实际账单未回读，保持 `UNKNOWN`。
+- **工程修复**：Wan/Paraformer 任务支持 poll 前 checkpoint 与同 task 恢复；Wan 显式 `watermark=false` 并支持关闭生成音频/prompt extend；Paraformer 返回句级时间码；官方 OSS accelerate Codex proxy 映射加入精确 allowlist；HappyHorse 1.1 r2v 修正为参考图片输入，参考视频短场景改由 Wan3 路由。媒体未进入 Git，业务/发布状态未升级。
+
 ## 2026-08-31｜10 秒冰冻海鲜 Aidge 视频生成与 QC
 
 - **P0 / 设计**：用户选择推荐方案并要求直接生成；目标为 10 秒、720P、9:16 高端冰冻海鲜展示，强调流畅运镜。禁止品牌、价格、库存、功效或履约承诺。

@@ -48,6 +48,14 @@
 - GitHub default branch/visibility/远端 CI 仍由具备管理权限的责任人单独核验；它们不替代业务闸门。
 - `external_execution_allowed=false`；不得发布、发送、报价、收款、下单、退款或发货。
 
+## Video Orchestrator 工程后续（不替代当前业务队列）
+
+1. 人工查看 `outputs/video_orchestrator/nepali_reference_recreation/final_nepali_reference_video.mp4`，重点复核连续运动、AI 变形、Nepali 发音/词义和手机字幕可读性；当前只为 `TECH_QC_PASSED / HUMAN_REVIEW_REQUIRED`。
+2. 人工查看 `outputs/video_orchestrator/aidge_probe_replacement_20260831.mp4`，只判断画面、声音和内容是否可接受；技术 QC 已通过。
+3. 没有新的精确用户授权时，不再提交 Aidge/Wan/HappyHorse 付费生成，也不修改 Qwen-MT 的账号全局 `FreeTierOnly` 设置。
+4. 保留 Provider task checkpoint 与 contract regression；后续 Wan/Paraformer/Aidge 调用必须 submit 后立即 checkpoint，重定向每一跳重验，恢复同一 task 优先于重新生成。
+5. `PROBE_PASSED` 或 `TECH_QC_PASSED` 仅证明技术能力；未确认商品、素材权、发布、投放、询盘或销售。
+
 ## 每项完成证据
 
 - 有可回读的来源、日期、责任人和书面确认；

@@ -68,8 +68,8 @@ class VideoOrchestratorCoreTests(unittest.TestCase):
             reference_videos=("asset:synthetic-video",),
             prompt="Synthetic scene",
         )
-        self.assertEqual(self.router.route(image_request).primary_adapter, "happyhorse_1_1_i2v")
-        self.assertEqual(self.router.route(video_request).primary_adapter, "happyhorse_1_1_r2v")
+        self.assertEqual(self.router.route(image_request).primary_adapter, "happyhorse_1_1_r2v")
+        self.assertEqual(self.router.route(video_request).primary_adapter, "wan3_video")
 
     def test_nepali_voice_routes_to_minimax_hd(self) -> None:
         request = OrchestratorRequest(

@@ -60,7 +60,7 @@
       "provider": "Alibaba Cloud Model Studio",
       "model_or_api": "happyhorse-1.1-t2v/i2v/r2v",
       "status": "PREVIOUSLY_TESTED",
-      "input_types": ["prompt", "reference_image", "reference_video"],
+      "input_types": ["prompt", "reference_image"],
       "output_types": ["video"],
       "supported_duration": [3, 15],
       "supported_resolution": ["480p", "720p", "1080p"],
@@ -70,7 +70,7 @@
       "cost_status": "PAID_PROVIDER",
       "credential_status": "RUNTIME_CHECK",
       "current_probe_status": "PREVIOUSLY_TESTED",
-      "primary_adapter": "happyhorse_1_1_i2v",
+      "primary_adapter": "happyhorse_1_1_r2v",
       "fallback": "wan3_video"
     },
     {

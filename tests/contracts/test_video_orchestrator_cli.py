@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from apps.videoctl import _write_aidge_probe_state, main
+from apps.videoctl import _request_from_args, _write_aidge_probe_state, build_parser, main
 from core.application.video_orchestrator import ErrorCode, ProviderAdapterError, ProviderExecutionResult
 
 
@@ -42,6 +42,64 @@ class VideoCtlTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(result["route"]["primary_adapter"], "aidge_video_generation")
         self.assertEqual(result["execution"], "PLAN_ONLY")
+
+    def test_generation_cli_carries_checkpoint_and_silent_output_controls(self) -> None:
+        try:
+            args = build_parser().parse_args(
+                [
+                    "generate",
+                    "--task",
+                    "story_video",
+                    "--prompt",
+                    "Synthetic reference recreation",
+                    "--reference-video",
+                    "inputs/video_orchestrator/reference.mp4",
+                    "--checkpoint",
+                    "outputs/video_orchestrator/run/shot_01_state.json",
+                    "--no-audio",
+                    "--no-prompt-extend",
+                ]
+            )
+        except SystemExit as exc:
+            self.fail(f"generation recovery flags should parse: {exc}")
+        request = _request_from_args(args)
+        self.assertEqual(
+            request.metadata["task_checkpoint_path"],
+            "outputs/video_orchestrator/run/shot_01_state.json",
+        )
+        self.assertIs(request.metadata["output_audio"], False)
+        self.assertIs(request.metadata["prompt_extend"], False)
+
+    def test_generation_cli_separates_product_images_from_reference_images(self) -> None:
+        product_args = build_parser().parse_args(
+            [
+                "generate",
+                "--task",
+                "product_ad",
+                "--image",
+                "https://assets.example/product.png",
+                "--title",
+                "Synthetic product",
+            ]
+        )
+        product_request = _request_from_args(product_args)
+        self.assertEqual(product_request.product_images, ("https://assets.example/product.png",))
+        self.assertEqual(product_request.reference_images, ())
+
+        reference_args = build_parser().parse_args(
+            [
+                "generate",
+                "--task",
+                "short_product_scene",
+                "--image",
+                "https://assets.example/reference.png",
+                "--prompt",
+                "Synthetic reference scene",
+            ]
+        )
+        reference_request = _request_from_args(reference_args)
+        self.assertEqual(reference_request.product_images, ())
+        self.assertEqual(reference_request.reference_images, ("https://assets.example/reference.png",))
 
     def test_voice_lip_sync_and_pipeline_commands_are_executable(self) -> None:
         code, voice = self.run_cli("voice", "--language", "ne", "--text", "नमस्कार")
@@ -161,6 +219,25 @@ class VideoCtlTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertEqual(assembly["route"]["primary_adapter"], "ffmpeg_assembly")
+
+    def test_asr_cli_carries_provider_checkpoint_path(self) -> None:
+        try:
+            args = build_parser().parse_args(
+                [
+                    "asr",
+                    "--source",
+                    "outputs/video_orchestrator/reference.wav",
+                    "--checkpoint",
+                    "outputs/video_orchestrator/run/asr_state.json",
+                ]
+            )
+        except SystemExit as exc:
+            self.fail(f"ASR recovery flag should parse: {exc}")
+        request = _request_from_args(args)
+        self.assertEqual(
+            request.metadata["task_checkpoint_path"],
+            "outputs/video_orchestrator/run/asr_state.json",
+        )
 
 
 if __name__ == "__main__":

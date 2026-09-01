@@ -22,6 +22,8 @@
 | SF-R07 | `RISK / attribution_incomplete` | Supplier 接收 Lead 后不回传 offered/won/lost/fulfilled | views/Lead 数无法判断商业质量 | 缺 feedback 不进入第二 Route、AI 或 scale。 |
 | VO-R01 | `RESOLVED / aidge_probe_passed` | task checkpoint、官方 HTTP→HTTPS 归一化、redirect 重验、北京/上海 OSS proxy allowlist 已完成 | Aidge replacement task 已下载并通过 ffprobe/解码，不再因上述工程问题阻断 | 保留 checkpoint 与输出 URL 安全合同回归；媒体进入 `HUMAN_REVIEW_REQUIRED`，不自动发布或作为业务证据。 |
 | VO-R02 | `RISK / generated_media_not_business_evidence` | Orchestrator 技术通过可能被误写成商品、素材权、发布或销售就绪 | 造成业务状态升级和外部传播越界 | 所有 provider 输出必须技术 QC 后进入 `HUMAN_REVIEW_REQUIRED`；无供应链/素材权/平台授权不发布。 |
+| VO-R03 | `BLOCKED / qwen_mt_free_tier_only` | Qwen-MT 当前账号拒绝按量调用，返回 `AllocationQuota.FreeTierOnly` | 本轮 Nepali 翻译只能使用明确标记的 fallback draft，不能写成 Qwen-MT 已验证 | 不擅自修改账号全局计费开关；如未来需要 Qwen-MT，须单独授权该持久化设置并继续做人审。 |
+| VO-R04 | `RISK / reference_platform_layer_copy` | Wan3 直接接收带平台字幕/水印的 reference video 时可能复制平台层 | 生成素材即使原生 watermark=false 也可能仍含来源平台文字 | 每 Shot/整片抽帧；发现即拒绝，禁止本地去水印；必要时基于参考分析改为无 source pixels 的 text-only 新生成。 |
 
 | 编号 | 状态 | 风险/阻断 | 当前影响 | 安全处理 |
 |---|---|---|---|---|

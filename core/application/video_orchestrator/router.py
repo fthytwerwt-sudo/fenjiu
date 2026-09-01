@@ -34,11 +34,14 @@ class VideoRouter:
         if request.task is TaskType.SHORT_PRODUCT_SCENE:
             if not request.prompt:
                 raise OrchestratorContractError("short_scene_prompt_required")
-            record = self.registry.get("short_reference_video")
             if request.reference_videos:
+                return self._from_capability(
+                    "story_video",
+                    "short_reference_video_requires_wan3",
+                )
+            record = self.registry.get("short_reference_video")
+            if request.reference_images:
                 adapter = "happyhorse_1_1_r2v"
-            elif request.reference_images:
-                adapter = "happyhorse_1_1_i2v"
             else:
                 adapter = "happyhorse_1_1_t2v"
             return RouteDecision(record.capability_id, adapter, record.fallback, "short_reference_input_shape")
